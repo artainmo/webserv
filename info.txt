@@ -1,6 +1,5 @@
 UNDERSTAND SUBJECT
 ------------------
-
 World Wide Web (www), grouping of all documents on the web accessible through URLs(uniform resource locator) 
 
 Web browser, is a software application that allows access to the world wide web via URLs. The web browser transforms the URL into an IP address using the DNS (domain name system), it sends http requests towards that ip address or the server machine for the requested content.
@@ -14,8 +13,6 @@ http stands for hypertext transfer protocol, hypertext are documents that includ
 
 NEW ALLOWED FUNCTIONS
 -----------------
-
-
 stat - Information about a file
 lstat - Information about a symbolic link
 fstat - Same as stat but takes fd as argument
@@ -28,11 +25,9 @@ closedir - closes the directory stream
 gettimeofday - number of seconds and miniseconds since epoch
 strptime - transforms time string in numerical structure
 
-
 SOCKET PROGRAMMING
 ------------------
 Socket programming allows two sockets(IP address with specific port) to communicate. The server contains the listen socket, and client, client socket.
-
 
 *Create Socket*
 socket - used to create a socket
@@ -54,11 +49,8 @@ inet_addr - Used to convert an IPv4 address string notation into an int notation
 getsockname - returns address of socket
 fcntl - funcion able to perform a range of different commands on file descriptors
 
-
 GIT COLLABORATION
 -----------------
-
-
 Never work on same files
 Work on separate branches:
 git branch <branch name>
