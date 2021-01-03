@@ -27,7 +27,30 @@ closedir - closes the directory stream
 gettimeofday - number of seconds and miniseconds since epoch
 strptime - transforms time string in numerical structure
 
+SOCKET PROGRAMMING
+------------------
+Socket programming allows two sockets(IP address with specific port) to communicate. The server contains the listen socket, and client, client socket.
 
+
+*Create Socket*
+socket - used to create a socket
+setsockopt - helps maamipulate the socket for re-use
+bind - binds the socket to a specific ip address and port number
+
+*Server Socket*
+listen - listen socket waits for the client socket/sockets to connect
+accept - extract first connection request in queue and returns newly connected socket
+
+*Client Socket*
+connect - client socket demands connection with server socket
+
+*OTHER*
+select - Allows the webserver to handle multiple clients. It waits until one of fds become active. Also allows for selection between TCP and UDP socket, http server normally uses TCP
+send - allows sending a message to another socket
+recv - used to reveive a message from a socket
+inet_addr - Used to convert an IPv4 address string notation into an int notation
+getsockname - returns address of socket
+fcntl - funcion able to perform a range of different commands on file descriptors
 
 
 GIT COLLABORATION
