@@ -15,6 +15,7 @@ http stands for hypertext transfer protocol, hypertext are documents that includ
 NEW ALLOWED FUNCTIONS
 -----------------
 
+
 stat - Information about a file
 lstat - Information about a symbolic link
 fstat - Same as stat but takes fd as argument
@@ -26,6 +27,7 @@ closedir - closes the directory stream
 
 gettimeofday - number of seconds and miniseconds since epoch
 strptime - transforms time string in numerical structure
+
 
 SOCKET PROGRAMMING
 ------------------
@@ -55,6 +57,8 @@ fcntl - funcion able to perform a range of different commands on file descriptor
 
 GIT COLLABORATION
 -----------------
+
+
 Never work on same files
 Work on separate branches:
 git branch <branch name>
