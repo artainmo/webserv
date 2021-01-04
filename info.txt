@@ -10,6 +10,7 @@ A real webserver thus at least contains HTML files and an http server. But it ca
 http requests are made by a web browser and consist of different parts, they can request content from the webserver or even post content on the webserver, allowing the client to interact with the webserver.
 http stands for hypertext transfer protocol, hypertext are documents that include links to other documents.
 
+An http server is able to accept connections with a client, to be able to receive and anser http requests.
 
 NEW ALLOWED FUNCTIONS
 -----------------
@@ -41,13 +42,54 @@ accept - extract first connection request in queue and returns newly connected s
 *Client Socket*
 connect - client socket demands connection with server socket
 
-*OTHER*
+*Listen to multiple clients with one thread using select*
+https://www.youtube.com/watch?v=Y6pFtgRdUts&lc=z23otnqj3rblfljfbacdp433usjvdyefrfq2k0mpjrxw03c010c
 select - Allows the webserver to handle multiple clients. It waits until one of fds become active. Also allows for selection between TCP and UDP socket, http server normally uses TCP
+
+*OTHER*
 send - allows sending a message to another socket
 recv - used to reveive a message from a socket
 inet_addr - Used to convert an IPv4 address string notation into an int notation
 getsockname - returns address of socket
-fcntl - funcion able to perform a range of different commands on file descriptors
+fcntl - funcion able to perform a range of different commands on file descriptors, here can only be used to set a fd as non-blocking
+
+GUIDELINES
+----------
+
+-Take file path as argument
+-Parse the file
+-Socket connection / routing
+-Parse client socket messages
+--method
+--URI / URL
+--protocol version (IPv4 | IPv6)
+--Header fields
+---Request modifiers
+---client info and representation
+---metadata
+--empty line to indicate end of header
+--Message body containing payload body
+-http answers
+--status line protocol version
+--success or error code
+--textual reason phrase
+--header fields
+---server information
+---resource metadata
+---representational metadata
+---Empty line to indicate end of the header
+---Message body that contains the payload body
+
+RFC
+-Message Syntax And Routing
+-Semantics And Content
+-Conditional Requests
+-Range Requests
+-Caching
+-Authentification
+
+VERIF
+-Check leaks, hangs, select, .....
 
 GIT COLLABORATION
 -----------------
