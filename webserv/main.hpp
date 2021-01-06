@@ -32,12 +32,13 @@ typedef struct s_CGI
 
 typedef struct s_location //Config routes
 {
-	std::list<std::string> extensions; //if  no extensions specified means ALL, besides if extension specified in other location
+	std::list<std::string> file_extensions; //if  no extensions specified means ALL, besides if extension specified in other location
+	std::string link_extension;
 	std::list<std::string> http_methods;
 	std::string root;
-	bool directory_listing;
+	std::string  directory_listing;
 	std::string default_file_if_request_directory;
-	std::list<t_CGI> CGI; //If equal to NULL no CGI server, but http static content server
+	t_CGI *CGI; //If equal to NULL no CGI server, but http static content server
 	std::string file_upload_location;
 } t_location;
 
@@ -47,11 +48,17 @@ typedef struct s_config
 	std::string port;
 	std::string server_name;
 	std::string default_error_page;
-	std::string client_limit_body_size;
+	std::string body_size_limit;
 	std::list<t_location> locations;
 } t_config;
 
 t_config *parse_config(std::string path);
 bool getlinecut(std::ifstream &fd, std::string &line);
+bool check_line(std::string line, const std::string &comp);
+std::string following_content(std::string line, const std::string &after);
+std::string parse_between(std::string &line, char cut, char cut2, bool between=true);
+std::string parse_until(std::string &line, char until, bool all=false);
+void show_conf(t_config &conf);
+
 
 #endif

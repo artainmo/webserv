@@ -6,5 +6,6 @@ int main(int argc, char **argv)
 
 	if (argc != 2)
 		std::cout << "ERROR: Wrong Program Arguments" << std::endl;
-	config = parse_config(argv[1]);	
+	config = parse_config(argv[1]);
+	show_conf(*config);
 }
