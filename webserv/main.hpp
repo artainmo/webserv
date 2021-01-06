@@ -19,7 +19,7 @@ typedef struct s_CGI
 	std::string PATH_TRANSLATED;
 	std::string QUERY_STRING;
 	std::string REMOTE_ADDR;
-	std::string REMOTE_IDENT;
+	std::string REMOTE_INDENT;
 	std::string REMOTE_USER;
 	std::string REQUEST_METHOD;
 	std::string REQUEST_URI;

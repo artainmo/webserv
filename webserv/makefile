@@ -11,7 +11,7 @@ compile:
 	@clang++ -Wall -Wextra -Werror $(SRC) -o webserv
 
 run: compile
-	@./webserv conf/webserv1.conf
+	@./webserv conf/webserv2.conf
 
 fclean:
 	rm -rf webserv

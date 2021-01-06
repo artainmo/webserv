@@ -100,6 +100,43 @@ void show_conf(t_config &conf)
 			P(locs->CGI);
 			std::cout << "file_upload_location: ";
 			P(locs->file_upload_location);
+			if (locs->CGI != 0)
+			{
+				std::cout << "AUTH_TYPE: ";
+				P(locs->CGI->AUTH_TYPE);
+				std::cout << "CONTENT_LENGTH: ";
+				P(locs->CGI->CONTENT_LENGTH);
+				std::cout << "CONTENT_TYPE: ";
+				P(locs->CGI->CONTENT_TYPE);
+				std::cout << "GATEWAY_INTERFACE: ";
+				P(locs->CGI->GATEWAY_INTERFACE);
+				std::cout << "PATH_INFO: ";
+				P(locs->CGI->PATH_INFO);
+				std::cout << "PATH_TRANSLATED: ";
+				P(locs->CGI->PATH_TRANSLATED);
+				std::cout << "QUERY_STRING: ";
+				P(locs->CGI->QUERY_STRING);
+				std::cout << "REMOTE_ADDR: ";
+				P(locs->CGI->REMOTE_ADDR);
+				std::cout << "REMOTE_INDENT: ";
+				P(locs->CGI->REMOTE_INDENT);
+				std::cout << "REMOTE_USER: ";
+				P(locs->CGI->REMOTE_USER);
+				std::cout << "REQUEST_METHOD: ";
+				P(locs->CGI->REQUEST_METHOD);
+				std::cout << "REQUEST_URI: ";
+				P(locs->CGI->REQUEST_URI);
+				std::cout << "SCRIPT_NAME: ";
+				P(locs->CGI->SCRIPT_NAME);
+				std::cout << "SERVER_NAME: ";
+				P(locs->CGI->SERVER_NAME);
+				std::cout << "SERVER_PORT: ";
+				P(locs->CGI->SERVER_PORT);
+				std::cout << "SERVER_PROTOCOL: ";
+				P(locs->CGI->SERVER_PROTOCOL);
+				std::cout << "SERVER_SOFTWARE: ";
+				P(locs->CGI->SERVER_SOFTWARE);
+			}
 		}
 	}
 }
