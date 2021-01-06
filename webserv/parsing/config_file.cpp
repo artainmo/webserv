@@ -1,6 +1,6 @@
 #include "../main.hpp"
 
-void parse_location(t_config &conf, std::ifstream &fd, std::string &line)
+void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In location block
 {
 	P(line);
 	while (getlinecut(fd, line) && line.substr(0,1) != std::string("}"))
