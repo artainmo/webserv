@@ -1,13 +1,17 @@
 SRC = main.cpp \
 	  parsing/config_file.cpp \
+	  parsing/utils.cpp \
 
 
-all: run
+all: compile
 
-re: fclean run
+re: fclean compile
 
-run:
-	clang++ -Wall -Wextra -Werror $(SRC) -o webserv
+compile:
+	@clang++ -Wall -Wextra -Werror $(SRC) -o webserv
+
+run: compile
+	@./webserv conf/webserv1.conf
 
 fclean:
 	rm -rf webserv
