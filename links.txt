@@ -1,2 +1,0 @@
-How to make a basic Tcp server Video : https://youtu.be/LtXEMwSG5-8
-How to make a basic http server videro : https://youtu.be/mStnzIEprH8

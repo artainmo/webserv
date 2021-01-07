@@ -91,6 +91,12 @@ RFC
 VERIF
 -Check leaks, hangs, select, .....
 
+LINKS
+-------
+How to make a basic Tcp server Video : https://youtu.be/LtXEMwSG5-8
+How to make a basic http server videro : https://youtu.be/mStnzIEprH8
+HTTP request parsing https://codereview.stackexchange.com/questions/188384/http-request-parser-in-c
+
 GIT COLLABORATION
 -----------------
 Never work on same files
