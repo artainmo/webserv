@@ -52,13 +52,48 @@ typedef struct s_config
 	std::list<t_location> locations;
 } t_config;
 
+typedef struct s_header_fields
+{
+	std::list<std::string> Accept_Charsets;
+	std::list<std::string> Accept_Language;
+	std::list<std::string> Allow;
+	std::list<std::string> Authorization;
+	std::list<std::string> Content_Language;
+	std::list<std::string> Content_Length;
+	std::list<std::string> Content_Location;
+	std::list<std::string> Content_Type;
+	std::list<std::string> Date;
+	std::list<std::string> Host;
+	std::list<std::string> Last_Modified;
+	std::list<std::string> Location;
+	std::list<std::string> Referer;
+	std::list<std::string> Retry_After;
+	std::list<std::string> Server;
+	std::list<std::string> Transfer_Encoding;
+	std::list<std::string> User_Agent;
+   	std::list<std::string> WWW_Authenticate;
+} t_header_fields;
+
+typedef struct s_http_req
+{
+	std::string method;
+	std::string URL;
+	std::string protocol_version;
+	t_header_fields header_fields;
+	std::string message_body;
+} t_http_req;
+
 t_config *parse_config(std::string path);
+t_http_req *parse_http_request(std::string req);
 bool getlinecut(std::ifstream &fd, std::string &line);
 bool check_line(std::string line, const std::string &comp);
 std::string following_content(std::string line, const std::string &after);
+std::list<std::string> following_contents(std::string line, const std::string &after);
+std::list<std::string> split(std::string text, char sp);
 std::string parse_between(std::string &line, char cut, char cut2, bool between=true);
 std::string parse_until(std::string &line, char until, bool all=false);
 void show_conf(t_config &conf);
+void show_http_request(t_http_req &req);
 
 
 #endif

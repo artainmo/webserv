@@ -31,10 +31,8 @@ void init_cgi(t_location &loc)
 
 void parse_cgi(std::string &line, t_location &loc)
 {
-	P("hell");
 	if (loc.CGI == 0)
 		init_cgi(loc);
-	P("hell");
 	line = following_content(line, "fastcgi_param");
 	if (check_line(line, "AUTH_TYPE"))
 		loc.CGI->AUTH_TYPE = following_content(line, "AUTH_TYPE");
@@ -70,22 +68,6 @@ void parse_cgi(std::string &line, t_location &loc)
 		loc.CGI->SERVER_PROTOCOL = following_content(line, "SERVER_PROTOCOL");
 	if (check_line(line, "SERVER_SOFTWARE"))
 		loc.CGI->SERVER_PROTOCOL = following_content(line, "SERVER_SOFTWARE");
-	P("end");
-}
-
-void parse_http_methods(std::string &line, t_location &loc)
-{
-	std::string methods;
-	std::string method;
-
-	loc.http_methods.pop_front();
-	methods = following_content(line, "http_methods");
-	while(methods != std::string("None"))
-	{
-		method = parse_until(methods, ' ');
-		loc.http_methods.push_back(method);
-		methods = following_content(methods, method);
-	}
 }
 
 void parse_location_line_file_extensions(std::string &line, t_location &loc)
@@ -137,7 +119,7 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 	while (getlinecut(fd, line) && !check_line(line, "}"))
 	{
 		if (check_line(line, "http_methods"))
-			parse_http_methods(line, *loc);
+			loc->http_methods = following_contents(line, "http_methods");
 		else if (check_line(line, "root"))
 			loc->root = following_content(line, "root");
 		else if (check_line(line, "directory_listing"))
@@ -196,6 +178,5 @@ t_config *parse_config(std::string path)
 	fd.open(path, std::fstream::in);
 	default_init(*ret);
 	parse(*ret, fd);
-	show_conf(*ret);
 	return (ret);	
 }
