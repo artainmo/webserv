@@ -35,5 +35,5 @@ int main(int argc, char **argv)
 	config = parse_config(argv[1]);
 	//show_conf(*config);
 	req = parse_http_request(http_request_example);
-	show_http_request(*req);
+	//show_http_request(*req);
 }
