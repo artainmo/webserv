@@ -178,5 +178,6 @@ t_config *parse_config(std::string path)
 	fd.open(path, std::fstream::in);
 	default_init(*ret);
 	parse(*ret, fd);
+	//show_conf(*config);
 	return (ret);	
 }

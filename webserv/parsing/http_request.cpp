@@ -140,5 +140,6 @@ t_http_req *parse_http_request(std::string req)
 	lines = split(req, '\n');
 	default_init(*ret);
 	parse(*ret, lines, body_line);
+	//show_http_request(*ret);
 	return (ret);	
 }
