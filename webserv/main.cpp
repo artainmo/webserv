@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 	config = parse_config(argv[1]);
 	//while (19)
 	//{
-		http_request = server_connexion(config); 
-	//	req = parse_http_request(http_request_example);
+	//	http_request = server_connexion(config); 
+		req = parse_http_request(http_request_example);
 	//}
 }
