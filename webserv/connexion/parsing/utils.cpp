@@ -1,4 +1,4 @@
-#include "../main.hpp"
+#include "parsing.hpp"
 
 bool getlinecut(std::ifstream &fd, std::string &line)
 {
@@ -68,7 +68,7 @@ std::string parse_between(std::string &line, char cut, char cut2, bool between)
 	unsigned int i;
 	int start = 0;
 	int end = 0;
-	
+
 	i = 0;
 	while(i < line.size() && line[i] != cut)
 		i++;
@@ -174,7 +174,7 @@ void show_http_request(t_http_req &req)
 	for (std::list<std::string>::iterator i = req.header_fields.Accept_Charsets.begin(); i != req.header_fields.Accept_Charsets.end(); i++)
 			std::cout << *i + std::string(" ");
 	std::cout << std::endl;
-	std::cout << "Accept_Language: ";	
+	std::cout << "Accept_Language: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Accept_Language.begin(); i != req.header_fields.Accept_Language.end(); i++)
 			std::cout << *i + std::string(" ");
 	std::cout << std::endl;
@@ -245,4 +245,3 @@ void show_http_request(t_http_req &req)
 	std::cout << "message_body: ";
 	P(req.message_body);
 }
-

@@ -1,5 +1,3 @@
-#include "main.hpp"
-
 std::string http_request_example = "GET / HTTP/1.1\r\n"
 			"Accept-Charsets: dwdwdq dwqdwqdwqdwq\r\n"
             "Accept-Language: en-us\r\n"
@@ -23,19 +21,3 @@ std::string http_request_example = "GET / HTTP/1.1\r\n"
             "Usually GET requests don\'t have a body\r\n"
             "But I don\'t care in this case :)";
 
-
-
-int main(int argc, char **argv)
-{
-	t_config *config;
-	t_http_req *req;
-
-	if (argc != 2)
-		std::cout << "ERROR: Wrong Program Arguments" << std::endl;
-	config = parse_config(argv[1]);
-	//while (19)
-	//{
-	//	http_request = server_connexion(config); 
-		req = parse_http_request(http_request_example);
-	//}
-}

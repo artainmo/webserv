@@ -1,11 +1,11 @@
-#ifndef MAIN_HPP
-#define MAIN_HPP
+#ifndef PARSING_HPP
+#define PARSING_HPP
 
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <list>
- 
+
 #define P(x) std::cout << x << std::endl
 #define pass (void)0
 

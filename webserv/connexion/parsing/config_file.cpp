@@ -1,4 +1,4 @@
-#include "../main.hpp"
+#include "parsing.hpp"
 
 void init_cgi(t_location &loc)
 {
@@ -75,7 +75,7 @@ void parse_location_line_file_extensions(std::string &line, t_location &loc)
 	std::string parsed;
 	std::string extension;
 
-	parsed = parse_between(line, '(', ')'); 
+	parsed = parse_between(line, '(', ')');
 	if (parsed != std::string("None"))
 	{
 		loc.file_extensions.pop_front();
@@ -92,7 +92,7 @@ void parse_location_line_link_extension(std::string &line, t_location &loc)
 {
 	std::string parsed;
 
-	parsed = parse_between(line, '/', '/', false); 
+	parsed = parse_between(line, '/', '/', false);
 	if (parsed != std::string("None"))
 		loc.link_extension = parsed;
 }
@@ -140,7 +140,7 @@ void  parse(t_config &conf, std::ifstream &fd)
 {
 	std::string line;
 
-	while (std::getline(fd, line) && !check_line(line, "server")) 
+	while (std::getline(fd, line) && !check_line(line, "server"))
 		pass;
 	//In server block
 	while (getlinecut(fd, line) && !check_line(line, "}"))
@@ -179,5 +179,5 @@ t_config *parse_config(std::string path)
 	default_init(*ret);
 	parse(*ret, fd);
 	//show_conf(*config);
-	return (ret);	
+	return (ret);
 }

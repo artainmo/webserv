@@ -1,4 +1,4 @@
-#include "../main.hpp"
+#include "parsing.hpp"
 
 void parse_first_line(t_http_req &req, std::string line)
 {
@@ -141,5 +141,5 @@ t_http_req *parse_http_request(std::string req)
 	default_init(*ret);
 	parse(*ret, lines, body_line);
 	//show_http_request(*ret);
-	return (ret);	
+	return (ret);
 }
