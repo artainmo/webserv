@@ -1,10 +1,10 @@
 UNDERSTAND SUBJECT
 ------------------
-World Wide Web (www), grouping of all documents on the web accessible through URLs(uniform resource locator) 
+World Wide Web (www), grouping of all documents on the web accessible through URLs(uniform resource locator)
 
 Web browser, is a software application that allows access to the world wide web via URLs. The web browser transforms the URL into an IP address using the DNS (domain name system), it sends http requests towards that ip address or the server machine for the requested content.
 
-Webserv project consists of writing an http web server. Meaning the web server is able to take and answer http requests. 
+Webserv project consists of writing an http web server. Meaning the web server is able to take and answer http requests.
 A real webserver thus at least contains HTML files and an http server. But it can also contain a database to provide dynamic content, meaning the html files take variables from the database to produce dynamic content.
 
 http requests are made by a web browser and consist of different parts, they can request content from the webserver or even post content on the webserver, allowing the client to interact with the webserver.
@@ -29,10 +29,11 @@ strptime - transforms time string in numerical structure
 SOCKET PROGRAMMING
 ------------------
 Socket programming allows two sockets(IP address with specific port) to communicate. The server contains the listen socket, and client, client socket.
+https://www.geeksforgeeks.org/socket-programming-cc/
 
 *Create Socket*
 socket - used to create a socket
-setsockopt - helps maamipulate the socket for re-use
+setsockopt - helps manipulate the socket for re-use
 bind - binds the socket to a specific ip address and port number
 
 *Server Socket*
