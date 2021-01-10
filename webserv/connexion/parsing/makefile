@@ -1,17 +1,21 @@
 NAME = parsing.a
 SRCS = config_file.cpp \
 			http_request.cpp \
-			parsing/utils.cpp
+			utils.cpp
 
-OBJ = $(SRCS:.cpp=.o)
+OBJS = $(SRCS:.cpp=.o)
 
-all: compile
+all: lib
 
-compile: $(OBJ)
-		clang++ -Wall -Wextra -Werror $(OBJ) -o $(NAME)
+compile:
+	clang++ -Wall -Wextra -Werror -c $(SRCS)
+
+lib: compile
+	ar rc $(NAME) $(OBJS)
+	ranlib $(NAME)
 
 clean:
-		rm -f $(OBJ)
+		rm -f $(OBJS)
 
 fclean: clean
 	rm -rf $(NAME)

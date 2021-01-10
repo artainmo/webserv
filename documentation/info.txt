@@ -44,7 +44,7 @@ accept - extract first connection request in queue and returns newly connected s
 connect - client socket demands connection with server socket
 
 *Listen to multiple clients with one thread using select*
-https://www.youtube.com/watch?v=Y6pFtgRdUts&lc=z23otnqj3rblfljfbacdp433usjvdyefrfq2k0mpjrxw03c010c
+https://www.geeksforgeeks.org/socket-programming-in-cc-handling-multiple-clients-on-server-without-multi-threading/
 select - Allows the webserver to handle multiple clients. It waits until one of fds become active. Also allows for selection between TCP and UDP socket, http server normally uses TCP
 
 *OTHER*

@@ -1,13 +1,16 @@
 NAME = connexion.a
 SRCS = connexion.cpp \
 
-
 OBJ = $(SRCS:.cpp=.o)
 
-all: compile
+all: lib
 
-compile: $(OBJ) parsing_comp
-		clang++ -Wall -Wextra -Werror $(OBJ) parsing.a -o $(NAME)
+compile: parsing_comp
+	clang++ -Wall -Wextra -Werror -c $(SRCS)
+
+lib: compile
+	ar rc $(NAME) $(OBJ) parsing/parsing.a
+	ranlib $(NAME)
 
 clean: parsing_clean
 		rm -rf $(OBJ)
@@ -19,8 +22,6 @@ re: fclean all
 
 parsing_comp:
 	make -C ./parsing all
-	mv ./parsing/parsing.a .
 
 parsing_clean:
 	make -C ./parsing fclean
-	rm -rf parsing.a
