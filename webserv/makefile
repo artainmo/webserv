@@ -1,4 +1,4 @@
-NAME = webserv
+NAME = webserv.a
 SRCS = webserv.cpp
 
 OBJ = $(SRCS:.cpp=.o)

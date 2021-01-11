@@ -77,6 +77,7 @@ std::string get_client_request(t_server &s)
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
+              s.socket_to_answer = s.client_socket[i];
               return std::string(message_buffer);
           }
       }
