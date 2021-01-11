@@ -173,11 +173,16 @@ void default_init(t_config &conf)
 t_config *parse_config(std::string path)
 {
 	t_config *ret = new t_config;
-	std::ifstream fd;
+	std::ifstream fd(path);
 
-	fd.open(path, std::fstream::in);
+	if (!fd.is_open())
+	{
+		P("Error: config file opening");
+		exit(1);
+	}
 	default_init(*ret);
 	parse(*ret, fd);
+	fd.close();
 	//show_conf(*config);
 	return (ret);
 }

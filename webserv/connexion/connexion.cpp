@@ -105,6 +105,7 @@ void new_incoming_connection(t_server &s)
       std::cout << "Error: listen failed" << std::endl;
       exit(1);
     }
+    // fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
     add_new_socket_to_active_sockets(s);
     printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
 }
