@@ -22,7 +22,7 @@ int main(int argc , char *argv[])
         if ((request = get_client_request(*s)) != std::string("None"))
         {
 					req = parse_http_request(request);
-			// answer_http_request(req, conn);
+					answer_http_request(*s, *req);
         }
     }
     return 0;

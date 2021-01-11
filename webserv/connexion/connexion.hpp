@@ -32,4 +32,6 @@ void wait_connexion(t_server &s);
 void new_incoming_connection(t_server &s);
 std::string get_client_request(t_server &s);
 
+void answer_http_request(t_server &s, t_http_req &req);
+
 #endif

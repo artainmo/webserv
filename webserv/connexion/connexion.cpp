@@ -71,7 +71,7 @@ std::string get_client_request(t_server &s)
       //If returns true, something happened on client socket, meaning this specific client socket is sending a request
       if (FD_ISSET(s.client_socket[i] , &s.active_socket_read))
       {
-          message_len = read(s.client_socket[i] , message_buffer, 1024); //Read the incoming message
+          message_len = recv(s.client_socket[i] , message_buffer, 1024, 0); //Read the incoming message
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
             return client_disconnection(s, i);
           else
