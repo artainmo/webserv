@@ -81,7 +81,7 @@ void parse_location_line_file_extensions(std::string &line, t_location &loc)
 		loc.file_extensions.pop_front();
 		while(parsed != std::string("None"))
 		{
-			extension = parse_until(parsed, '|');
+			extension = parse_until(parsed, "|");
 			loc.file_extensions.push_back(extension);
 			parsed = following_content(parsed, extension);
 		}

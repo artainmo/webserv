@@ -89,9 +89,9 @@ bool getlinecut(std::ifstream &fd, std::string &line);
 bool check_line(std::string line, const std::string &comp);
 std::string following_content(std::string line, const std::string &after);
 std::list<std::string> following_contents(std::string line, const std::string &after);
-std::list<std::string> split(std::string text, char sp);
+std::list<std::string> split(std::string text, std::string sp);
 std::string parse_between(std::string &line, char cut, char cut2, bool between=true);
-std::string parse_until(std::string &line, char until, bool all=false);
+std::string parse_until(std::string &line, std::string until, bool all=false);
 void show_conf(t_config &conf);
 void show_http_request(t_http_req &req);
 

@@ -4,7 +4,7 @@ void parse_first_line(t_http_req &req, std::string line)
 {
 	std::list<std::string> parts;
 
-	parts = split(line, ' ');
+	parts = split(line, " ");
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front();
@@ -136,10 +136,15 @@ t_http_req *parse_http_request(std::string req)
 	std::list<std::string> lines;
 	unsigned int body_line;
 
+	P("--------------------------------------------------------------------------");
+	P(req); //test
+	P("--------------------------------------------------------------------------");
 	body_line = find_body(req);
-	lines = split(req, '\n');
+	lines = split(req, "\n");
 	default_init(*ret);
 	parse(*ret, lines, body_line);
-	//show_http_request(*ret);
+	P("--------------------------------------------------------------------------");
+	show_http_request(*ret); //test
+	P("--------------------------------------------------------------------------");
 	return (ret);
 }
