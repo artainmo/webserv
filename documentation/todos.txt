@@ -1,5 +1,4 @@
 - Understand the RFCs
-- Adapt http_request_parser to function with rest of code
 - Create http answers for each method
 - Adapt http answers based on config file
 - Adapt server setup based on config file
