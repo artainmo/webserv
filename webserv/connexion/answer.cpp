@@ -38,13 +38,19 @@ std::string parse_method(t_server &s, t_http_req &req)
 {
   if (req.method == std::string("GET"))
     return GET("../tests/index.html");
+  if (req.method == std::string("HEAD"))
+    return header_line("HTTP/1.1", "200", "OK") + std::string("\n");
   else if (req.method == std::string("POST"))
     pass;
   else if (req.method == std::string("PUT"))
     pass;
-  else if (req.method == std::string("PATCH"))
-    pass;
   else if (req.method == std::string("DELETE"))
+    pass;
+  else if (req.method == std::string("CONNECT"))
+    pass;
+  else if (req.method == std::string("OPTIONS"))
+    pass;
+  else if (req.method == std::string("TRACE"))
     pass;
   (void)s;
   return error_page();
