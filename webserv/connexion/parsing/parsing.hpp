@@ -95,5 +95,4 @@ std::string parse_until(std::string &line, std::string until, bool all=false);
 void show_conf(t_config &conf);
 void show_http_request(t_http_req &req);
 
-
 #endif

@@ -3,3 +3,10 @@
 - Adapt http answers based on config file
 - Adapt server setup based on config file
 
+----------------------------------------------
+
+GET REQUEST:
+- Get the good request and retrieve the file
+- Parse the file and put it in the body if successful
+- Fill the response headers
+- Send the response
