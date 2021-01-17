@@ -1,28 +1,25 @@
 #include "connexion.hpp"
 #include "answer.hpp"
 
-std::string header_line(std::string protocol_version, std::string code, std::string text)
+std::string get_header_line(size_t const& number)
 {
-  return protocol_version + std::string(" ") + code + std::string(" ") + text;
+	std::string	protocol("HTTP/1.1 ");
+	
+	switch (number)
+	{
+		case 200:
+			return (protocol + std::string("200 OK"));
+		case 404:
+			return (protocol + std::string("404 Not Found"));
+		case 405:
+			return (protocol + std::string("405 Not Allowed"));
+		default:
+			return (protocol + std::string("404 Not Found"));
+	}
+	return (protocol + std::string("404 Not Found"));
 }
 
-std::string error_page()
-{
-  std::ifstream fd("default/error.html");
-  std::string 	file("\n");
-  std::string 	line;
-
-  if (!fd.is_open())
-  {
-    std::cout << "Error: file opening default/error.html" << std::endl;
-    exit(1);
-  }
-  while (getline(fd, line))
-    file += line;
-  return header_line("HTTP/1.1", "400", "BAD REQUEST") + file;
-}
-
-std::string get_date()
+std::string get_date(void)
 {
 	char			buf[255];
 	struct tm		timeinfo;
@@ -82,7 +79,18 @@ void	init_response_struct(t_answer_headers & response)
 	response.last_modified = std::string("Last-Modified: ");
 }
 
-std::string construct_header_and_send(t_answer_headers const& info)
+void	fill_response_struct(t_answer_headers & response, std::string const& file, std::string const& path, size_t const& response_number)
+{
+	response.server += std::string("webserv/1.0");
+	response.date += get_date();
+	response.last_modified += get_last_modified(path);
+	response.content_length += std::to_string(file.size());
+	response.header_line += get_header_line(response_number);
+	response.body = file;
+	response.content_type += get_content_type(path);
+}
+
+std::string construct_get_response(t_answer_headers const& info)
 {
 	std::string response;
 
@@ -97,33 +105,91 @@ std::string construct_header_and_send(t_answer_headers const& info)
 	return response;
 }
 
+std::string construct_head_response(t_answer_headers const& info)
+{
+	std::string response;
+
+	response = info.header_line + "\n"
+			+ info.server + "\n"
+			+ info.date + "\n"
+			+ info.content_type + "\n"
+			+ info.content_length + "\n"
+			+ info.last_modified + "\n"
+			+ "\r\n";
+	return response;
+}
+
+std::string construct_error_response(t_answer_headers const& info)
+{
+	std::string response;
+
+	response = info.header_line + "\n"
+			+ info.server + "\n"
+			+ info.date + "\n"
+			+ info.content_type + "\n"
+			+ info.content_length + "\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY 
+			+ "\n"
+			+ info.body + "\r";
+	return response;
+}
+
+void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers & response, size_t const& response_number)
+{
+	std::string			file;
+	std::string			line;
+	struct stat			stat_file;
+
+	stat(path.c_str(), &stat_file);
+	while (getline(fd, line))
+		file += line + "\n";
+	init_response_struct(response);
+	fill_response_struct(response, file, path, response_number);
+}
+
+std::string error_page(size_t error_nbr)
+{
+	std::string			path("default/" + std::to_string(error_nbr) + ".html");
+	std::ifstream 		fd(path);  // charger l'erreur 
+	t_answer_headers	info;
+
+	if (!fd.is_open())
+	{
+		std::cout << "Error: file opening default/error.html" << std::endl;
+		exit(1);
+	}
+	init_head_get(path, fd, info, error_nbr);
+	return construct_error_response(info);
+}
+
 std::string GET(std::string path)
 {
 	std::ifstream		fd(path);
-	std::string			file;
-	std::string			line;
 	t_answer_headers	response;
-	struct stat			stat_file;
-
-	if (!fd.is_open())
-		return error_page();
-	stat(path.c_str(), &stat_file);
-	while (getline(fd, line))
-	{
-		file += line + "\n";
-	//	std::cout << "line= " << line << std::endl;
-	}
 	
-	init_response_struct(response);
-	response.server += std::string("webserv/1.0");
-	response.date += get_date();
-	response.last_modified += get_last_modified(path);
-	response.content_length += std::to_string(file.size());
-	response.header_line += header_line("HTTP/1.1", "200", "OK");
-	response.body = file;
-	response.content_type += get_content_type(path);
-std::cout << "line= " << response.body << std::endl;
-	return construct_header_and_send(response);
+	if (!fd.is_open())
+		return error_page(404);
+	init_head_get(path, fd, response, 200);
+	return construct_get_response(response);
+}
+
+std::string HEAD(std::string path)
+{
+	std::ifstream		fd(path);
+	t_answer_headers	response;
+	
+	if (!fd.is_open())
+		return error_page(404);
+	init_head_get(path, fd, response, 200);
+	return construct_head_response(response);
+}
+
+std::string POST(std::string path)
+{
+	std::ifstream		fd(path);
+	
+	if (!fd.is_open())
+		return error_page(404);
+	return error_page(405);
 }
 
 std::string parse_method(t_server &s, t_http_req &req)
@@ -136,22 +202,26 @@ std::string parse_method(t_server &s, t_http_req &req)
 		path += "index.html";  // need to check first index.html or other files depends from the config, better use fstat
 		return GET(path);
 	}
-	if (req.method == std::string("HEAD"))
-		return header_line("HTTP/1.1", "200", "OK") + std::string("\n");
+	else if (req.method == std::string("HEAD"))
+	{
+		std::string	path = "../tests";
+		path += req.URL;
+		path += "index.html";
+		return HEAD(path);
+	}
 	else if (req.method == std::string("POST"))
-		pass;
+	{
+		std::string	path = "../tests";
+		path += req.URL;
+		path += "index.html";
+		return POST(path);
+	}
 	else if (req.method == std::string("PUT"))
-		pass;
+		return error_page(405);
 	else if (req.method == std::string("DELETE"))
-		pass;
-	else if (req.method == std::string("CONNECT"))
-		pass;
-	else if (req.method == std::string("OPTIONS"))
-		pass;
-	else if (req.method == std::string("TRACE"))
-		pass;
+		return error_page(405);
 	(void)s;
-	return error_page();
+	return error_page(404);
 }
 
 void answer_http_request(t_server &s, t_http_req &req)
