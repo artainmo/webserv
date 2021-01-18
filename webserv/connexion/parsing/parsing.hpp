@@ -48,7 +48,7 @@ typedef struct s_config
 	int port;
 	std::string server_name;
 	std::string default_error_page;
-	std::string body_size_limit;
+	int body_size_limit;
 	std::list<t_location> locations;
 } t_config;
 
@@ -84,7 +84,7 @@ typedef struct s_http_req
 } t_http_req;
 
 t_config *parse_config(std::string path);
-t_http_req *parse_http_request(std::string req);
+t_http_req *parse_http_request(std::string req, t_config &conf);
 bool getlinecut(std::ifstream &fd, std::string &line);
 bool check_line(std::string line, const std::string &comp);
 std::string following_content(std::string line, const std::string &after);

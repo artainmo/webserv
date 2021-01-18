@@ -95,7 +95,7 @@ void show_conf(t_config &conf)
 	P(std::string("port: ") + std::to_string(conf.port));
 	P(std::string("server_name: ") + conf.server_name);
 	P(std::string("default_error_page: ") + conf.default_error_page);
-	P(std::string("body_size_limit: ") + conf.body_size_limit);
+	P(std::string("body_size_limit: ") + std::to_string(conf.body_size_limit));
 	if (conf.locations.size() != 0)
 	{
 		int i = 0;

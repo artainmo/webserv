@@ -21,7 +21,7 @@ int main(int argc , char *argv[])
       new_incoming_connection(*s, *config);
       if ((request = get_client_request(*s, *config)) != std::string("None"))
       {
-				req = parse_http_request(request);
+				req = parse_http_request(request, *config);
 				answer_http_request(*s, *req);
       }
   }

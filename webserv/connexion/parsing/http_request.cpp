@@ -12,7 +12,7 @@ void parse_first_line(t_http_req &req, std::string line)
 	req.protocol_version = parts.front();
 }
 
-void parse_body(t_http_req &req, std::string line)
+void parse_body(t_http_req &req, std::string line, t_config &conf)
 {
 	if (req.message_body == std::string("None"))
 		req.message_body.assign(line);
@@ -21,6 +21,8 @@ void parse_body(t_http_req &req, std::string line)
 		req.message_body.insert(req.message_body.size() - 1, "\n"); //Insert is used instead of append due to unexplained bug when using append
 		req.message_body.insert(req.message_body.size() - 1, line);
 	}
+	if (static_cast<int>(req.message_body.size()) > conf.body_size_limit)
+		req.message_body = req.message_body.substr(0, conf.body_size_limit);
 }
 
 void parse_header_fields(t_http_req &req, std::string line)
@@ -63,7 +65,7 @@ void parse_header_fields(t_http_req &req, std::string line)
 			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
 }
 
-void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line)
+void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line, t_config &conf)
 {
 	unsigned int i;
 
@@ -73,7 +75,7 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 		if (i == 0)
 			parse_first_line(req, *line);
 		else if (i >= body_line)
-			parse_body(req, *line);
+			parse_body(req, *line, conf);
 		else
 			parse_header_fields(req, *line);
 		i++;
@@ -130,7 +132,7 @@ void default_init(t_http_req &req)
 	req.message_body = std::string("None");
 }
 
-t_http_req *parse_http_request(std::string req)
+t_http_req *parse_http_request(std::string req, t_config &conf)
 {
 	t_http_req *ret = new t_http_req;
 	std::list<std::string> lines;
@@ -142,7 +144,7 @@ t_http_req *parse_http_request(std::string req)
 	body_line = find_body(req);
 	lines = split(req, "\n");
 	default_init(*ret);
-	parse(*ret, lines, body_line);
+	parse(*ret, lines, body_line, conf);
 	// P("--------------------------------------------------------------------------");
 	// show_http_request(*ret); //test
 	// P("--------------------------------------------------------------------------");

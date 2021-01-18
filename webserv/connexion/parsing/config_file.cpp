@@ -163,7 +163,14 @@ void  parse(t_config &conf, std::ifstream &fd)
 		else if (check_line(line, "default_error_page"))
 			conf.default_error_page = following_content(line, "default_error_page");
 		else if (check_line(line, "body_size_limit"))
-			conf.body_size_limit = following_content(line, "body_size_limit");
+		try
+		{
+			conf.body_size_limit = std::stoi(following_content(line, "body_size_limit"));
+		}
+		catch(std::exception &e)
+		{
+			P(e.what());
+		}
 		else if (check_line(line, "location"))
 			parse_location(conf, fd, line);
 	}
@@ -176,7 +183,7 @@ void default_init(t_config &conf)
 	conf.port = -1;
 	conf.server_name = "None";
 	conf.default_error_page = "None";
-	conf.body_size_limit = "None";
+	conf.body_size_limit = -1;
 }
 
 t_config *parse_config(std::string path)
@@ -198,6 +205,11 @@ t_config *parse_config(std::string path)
 	if(ret->port == -1)
 	{
 		P("Error: port not specified");
+		exit(1);
+	}
+	else if (ret->body_size_limit == -1)
+	{
+		P("Error: body size limit not specified");
 		exit(1);
 	}
 	//show_conf(*config);
