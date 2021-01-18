@@ -1,7 +1,8 @@
 #include "connexion.hpp"
 
-void setup_server(t_server &s)
+void setup_server(t_server &s, t_config &config)
 {
+    (void)config;
     s.addrlen = sizeof(s.address);
 
     //initialise client sockets to null or inactive
@@ -30,16 +31,17 @@ void setup_server(t_server &s)
     //type of socket created
     s.address.sin_family = AF_INET; //= IPv4
     s.address.sin_addr.s_addr = INADDR_ANY; //Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks
-    s.address.sin_port = htons(PORT); //decode port adress with htons
+    s.address.sin_port = htons(config.port); //decode port adress with htons
 
     if (bind(s.server_socket, (struct sockaddr *)&s.address, s.addrlen) == -1)
     {
         std::cout << "Error: bind failed" << std::endl;
+        P(strerror(errno));
         exit(1);
     }
 
     std::cout << "Listening on port: ";
-    std:: cout << PORT << std::endl;
+    std:: cout << config.port << std::endl;
     //Server socket waits for a client socket to connect
     //SOMAXCONN is constant of max number of client requests we could wait for
     if (listen(s.server_socket, SOMAXCONN) == -1)
@@ -61,8 +63,9 @@ std::string client_disconnection(t_server &s, unsigned int i)
   return (std::string("None"));
 }
 
-std::string get_client_request(t_server &s)
+std::string get_client_request(t_server &s, t_config &config)
 {
+  (void)config;
   int message_len = -1; //Receive message lenght to add a /0 at end str
   char message_buffer[1025];  //Received message is taken into a char* message_buffer because we use C functions
 
@@ -97,8 +100,9 @@ void add_new_socket_to_active_sockets(t_server &s)
   }
 }
 
-void new_incoming_connection(t_server &s)
+void new_incoming_connection(t_server &s, t_config &config)
 {
+    (void)config;
     //Extracts first connection request in queue and returns new connected socket (server - client)
     if ((s.connected_socket = accept(s.server_socket, (struct sockaddr *)&s.address, (socklen_t*)&s.addrlen)) == -1)
     {
@@ -123,8 +127,9 @@ void reset_sockets(t_server &s)
   }
 }
 
-void wait_connexion(t_server &s)
+void wait_connexion(t_server &s, t_config &config)
 {
+  (void)config;
   reset_sockets(s);
   //Wait untill a socket gets activated
   //NULL is used to indicate wait indefinitevely

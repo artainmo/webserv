@@ -148,7 +148,16 @@ void  parse(t_config &conf, std::ifstream &fd)
 		if (check_line(line, "host"))
 			conf.host = following_content(line, "host");
 		else if (check_line(line, "port"))
-			conf.port = following_content(line, "port");
+		{
+			try
+			{
+				conf.port = std::stoi(following_content(line, "port"));
+			}
+			catch(std::exception &e)
+			{
+				P(e.what());
+			}
+		}
 		else if (check_line(line, "server_name"))
 			conf.server_name = following_content(line, "server_name");
 		else if (check_line(line, "default_error_page"))
@@ -164,7 +173,7 @@ void  parse(t_config &conf, std::ifstream &fd)
 void default_init(t_config &conf)
 {
 	conf.host = "None";
-	conf.port = "None";
+	conf.port = -1;
 	conf.server_name = "None";
 	conf.default_error_page = "None";
 	conf.body_size_limit = "None";
@@ -177,12 +186,20 @@ t_config *parse_config(std::string path)
 
 	if (!fd.is_open())
 	{
-		P("Error: config file opening");
+		if (errno == 2)
+			P("Error: no such file or directory");
+		else if (errno == 13)
+			P("Error: permission denied");
 		exit(1);
 	}
 	default_init(*ret);
 	parse(*ret, fd);
 	fd.close();
+	if(ret->port == -1)
+	{
+		P("Error: port not specified");
+		exit(1);
+	}
 	//show_conf(*config);
 	return (ret);
 }

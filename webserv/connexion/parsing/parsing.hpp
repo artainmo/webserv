@@ -45,7 +45,7 @@ typedef struct s_location //Config routes
 typedef struct s_config
 {
 	std::string host;
-	std::string port;
+	int port;
 	std::string server_name;
 	std::string default_error_page;
 	std::string body_size_limit;

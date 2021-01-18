@@ -13,13 +13,13 @@ int main(int argc , char *argv[])
 		exit(1);
 	}
 	config = parse_config(argv[1]);
-  setup_server(*s);
+  setup_server(*s, *config);
   while(true)
   {
-      wait_connexion(*s);
+      wait_connexion(*s, *config);
       if (FD_ISSET(s->server_socket, &s->active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
-      new_incoming_connection(*s);
-      if ((request = get_client_request(*s)) != std::string("None"))
+      new_incoming_connection(*s, *config);
+      if ((request = get_client_request(*s, *config)) != std::string("None"))
       {
 				req = parse_http_request(request);
 				answer_http_request(*s, *req);

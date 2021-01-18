@@ -16,8 +16,6 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <fcntl.h>
 
-#define PORT 8888 //For testing
-
 typedef struct	s_server
 {
 	int server_socket; //Our server socket, whereby clients can connect to
@@ -29,10 +27,10 @@ typedef struct	s_server
 	int connected_socket; //New socket connected between server and client
 }				t_server;
 
-void		setup_server(t_server &s);
-void		wait_connexion(t_server &s);
-void		new_incoming_connection(t_server &s);
-std::string	get_client_request(t_server &s);
+void		setup_server(t_server &s, t_config &config);
+void		wait_connexion(t_server &s, t_config &config);
+void		new_incoming_connection(t_server &s, t_config &config);
+std::string	get_client_request(t_server &s, t_config &config);
 
 void		answer_http_request(t_server &s, t_http_req &req);
 

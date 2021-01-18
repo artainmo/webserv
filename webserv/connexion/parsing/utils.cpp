@@ -92,7 +92,7 @@ std::string parse_between(std::string &line, char cut, char cut2, bool between)
 void show_conf(t_config &conf)
 {
 	P(std::string("host: ") + conf.host);
-	P(std::string("port: ") + conf.port);
+	P(std::string("port: ") + std::to_string(conf.port));
 	P(std::string("server_name: ") + conf.server_name);
 	P(std::string("default_error_page: ") + conf.default_error_page);
 	P(std::string("body_size_limit: ") + conf.body_size_limit);
