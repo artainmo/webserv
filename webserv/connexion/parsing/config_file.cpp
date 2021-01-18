@@ -183,7 +183,7 @@ void default_init(t_config &conf)
 	conf.port = -1;
 	conf.server_name = "None";
 	conf.default_error_page = "None";
-	conf.body_size_limit = -1;
+	conf.body_size_limit = 1024; //Default max body size
 }
 
 t_config *parse_config(std::string path)
@@ -205,11 +205,6 @@ t_config *parse_config(std::string path)
 	if(ret->port == -1)
 	{
 		P("Error: port not specified");
-		exit(1);
-	}
-	else if (ret->body_size_limit == -1)
-	{
-		P("Error: body size limit not specified");
 		exit(1);
 	}
 	//show_conf(*config);
