@@ -1,10 +1,9 @@
 #include "connexion.hpp"
-#include "answer.hpp"
 
 std::string get_header_line(size_t const& number)
 {
 	std::string	protocol("HTTP/1.1 ");
-	
+
 	switch (number)
 	{
 		case 200:
@@ -25,12 +24,12 @@ std::string get_date(void)
 	struct tm		timeinfo;
 	time_t			time;
 	struct timeval	current_time;
-	
+
 	gettimeofday(&current_time, NULL);
 	time = (time_t)current_time.tv_sec;
 	strptime(ctime(&time), "%a %b %d %T %Y", &timeinfo);
 	strftime(buf, 255, "%a, %d %b %Y %T GMT", &timeinfo);
-	
+
 	return std::string(buf);
 }
 
@@ -127,7 +126,7 @@ std::string construct_error_response(t_answer_headers const& info)
 			+ info.server + "\n"
 			+ info.date + "\n"
 			+ info.content_type + "\n"
-			+ info.content_length + "\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY 
+			+ info.content_length + "\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
 			+ "\n"
 			+ info.body + "\r";
 	return response;
@@ -149,7 +148,7 @@ void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers
 std::string error_page(size_t error_nbr)
 {
 	std::string			path("default/" + std::to_string(error_nbr) + ".html");
-	std::ifstream 		fd(path);  // charger l'erreur 
+	std::ifstream 		fd(path);  // charger l'erreur
 	t_answer_headers	info;
 
 	if (!fd.is_open())
@@ -165,7 +164,7 @@ std::string GET(std::string path)
 {
 	std::ifstream		fd(path);
 	t_answer_headers	response;
-	
+
 	if (!fd.is_open())
 		return error_page(404);
 	init_head_get(path, fd, response, 200);
@@ -176,7 +175,7 @@ std::string HEAD(std::string path)
 {
 	std::ifstream		fd(path);
 	t_answer_headers	response;
-	
+
 	if (!fd.is_open())
 		return error_page(404);
 	init_head_get(path, fd, response, 200);
@@ -186,19 +185,19 @@ std::string HEAD(std::string path)
 std::string POST(std::string path)
 {
 	std::ifstream		fd(path);
-	
+
 	if (!fd.is_open())
 		return error_page(404);
 	return error_page(405);
 }
 
 std::string parse_method(t_server &s, t_http_req &req)
-{ 
+{
 	if (req.method == std::string("GET"))
 	{
 		std::string	path = "../tests";
 		path += req.URL;
-		//if (req.URL[req.URL.size() - 1] )    MANAGE ThE  '/' at the end 
+		//if (req.URL[req.URL.size() - 1] )    MANAGE ThE  '/' at the end
 		path += "index.html";  // need to check first index.html or other files depends from the config, better use fstat
 		return GET(path);
 	}

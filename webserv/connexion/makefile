@@ -1,6 +1,7 @@
 NAME = connexion.a
 SRCS = connexion.cpp \
-				answer.cpp
+				answer.cpp \
+				cgi.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 
