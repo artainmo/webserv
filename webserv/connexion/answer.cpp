@@ -101,7 +101,7 @@ std::string construct_get_response(t_answer_headers const& info)
 			+ info.content_length + "\n"
 			+ info.last_modified + "\n"
 			+ "\n"
-			+ info.body + "\r";
+			+ info.body; // + "\n";
 	return response;
 }
 
@@ -211,7 +211,9 @@ std::string parse_method(t_server &s, t_http_req &req)
 	}
 	else if (req.method == std::string("POST"))
 	{
-		std::string	path = "../tests";
+	/*	if (req.message_body == "None")
+			return std::string();
+	*/	std::string	path = "../tests";
 		path += req.URL;
 		path += "index.html";
 		return POST(path);
