@@ -160,14 +160,19 @@ std::string error_page(size_t error_nbr)
 	return construct_error_response(info);
 }
 
-std::string GET(std::string path)
+std::string GET(std::string path, t_config &conf)
 {
 	std::ifstream		fd(path);
 	t_answer_headers	response;
 
 	if (!fd.is_open())
 		return error_page(404);
+	if (get_cgi(path, conf))
+	{
+
+	}
 	init_head_get(path, fd, response, 200);
+	fd.close();
 	return construct_get_response(response);
 }
 
