@@ -132,7 +132,6 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 			loc->file_upload_location = following_content(line, "file_upload_location");
 	}
 	conf.locations.push_back(*loc);
-	delete loc;
 }
 
 
