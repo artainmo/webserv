@@ -26,6 +26,8 @@ void parse_first_line(t_http_req &req, std::string line)
 			exit(1);
 		}
 	}
+	else
+		req.URL = req.URL.substr(1, req.URL.size());
 }
 
 void parse_body(t_http_req &req, std::string line, t_config &conf)

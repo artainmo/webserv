@@ -9,7 +9,7 @@ compile: connexion_comp $(OBJ)
 		clang++ -Wall -Wextra -Werror $(OBJ) connexion/connexion.a connexion/parsing/parsing.a -o $(NAME)
 
 run: re
-	./webserv.a conf/webserv1.conf
+	./webserv.a conf/webserv2.conf
 
 clean: connexion_clean
 		rm -rf $(OBJ)

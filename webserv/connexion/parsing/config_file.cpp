@@ -101,12 +101,12 @@ void init_location(t_location &loc)
 {
 	loc.file_extensions.push_back("ALL");
 	loc.link_extension = "None";
-	loc.http_methods.push_back("None");
-	loc.root = "/";
+	loc.http_methods.push_back("ALL");
+	loc.root = "";
 	loc.directory_listing = std::string("false");
 	loc.default_file_if_request_directory = "None";
 	loc.CGI = 0;
-	loc.file_upload_location = "None";
+	loc.file_upload_location = "upload/default";
 }
 
 void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In location block
@@ -121,7 +121,11 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 		if (check_line(line, "http_methods"))
 			loc->http_methods = following_contents(line, "http_methods");
 		else if (check_line(line, "root"))
+		{
 			loc->root = following_content(line, "root");
+			if (loc->root == "/")
+				loc->root = "";
+		}
 		else if (check_line(line, "directory_listing"))
 			loc->directory_listing = following_content(line, "directory_listing");
 		else if (check_line(line, "default_file_if_request_directory"))

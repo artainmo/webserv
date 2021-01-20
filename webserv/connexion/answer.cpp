@@ -175,10 +175,12 @@ std::string GET(std::string path, t_config &conf)
 		return error_page(404);
 	if ((generated_file_path = get_cgi(path, "GET", conf)) != std::string("None"))
 	{
+		P("YES");
 		fd.close();
 		fd.open(generated_file_path);
 		path = generated_file_path;
 	}
+	P(path);
 	init_head_get(path, fd, response, 200);
 	fd.close();
 	(void)conf;

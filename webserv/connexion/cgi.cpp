@@ -2,6 +2,7 @@
 
 t_location *get_location(std::string file_extension, std::string method, t_config &conf)
 {
+	show_conf(conf);
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
 		for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
 				if ((file_extension == *ext || *ext == std::string("ALL")) && loc->CGI != 0)
@@ -18,7 +19,19 @@ std::string get_file_extension(std::string path)
 
 void set_env(std::string var, std::string equal_to)
 {
-	execve("/bin/export", (char *[]) {(char *)(var + std::string("=") + equal_to).c_str(), 0}, 0);
+	pid_t	pid;
+
+	if ((pid = fork()) == -1)
+	{
+		P("Error: fork failed");
+		exit(1);
+	}
+	if (!pid)
+	{
+		execve("/bin/export", (char *[]) {(char *)(var + std::string("=") + equal_to).c_str(), 0}, 0);
+		exit(1);
+	}
+	waitpid(pid, 0, 0);
 }
 
 void set_meta_variables(t_CGI &c)
@@ -45,14 +58,27 @@ void set_meta_variables(t_CGI &c)
 void write_to_upload_file(int fd_upload_location, std::string path)
 {
 	int fd_1;
+	pid_t pid;
 
 	fd_1 = dup(1);
-	dup2(fd_upload_location, 1); //dup the execve output towards the upload location file
-	if (execve("/usr/bin/php", (char *[]) {(char *)"php", (char *)path.c_str(), 0}, 0) == -1) //brew install php, use php as CGI script, output file in upload location
+	if ((pid = fork()) == -1)
 	{
-		P(strerror(errno));
+		P("Error: fork failed");
 		exit(1);
 	}
+	dup2(fd_upload_location, 1); //dup the execve output towards the upload location file
+	if (!pid)
+	{
+		if (execve("/usr/bin/php", (char *[]) {(char *)"php", (char *)path.c_str(), 0}, 0) == -1) //brew install php, use php as CGI script, output file in upload location
+		{
+			P("Error: execve cgi php");
+			P(strerror(errno));
+			exit(1);
+		}
+		exit(1);
+	}
+	waitpid(pid, 0, 0);
+	dup2(fd_1, 1);
 	dup2(fd_1, 1);
 	close(fd_1);
 	close(fd_upload_location);
@@ -67,12 +93,16 @@ std::string get_cgi(std::string path, std::string method, t_config &conf) //retu
 	if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
 		return std::string("None");
 	set_meta_variables(*loc->CGI);
-	generated_file_path = loc->root + std::string("/") + loc->file_upload_location;
+	generated_file_path = loc->root + loc->file_upload_location;
+	P(generated_file_path);
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
+		P("Error: file upload location error");
 		P(strerror(errno));
 		exit(1);
 	}
+	P(generated_file_path);
 	write_to_upload_file(fd_upload_location, path);
+	P(generated_file_path);
 	return generated_file_path;
 }
