@@ -171,7 +171,7 @@ std::string GET(std::string path, t_config &conf)
 	t_answer_headers	response;
 	std::string generated_file_path;
 
-	if (!fd.is_open())
+	if (path == std::string("file not found"))
 		return error_page(404);
 	if ((generated_file_path = get_cgi(path, "GET", conf)) != std::string("None"))
 	{

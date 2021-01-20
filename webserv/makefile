@@ -6,7 +6,7 @@ OBJ = $(SRCS:.cpp=.o)
 all: compile
 
 compile: connexion_comp $(OBJ)
-		clang++ -Wall -Wextra -Werror $(OBJ) connexion/connexion.a connexion/parsing/parsing.a -o $(NAME)
+		clang++ -Wall -Wextra -Werror $(OBJ) connexion/connexion.a connexion/parsing/parsing.a connexion/utils/utils.a -o $(NAME)
 
 run: re
 	./webserv.a conf/webserv2.conf

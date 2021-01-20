@@ -2,6 +2,7 @@
 #	define CONNEXION_HPP
 
 #include "parsing/parsing.hpp"
+#include "utils/utils.hpp"
 
 #include <stdio.h>
 #include <iostream>

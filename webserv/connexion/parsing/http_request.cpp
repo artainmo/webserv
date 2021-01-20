@@ -7,27 +7,15 @@ void parse_first_line(t_http_req &req, std::string line)
 	parts = split(line, " ");
 	req.method = parts.front();
 	parts.pop_front();
-	req.URL = parts.front();
+	req.URL = parts.front().substr(1);
 	parts.pop_front();
 	req.protocol_version = parts.front();
 
-	if (req.URL == std::string("/"))
-	{
-		std::ifstream fd1("index.html");
-		std::ifstream fd2("index.php");
-
-		if (fd2.is_open())
-			req.URL = "index.php";
-		else if (fd1.is_open())
-			req.URL = "index.html";
-		else
-		{
-			std::cout << "Error: index file not found" << std::endl;
-			exit(1);
-		}
-	}
-	else
-		req.URL = req.URL.substr(1, req.URL.size());
+	if (req.URL == std::string(""))
+		req.URL = "index";
+	if (req.URL[req.URL.size() - 1] == '/')
+		req.URL = req.URL.substr(0, req.URL.size() - 1);
+	req.URL = find_file(req.URL); //If file not found req.URL = "file not found"
 }
 
 void parse_body(t_http_req &req, std::string line, t_config &conf)
@@ -155,15 +143,15 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	std::list<std::string> lines;
 	unsigned int body_line;
 
-	P("--------------------------------------------------------------------------");
-	P(req); //test
-	P("--------------------------------------------------------------------------");
+	// P("--------------------------------------------------------------------------");
+	// P(req); //test
+	// P("--------------------------------------------------------------------------");
 	body_line = find_body(req);
 	lines = split(req, "\n");
 	default_init(*ret);
 	parse(*ret, lines, body_line, conf);
-	P("--------------------------------------------------------------------------");
-	show_http_request(*ret); //test
-	P("--------------------------------------------------------------------------");
+	// P("--------------------------------------------------------------------------");
+	// show_http_request(*ret); //test
+	// P("--------------------------------------------------------------------------");
 	return (ret);
 }

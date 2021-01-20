@@ -1,6 +1,8 @@
 #ifndef PARSING_HPP
 #define PARSING_HPP
 
+#include "../utils/utils.hpp"
+
 #include <iostream>
 #include <string>
 #include <fstream>

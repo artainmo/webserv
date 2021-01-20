@@ -2,7 +2,6 @@
 
 t_location *get_location(std::string file_extension, std::string method, t_config &conf)
 {
-	show_conf(conf);
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
 		for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
 				if ((file_extension == *ext || *ext == std::string("ALL")) && loc->CGI != 0)
@@ -10,11 +9,6 @@ t_location *get_location(std::string file_extension, std::string method, t_confi
 						if ((method == *met || *met == std::string("ALL")) && loc->CGI != 0)
 							return &(*loc);
 	return 0;
-}
-
-std::string get_file_extension(std::string path)
-{
-	return path.substr(path.find_last_of('.') + 1);
 }
 
 void set_env(std::string var, std::string equal_to)
@@ -99,8 +93,6 @@ std::string get_cgi(std::string path, std::string method, t_config &conf) //retu
 		P(strerror(errno));
 		exit(1);
 	}
-	P(generated_file_path);
 	write_to_upload_file(fd_upload_location, path);
-	P(generated_file_path);
 	return generated_file_path;
 }
