@@ -2,16 +2,13 @@
 
 t_location *get_location(std::string file_extension, std::string method, t_config &conf)
 {
-	t_location *location;
-
-	location = 0;
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
 		for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
-				if (file_extension == *ext || *ext == std::string("ALL"))
+				if ((file_extension == *ext || *ext == std::string("ALL")) && loc->CGI != 0)
 					for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
-						if (method == *met || *met == std::string("ALL"))
-							*location = *loc;
-	return location;
+						if ((method == *met || *met == std::string("ALL")) && loc->CGI != 0)
+							return &(*loc);
+	return 0;
 }
 
 std::string get_file_extension(std::string path)
@@ -26,6 +23,7 @@ void set_env(std::string var, std::string equal_to)
 
 void set_meta_variables(t_CGI &c)
 {
+	P("YES");
 	set_env("AUTH_TYPE", c.AUTH_TYPE);
 	set_env("CONTENT_LENGTH", c.CONTENT_LENGTH);
 	set_env("CONTENT_TYPE", c.CONTENT_TYPE);
@@ -61,19 +59,26 @@ void write_to_upload_file(int fd_upload_location, std::string path)
 	close(fd_upload_location);
 }
 
-bool get_cgi(std::string path, t_config &conf, std::string method) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
+std::string get_cgi(std::string path, std::string method, t_config &conf) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
 {
 	t_location *loc;
 	int fd_upload_location;
+	std::string generated_file_path;
 
+	P("H");
+	show_conf(conf);
 	if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
-		return false;
+		return std::string("None");
+	P(loc);
 	set_meta_variables(*loc->CGI);
-	if ((fd_upload_location = open((loc->root + std::string("/") + loc->file_upload_location).c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
+	P("H");
+	generated_file_path = loc->root + std::string("/") + loc->file_upload_location;
+	P("H");
+	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P(strerror(errno));
 		exit(1);
 	}
 	write_to_upload_file(fd_upload_location, path);
-	return true;
+	return generated_file_path;
 }

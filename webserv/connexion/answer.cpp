@@ -169,13 +169,16 @@ std::string GET(std::string path, t_config &conf)
 {
 	std::ifstream		fd(path);
 	t_answer_headers	response;
+	std::string generated_file_path;
 
 	if (!fd.is_open())
 		return error_page(404);
-	// if (get_cgi(path, conf))
-	// {
-	//
-	// }
+	if ((generated_file_path = get_cgi(path, "GET", conf)) != std::string("None"))
+	{
+		fd.close();
+		fd.open(generated_file_path);
+		path = generated_file_path;
+	}
 	init_head_get(path, fd, response, 200);
 	fd.close();
 	(void)conf;
