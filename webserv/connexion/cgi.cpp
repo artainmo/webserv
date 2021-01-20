@@ -79,7 +79,6 @@ void write_to_upload_file(int fd_upload_location, std::string path)
 	}
 	waitpid(pid, 0, 0);
 	dup2(fd_1, 1);
-	dup2(fd_1, 1);
 	close(fd_1);
 	close(fd_upload_location);
 }
@@ -94,7 +93,6 @@ std::string get_cgi(std::string path, std::string method, t_config &conf) //retu
 		return std::string("None");
 	set_meta_variables(*loc->CGI);
 	generated_file_path = loc->root + loc->file_upload_location;
-	P(generated_file_path);
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P("Error: file upload location error");
