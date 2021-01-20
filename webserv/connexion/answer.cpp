@@ -194,6 +194,14 @@ std::string POST(std::string path)
 	if (!fd.is_open())
 		return error_page(404);
 	return error_page(405);
+
+	// return header_line("HTTP/1.1", "206", "Partial Content");
+	//
+  // return header_line("HTTP/1.1", "304", "Not Modified");
+	//
+  // return header_line("HTTP/1.1", "416", "Range Not Satisfiable");
+	//
+  // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
 std::string parse_method(t_server &s, t_http_req &req)

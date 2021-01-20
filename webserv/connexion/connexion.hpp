@@ -59,6 +59,6 @@ std::string	get_client_request(t_server &s, t_config &config);
 
 void		answer_http_request(t_server &s, t_http_req &req);
 
-bool get_cgi(std::string path, t_config &conf);
+bool get_cgi(std::string path, t_config &conf, std::string method);
 
 #	endif

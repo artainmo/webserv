@@ -1,6 +1,6 @@
 #include "connexion.hpp"
 
-t_location *get_location(std::string file_extension, t_config &conf)
+t_location *get_location(std::string file_extension, std::string method, t_config &conf)
 {
 	t_location *location;
 
@@ -8,7 +8,9 @@ t_location *get_location(std::string file_extension, t_config &conf)
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
 		for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
 				if (file_extension == *ext || *ext == std::string("ALL"))
-					*location = *loc;
+					for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
+						if (method == *met || *met == std::string("ALL"))
+							*location = *loc;
 	return location;
 }
 
@@ -59,15 +61,15 @@ void write_to_upload_file(int fd_upload_location, std::string path)
 	close(fd_upload_location);
 }
 
-bool get_cgi(std::string path, t_config &conf) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
+bool get_cgi(std::string path, t_config &conf, std::string method) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
 {
 	t_location *loc;
 	int fd_upload_location;
 
-	if ((loc = get_location(get_file_extension(path), conf)) == 0) //cgi must not be used for this file extension
+	if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
 		return false;
 	set_meta_variables(*loc->CGI);
-	if ((fd_upload_location = open(loc->file_upload_location.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
+	if ((fd_upload_location = open((loc->root + std::string("/") + loc->file_upload_location).c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P(strerror(errno));
 		exit(1);
