@@ -18,6 +18,11 @@ std::string get_header_line(size_t const& number)
 	return (protocol + std::string("404 Not Found"));
 }
 
+std::string header_field(std::string header, std::string text)
+{
+  return header + std::string(": ") + text + std::string("\r\n");
+}
+
 std::string get_date(void)
 {
 	char			buf[255];
@@ -93,14 +98,14 @@ std::string construct_get_response(t_answer_headers const& info)
 {
 	std::string response;
 
-	response = info.header_line + "\n"
-			+ info.server + "\n"
-			+ info.date + "\n"
-			+ info.content_type + "\n"
-			+ info.content_length + "\n"
-			+ info.last_modified + "\n"
-			+ "\n"
-			+ info.body; // + "\n";
+	response = info.header_line + "\r\n"
+			+ info.server + "\r\n"
+			+ info.date + "\r\n"
+			+ info.content_type + "\r\n"
+			+ info.content_length + "\r\n"
+			+ info.last_modified + "\r\n"
+			+ "\r\n"
+			+ info.body;
 	return response;
 }
 
@@ -108,12 +113,12 @@ std::string construct_head_response(t_answer_headers const& info)
 {
 	std::string response;
 
-	response = info.header_line + "\n"
-			+ info.server + "\n"
-			+ info.date + "\n"
-			+ info.content_type + "\n"
-			+ info.content_length + "\n"
-			+ info.last_modified + "\n"
+	response = info.header_line + "\r\n"
+			+ info.server + "\r\n"
+			+ info.date + "\r\n"
+			+ info.content_type + "\r\n"
+			+ info.content_length + "\r\n"
+			+ info.last_modified + "\r\n"
 			+ "\r\n";
 	return response;
 }
@@ -122,13 +127,13 @@ std::string construct_error_response(t_answer_headers const& info)
 {
 	std::string response;
 
-	response = info.header_line + "\n"
-			+ info.server + "\n"
-			+ info.date + "\n"
-			+ info.content_type + "\n"
-			+ info.content_length + "\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
-			+ "\n"
-			+ info.body + "\r";
+	response = info.header_line + "\r\n"
+			+ info.server + "\r\n"
+			+ info.date + "\r\n"
+			+ info.content_type + "\r\n"
+			+ info.content_length + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
+			+ "\r\n"
+			+ info.body;
 	return response;
 }
 
@@ -167,12 +172,13 @@ std::string GET(std::string path, t_config &conf)
 
 	if (!fd.is_open())
 		return error_page(404);
-	if (get_cgi(path, conf))
-	{
-
-	}
+	// if (get_cgi(path, conf))
+	// {
+	//
+	// }
 	init_head_get(path, fd, response, 200);
 	fd.close();
+	(void)conf;
 	return construct_get_response(response);
 }
 
@@ -204,7 +210,7 @@ std::string POST(std::string path)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
-std::string parse_method(t_server &s, t_http_req &req)
+std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
 {
 	if (req.method == std::string("GET"))
 	{
@@ -212,7 +218,7 @@ std::string parse_method(t_server &s, t_http_req &req)
 		path += req.URL;
 		//if (req.URL[req.URL.size() - 1] )    MANAGE ThE  '/' at the end
 		path += "index.html";  // need to check first index.html or other files depends from the config, better use fstat
-		return GET(path);
+		return GET(path, conf);
 	}
 	else if (req.method == std::string("HEAD"))
 	{
@@ -238,11 +244,11 @@ std::string parse_method(t_server &s, t_http_req &req)
 	return error_page(404);
 }
 
-void answer_http_request(t_server &s, t_http_req &req)
+void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
 {
 	std::string	answer;
 
-	answer = parse_method(s, req);
+	answer = parse_method(s, req, conf);
 	if (send(s.socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	{
 		std::cout << "Error: send failed" << std::endl;
