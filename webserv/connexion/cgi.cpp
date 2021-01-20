@@ -23,7 +23,6 @@ void set_env(std::string var, std::string equal_to)
 
 void set_meta_variables(t_CGI &c)
 {
-	P("YES");
 	set_env("AUTH_TYPE", c.AUTH_TYPE);
 	set_env("CONTENT_LENGTH", c.CONTENT_LENGTH);
 	set_env("CONTENT_TYPE", c.CONTENT_TYPE);
@@ -65,15 +64,10 @@ std::string get_cgi(std::string path, std::string method, t_config &conf) //retu
 	int fd_upload_location;
 	std::string generated_file_path;
 
-	P("H");
-	show_conf(conf);
 	if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
 		return std::string("None");
-	P(loc);
 	set_meta_variables(*loc->CGI);
-	P("H");
 	generated_file_path = loc->root + std::string("/") + loc->file_upload_location;
-	P("H");
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P(strerror(errno));

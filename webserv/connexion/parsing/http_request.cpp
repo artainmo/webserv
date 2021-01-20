@@ -10,6 +10,22 @@ void parse_first_line(t_http_req &req, std::string line)
 	req.URL = parts.front();
 	parts.pop_front();
 	req.protocol_version = parts.front();
+
+	if (req.URL == std::string("/"))
+	{
+		std::ifstream fd1("index.html");
+		std::ifstream fd2("index.php");
+
+		if (fd2.is_open())
+			req.URL = "index.php";
+		else if (fd1.is_open())
+			req.URL = "index.html";
+		else
+		{
+			std::cout << "Error: index file not found" << std::endl;
+			exit(1);
+		}
+	}
 }
 
 void parse_body(t_http_req &req, std::string line, t_config &conf)
@@ -124,8 +140,7 @@ void default_init(t_http_req &req)
 	req.header_fields.Server.push_back("None");
 	req.header_fields.Transfer_Encoding.push_back("None");
 	req.header_fields.User_Agent.push_back("None");
-   	req.header_fields.WWW_Authenticate.push_back("None");
-
+  req.header_fields.WWW_Authenticate.push_back("None");
 	req.method = std::string("None");
 	req.URL = std::string("None");
 	req.protocol_version = std::string("None");
@@ -138,15 +153,15 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	std::list<std::string> lines;
 	unsigned int body_line;
 
-	// P("--------------------------------------------------------------------------");
-	// P(req); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	P(req); //test
+	P("--------------------------------------------------------------------------");
 	body_line = find_body(req);
 	lines = split(req, "\n");
 	default_init(*ret);
 	parse(*ret, lines, body_line, conf);
-	// P("--------------------------------------------------------------------------");
-	// show_http_request(*ret); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	show_http_request(*ret); //test
+	P("--------------------------------------------------------------------------");
 	return (ret);
 }

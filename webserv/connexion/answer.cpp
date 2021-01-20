@@ -152,13 +152,13 @@ void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers
 
 std::string error_page(size_t error_nbr)
 {
-	std::string			path("default/" + std::to_string(error_nbr) + ".html");
+	std::string			path("../default/" + std::to_string(error_nbr) + ".html");
 	std::ifstream 		fd(path);  // charger l'erreur
 	t_answer_headers	info;
 
 	if (!fd.is_open())
 	{
-		std::cout << "Error: file opening default/error.html" << std::endl;
+		std::cout << "Error: file opening ../default/error.html" << std::endl;
 		exit(1);
 	}
 	init_head_get(path, fd, info, error_nbr);
@@ -216,29 +216,11 @@ std::string POST(std::string path)
 std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
 {
 	if (req.method == std::string("GET"))
-	{
-		std::string	path = "../tests";
-		path += req.URL;
-		//if (req.URL[req.URL.size() - 1] )    MANAGE ThE  '/' at the end
-		path += "index.html";  // need to check first index.html or other files depends from the config, better use fstat
-		return GET(path, conf);
-	}
+		return GET(req.URL, conf);
 	else if (req.method == std::string("HEAD"))
-	{
-		std::string	path = "../tests";
-		path += req.URL;
-		path += "index.html";
-		return HEAD(path);
-	}
+		return HEAD(req.URL);
 	else if (req.method == std::string("POST"))
-	{
-	/*	if (req.message_body == "None")
-			return std::string();
-	*/	std::string	path = "../tests";
-		path += req.URL;
-		path += "index.html";
-		return POST(path);
-	}
+		return POST(req.URL);
 	else if (req.method == std::string("PUT"))
 		return error_page(405);
 	else if (req.method == std::string("DELETE"))
