@@ -1,26 +1,37 @@
 NAME = webserv.a
 SRCS = webserv.cpp
 
+CXX = clang++
+CXXFLAGS = #-Wall -Wextra -Werror
+
+CONNEXION_P = connexion
+CONNEXION = $(CONNEXION_P)/connexion.a
+
+CONNEXION_LIB = $(CONNEXION_P)/connexion.a
+PARSING_LIB = $(CONNEXION_P)/parsing/parsing.a
+UTILS_LIB = $(CONNEXION_P)/utils/utils.a
+
 OBJ = $(SRCS:.cpp=.o)
 
-all: compile
+all: $(CONNEXION) $(NAME)
 
-compile: connexion_comp $(OBJ)
-		clang++ -Wall -Wextra -Werror $(OBJ) connexion/connexion.a connexion/parsing/parsing.a connexion/utils/utils.a -o $(NAME)
+$(NAME): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) $(CONNEXION_LIB) $(PARSING_LIB) $(UTILS_LIB) -o $(NAME)
 
-run: re
+$(CONNEXION):
+	(cd $(CONNEXION_P) && $(MAKE))
+
+run: all
 	./webserv.a conf/webserv2.conf
 
-clean: connexion_clean
-		rm -rf $(OBJ)
+clean:
+	(cd $(CONNEXION_P) && $(MAKE) $@)
+	rm -rf $(OBJ)
 
 fclean: clean
+	(cd $(CONNEXION_P) && $(MAKE) $@)
 	rm -rf $(NAME)
 
 re: fclean all
 
-connexion_comp:
-	make -C ./connexion all
-
-connexion_clean:
-	make -C ./connexion fclean
+.PHONY:all fclean re run

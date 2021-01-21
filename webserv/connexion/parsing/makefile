@@ -3,21 +3,37 @@ SRCS = config_file.cpp \
 			http_request.cpp \
 			utils.cpp
 
-OBJS = $(SRCS:.cpp=.o)
+CXX = clang++
+CXXFLAGS = #-Wall -Wextra -Werror
 
-all: lib
+OBJ = $(SRCS:.cpp=.o)
 
-compile:
-	clang++ -Wall -Wextra -Werror -c $(SRCS)
+all: $(NAME) 
 
-lib: compile
-	ar rc $(NAME) $(OBJS)
-	ranlib $(NAME)
+$(NAME): $(OBJ)
+	ar rc $(NAME) $(OBJ)
 
 clean:
-		rm -f $(OBJS)
+	rm -f $(OBJ)
 
 fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
+
+.PHONY:all fclean re
+
+# compile:
+# 	clang++ -Wall -Wextra -Werror -c $(SRCS)
+
+# lib: compile
+# 	ar rc $(NAME) $(OBJS)
+# 	ranlib $(NAME)
+
+# clean:
+# 		rm -f $(OBJS)
+
+# fclean: clean
+# 	rm -rf $(NAME)
+
+# re: fclean all

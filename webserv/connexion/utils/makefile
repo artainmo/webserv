@@ -3,20 +3,43 @@ SRCS = directory.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 
-all: lib
+CXX = clang++
+CXXFLAGS = #-Wall -Wextra -Werror
 
-compile:
-	clang++ -Wall -Wextra -Werror -c $(SRCS)
+OBJ = $(SRCS:.cpp=.o)
 
-lib: compile
+all: $(NAME)
+
+$(NAME): $(OBJ)
 	ar rc $(NAME) $(OBJ)
-	ranlib $(NAME)
 
 clean:
-		rm -rf $(OBJ)
+	rm -f $(OBJ)
 
 fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
+
+.PHONY:all fclean re
+
+
+
+
+# all: lib
+
+# compile:
+# 	clang++ -Wall -Wextra -Werror -c $(SRCS)
+
+# lib: compile
+# 	ar rc $(NAME) $(OBJ)
+# 	ranlib $(NAME)
+
+# clean:
+# 		rm -rf $(OBJ)
+
+# fclean: clean
+# 	rm -rf $(NAME)
+
+# re: fclean all
 

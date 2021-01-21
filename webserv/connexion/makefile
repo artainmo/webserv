@@ -3,33 +3,38 @@ SRCS = connexion.cpp \
 		answer.cpp \
 		cgi.cpp \
 
+CXX = clang++
+CXXFLAGS = #-Wall -Wextra -Werror
+
+PARSING_P = parsing
+PARSING = $(PARSING_P)/parsing.a
+
+UTILS_P = utils
+UTILS = $(UTILS_P)/utils.a
+
 OBJ = $(SRCS:.cpp=.o)
 
-all: lib
+all: $(PARSING) $(UTILS)  $(NAME)
 
-compile: parsing_comp utils_comp
-	clang++ -Wall -Wextra -Werror -c $(SRCS)
+$(NAME): $(OBJ)
+	ar rc $(NAME) $(OBJ)
 
-lib: compile
-	ar rc $(NAME) $(OBJ) parsing/parsing.a utils/utils.a
-	ranlib $(NAME)
+$(PARSING):
+	(cd $(PARSING_P) && $(MAKE))
 
-clean: parsing_clean utils_clean
-		rm -rf $(OBJ)
+$(UTILS):
+	(cd $(UTILS_P) && $(MAKE))
+
+clean:
+	(cd $(PARSING_P) && $(MAKE) $@)
+	(cd $(UTILS_P) && $(MAKE) $@)
+	rm -rf $(OBJ)
 
 fclean: clean
+	(cd $(PARSING_P) && $(MAKE) $@)
+	(cd $(UTILS_P) && $(MAKE) $@)
 	rm -rf $(NAME)
 
 re: fclean all
 
-parsing_comp:
-	make -C ./parsing all
-
-parsing_clean:
-	make -C ./parsing fclean
-
-utils_comp:
-	make -C ./utils all
-
-utils_clean:
-	make -C ./utils fclean
+.PHONY:all fclean re
