@@ -1,6 +1,37 @@
 #include "parsing.hpp"
 
-void parse_first_line(t_http_req &req, std::string line)
+void parse_URL(t_http_req &req, t_config &conf)
+{
+	std::string rem;
+
+	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == '/')
+		req.URL = req.URL.substr(0, req.URL.size() - 1);
+	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == ':')
+		req.URL = req.URL.substr(0, req.URL.size() - 1);
+	// char *path_name = new char[100];
+	// getcwd(path_name, 100);
+	// std::cout << path_name << std::endl;
+	if (req.URL.size() == 0)
+		rem = req.URL;
+	if (req.URL.size() != 0)
+		rem = req.URL + std::string("/");
+	std::cout << "before: " << req.URL << std::endl;
+	if (req.URL.size() == 0 || (req.URL = find_file(req.URL)) == std::string("directory found"))
+	{
+		if (conf.index.size() != 0)
+		{
+			for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++) //If directory found search for given indexes
+			{
+				if ((req.URL = find_file(rem + *i)) != std::string("file not found") && (rem = find_file(rem + *i)) != std::string("directory found"))
+					return ;
+			}
+		}
+		req.URL = std::string("file not found");
+	}
+	std::cout << "after: " << req.URL << std::endl;
+}
+
+void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 {
 	std::list<std::string> parts;
 
@@ -8,21 +39,9 @@ void parse_first_line(t_http_req &req, std::string line)
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
+	parse_URL(req, conf);
 	parts.pop_front();
 	req.protocol_version = parts.front();
-
-	if (req.URL == std::string(""))
-		req.URL = "index";
-	if (req.URL[req.URL.size() - 1] == '/')
-		req.URL = req.URL.substr(0, req.URL.size() - 1);
-	if (req.URL[req.URL.size() - 1] == ':')
-		req.URL = req.URL.substr(0, req.URL.size() - 1);
-	char *path_name = new char[100];
-	getcwd(path_name, 100);
-	std::cout << path_name << std::endl;
-	P(req.URL);
-	req.URL = find_file(req.URL); //If file not found req.URL = "file not found"
-	P(req.URL);
 }
 
 void parse_body(t_http_req &req, std::string line, t_config &conf)
@@ -86,7 +105,7 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 	for (std::list<std::string>::iterator line = lines.begin(); line != lines.end(); line++)
 	{
 		if (i == 0)
-			parse_first_line(req, *line);
+			parse_first_line(req, *line, conf);
 		else if (i >= body_line)
 			parse_body(req, *line, conf);
 		else

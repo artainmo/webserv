@@ -21,7 +21,7 @@ $(NAME): $(OBJ)
 $(CONNEXION):
 	(cd $(CONNEXION_P) && $(MAKE))
 
-run: all
+run: fclean all
 	./webserv.a conf/webserv2.conf
 
 clean:

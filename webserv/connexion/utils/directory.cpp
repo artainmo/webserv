@@ -56,7 +56,7 @@ std::string found(std::string directory, std::string file)
 	else
 		ret = file;
 	if (is_regular_file(ret.c_str()) == 0) //If is a directory
-		return "file not found";
+		return "directory found";
 	return ret;
 }
 

@@ -176,6 +176,8 @@ void  parse(t_config &conf, std::ifstream &fd)
 		}
 		else if (check_line(line, "location"))
 			parse_location(conf, fd, line);
+		else if (check_line(line, "index"))
+			conf.index = following_contents(line, "index");
 	}
 	(void)conf;
 }

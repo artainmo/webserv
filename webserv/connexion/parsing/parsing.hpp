@@ -52,6 +52,7 @@ typedef struct s_config
 	std::string default_error_page;
 	int body_size_limit;
 	std::list<t_location> locations;
+	std::list<std::string> index;
 } t_config;
 
 typedef struct s_header_fields
