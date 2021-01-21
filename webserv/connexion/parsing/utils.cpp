@@ -109,8 +109,8 @@ void show_conf(t_config &conf)
 			for (std::list<std::string>::iterator ext = locs->file_extensions.begin(); ext != locs->file_extensions.end(); ext++)
 				std::cout << *ext + std::string(" ");
 			std::cout << std::endl;
-			std::cout << "link_extension: ";
-			P(locs->link_extension);
+			std::cout << "directory: ";
+			P(locs->directory);
 			std::cout << "http_methods: ";
 			for (std::list<std::string>::iterator http = locs->http_methods.begin(); http != locs->http_methods.end(); http++)
 				std::cout << *http + std::string(" ");

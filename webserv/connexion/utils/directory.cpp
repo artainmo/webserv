@@ -41,6 +41,7 @@ std::string dir_no_file(std::string path)
 	if (path[0] == '/')
 	{
 		std::cout << "Error: input dir_no_file"<< std::endl;
+		exit(1);
 	}
 	if (path.find("/") == std::string::npos)
 		return ".";

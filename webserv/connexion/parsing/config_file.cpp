@@ -88,19 +88,24 @@ void parse_location_line_file_extensions(std::string &line, t_location &loc)
 	}
 }
 
-void parse_location_line_link_extension(std::string &line, t_location &loc)
+void parse_location_line_directory(std::string &line, t_location &loc)
 {
-	std::string parsed;
+	int start;
+	int end;
 
-	parsed = parse_between(line, '/', '/', false);
-	if (parsed != std::string("None"))
-		loc.link_extension = parsed;
+	if ((start = line.find_first_of("/")) == std::string::npos)
+		return ;
+	end = line.find_last_of("/");
+	if (start == end)
+		loc.directory = "/";
+	else
+		loc.directory = line.substr(start + 1, end - start - 1);
 }
 
 void init_location(t_location &loc)
 {
 	loc.file_extensions.push_back("ALL");
-	loc.link_extension = "None";
+	loc.directory = "None";
 	loc.http_methods.push_back("ALL");
 	loc.root = "";
 	loc.directory_listing = std::string("false");
@@ -114,7 +119,7 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 	t_location *loc = new t_location;
 
 	init_location(*loc);
-	parse_location_line_link_extension(line, *loc);
+	parse_location_line_directory(line, *loc);
 	parse_location_line_file_extensions(line, *loc);
 	while (getlinecut(fd, line) && !check_line(line, "}"))
 	{
@@ -123,8 +128,8 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 		else if (check_line(line, "root"))
 		{
 			loc->root = following_content(line, "root");
-			if (loc->root == "/")
-				loc->root = "";
+			if (loc->root[0] == '/')
+				loc->root =loc->root.substr(1, loc->root.size());
 		}
 		else if (check_line(line, "directory_listing"))
 			loc->directory_listing = following_content(line, "directory_listing");
@@ -212,6 +217,6 @@ t_config *parse_config(std::string path)
 		P("Error: port not specified");
 		exit(1);
 	}
-	// show_conf(*ret);
+	show_conf(*ret);
 	return (ret);
 }

@@ -163,24 +163,16 @@ std::string error_page(size_t error_nbr)
 	return construct_error_response(info);
 }
 
-std::string GET(std::string path, t_config &conf)
+std::string GET(t_http_req &req)
 {
 	std::ifstream		fd;
 	t_answer_headers	response;
-	std::string generated_file_path;
 
-	if (path == std::string("file not found"))
-		return error_page(404);
-	fd.open(path);
-	if ((generated_file_path = get_cgi(path, "GET", conf)) != std::string("None"))
-	{
-		fd.close();
-		fd.open(generated_file_path);
-		path = generated_file_path;
-	}
-	init_head_get(path, fd, response, 200);
+  if (req.loc != 0 && req.loc->CGI != 0)
+	   req.URL = get_cgi(req);
+  fd.open(req.URL);
+	init_head_get(req.URL, fd, response, 200);
 	fd.close();
-	(void)conf;
 	return construct_get_response(response);
 }
 
@@ -189,24 +181,17 @@ std::string HEAD(std::string path)
 	std::ifstream		fd;
 	t_answer_headers	response;
 
-	if (path == std::string("file not found"))
-		return error_page(404);
 	fd.open(path);
 	init_head_get(path, fd, response, 200);
 	fd.close();
 	return construct_head_response(response);
 }
 
-std::string POST(std::string action, t_config &conf)
+std::string POST(t_http_req &req)
 {
 	std::ifstream		fd;
 
-	if (action == std::string("file not found"))
-		return error_page(404);
-	fd.open(action);
-	fd.close();
-	return GET(action, conf);
-
+	return GET(req);
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
   // return header_line("HTTP/1.1", "304", "Not Modified");
@@ -219,11 +204,11 @@ std::string POST(std::string action, t_config &conf)
 std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
 {
 	if (req.method == std::string("GET"))
-		return GET(req.URL, conf);
+		return GET(req);
 	else if (req.method == std::string("HEAD"))
 		return HEAD(req.URL);
 	else if (req.method == std::string("POST"))
-		return POST(req.URL, conf);
+		return POST(req);
 	else if (req.method == std::string("PUT"))
 		return error_page(405);
 	else if (req.method == std::string("DELETE"))
@@ -236,7 +221,12 @@ void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
 {
 	std::string	answer;
 
-	answer = parse_method(s, req, conf);
+  if (req.URL == std::string("file not found"))
+    answer = error_page(404);
+  else if (req.URL == std::string("method not found"))
+    answer = error_page(405);
+	else
+    answer = parse_method(s, req, conf);
 	if (send(s.socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	{
 		std::cout << "Error: send failed" << std::endl;

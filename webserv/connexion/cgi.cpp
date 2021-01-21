@@ -77,22 +77,21 @@ void write_to_upload_file(int fd_upload_location, std::string path)
 	close(fd_upload_location);
 }
 
-std::string get_cgi(std::string path, std::string method, t_config &conf) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
+std::string get_cgi(t_http_req &req) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
 {
-	t_location *loc;
 	int fd_upload_location;
 	std::string generated_file_path;
 
-	if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
-		return std::string("None");
-	set_meta_variables(*loc->CGI);
-	generated_file_path = loc->root + loc->file_upload_location;
+	// if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
+	// 	return std::string("None");
+	set_meta_variables(*req.loc->CGI);
+	generated_file_path = req.loc->root + req.loc->file_upload_location;
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P("Error: file upload location error");
 		P(strerror(errno));
 		exit(1);
 	}
-	write_to_upload_file(fd_upload_location, path);
+	write_to_upload_file(fd_upload_location, req.URL);
 	return generated_file_path;
 }

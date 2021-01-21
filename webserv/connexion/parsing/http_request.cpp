@@ -1,5 +1,23 @@
 #include "parsing.hpp"
 
+t_location *assigned_location(t_http_req &req, t_config &conf)
+{
+	std::string directory;
+	std::string file_extension;
+
+	directory = dir_no_file(req.URL);
+	if (directory == std::string("."))
+		directory = "/";
+	file_extension = get_file_extension(req.URL);
+
+	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
+			if ((directory == loc->directory || loc->directory == std::string("None"))) //If directory is equal or directory is none
+				for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
+					if ((file_extension == *ext || *ext == std::string("ALL"))) //If file extension is equal or all file extensions are accepted
+							return &(*loc);
+	return 0;
+}
+
 void parse_URL(t_http_req &req, t_config &conf)
 {
 	std::string rem;
@@ -27,6 +45,15 @@ void parse_URL(t_http_req &req, t_config &conf)
 			}
 		}
 		req.URL = std::string("file not found");
+	}
+	if (req.URL != std::string("file not found"))
+	{
+		if ((req.loc = assigned_location(req, conf)) == 0)
+			return ;
+		for (std::list<std::string>::iterator met = req.loc->http_methods.begin(); met != req.loc->http_methods.end(); met++)
+			if ((req.method == *met || *met == std::string("ALL")))
+				return ;
+		req.URL = std::string("method not found");
 	}
 	std::cout << "after: " << req.URL << std::endl;
 }
@@ -159,6 +186,7 @@ void default_init(t_http_req &req)
   req.header_fields.WWW_Authenticate.push_back("None");
 	req.method = std::string("None");
 	req.URL = std::string("None");
+	req.loc = 0;
 	req.protocol_version = std::string("None");
 	req.message_body = std::string("None");
 }
