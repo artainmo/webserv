@@ -1,8 +1,11 @@
 <html>
- <head>
-  <title>PHP Test</title>
- </head>
- <body>
- <p>Hello World</p> 
- </body>
+<body>
+
+<form method="post" action="test.php:">
+  Name: <input type="text" name="fname">
+  <input type="submit">
+</form>
+
+
+</body>
 </html>

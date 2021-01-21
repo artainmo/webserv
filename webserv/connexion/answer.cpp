@@ -1,5 +1,15 @@
 #include "connexion.hpp"
 
+std::string header_line(std::string protocol_version, std::string code, std::string text)
+{
+  return protocol_version + std::string(" ") + code + std::string(" ") + text + std::string("\r\n");
+}
+
+std::string header_field(std::string header, std::string text)
+{
+  return header + std::string(": ") + text + std::string("\r\n");
+}
+
 std::string get_header_line(size_t const& number)
 {
 	std::string	protocol("HTTP/1.1 ");
@@ -16,11 +26,6 @@ std::string get_header_line(size_t const& number)
 			return (protocol + std::string("404 Not Found"));
 	}
 	return (protocol + std::string("404 Not Found"));
-}
-
-std::string header_field(std::string header, std::string text)
-{
-  return header + std::string(": ") + text + std::string("\r\n");
 }
 
 std::string get_date(void)
@@ -53,16 +58,9 @@ std::string get_last_modified(std::string const& filename)
 
 std::string get_content_type(std::string const& filename)
 {
-	int			i;
 	std::string	filetype;
 
-	for (i = filename.size() - 1; i > 0; i--)
-	{
-		if (filename[i] == '.')
-			break ;
-	}
-	filetype = std::string(filename, i + 1, filename.size() - 1);
-
+	filetype = get_file_extension(filename);
 	if (filetype == "html" || filetype == "php")
 		return (std::string("text/html"));
 	else if (filetype == "png")
@@ -167,20 +165,19 @@ std::string error_page(size_t error_nbr)
 
 std::string GET(std::string path, t_config &conf)
 {
-	std::ifstream		fd(path);
+	std::ifstream		fd;
 	t_answer_headers	response;
 	std::string generated_file_path;
 
 	if (path == std::string("file not found"))
 		return error_page(404);
+	fd.open(path);
 	if ((generated_file_path = get_cgi(path, "GET", conf)) != std::string("None"))
 	{
-		P("YES");
 		fd.close();
 		fd.open(generated_file_path);
 		path = generated_file_path;
 	}
-	P(path);
 	init_head_get(path, fd, response, 200);
 	fd.close();
 	(void)conf;
@@ -189,22 +186,26 @@ std::string GET(std::string path, t_config &conf)
 
 std::string HEAD(std::string path)
 {
-	std::ifstream		fd(path);
+	std::ifstream		fd;
 	t_answer_headers	response;
 
-	if (!fd.is_open())
+	if (path == std::string("file not found"))
 		return error_page(404);
+	fd.open(path);
 	init_head_get(path, fd, response, 200);
+	fd.close();
 	return construct_head_response(response);
 }
 
-std::string POST(std::string path)
+std::string POST(std::string action, t_config &conf)
 {
-	std::ifstream		fd(path);
+	std::ifstream		fd;
 
-	if (!fd.is_open())
+	if (action == std::string("file not found"))
 		return error_page(404);
-	return error_page(405);
+	fd.open(action);
+	fd.close();
+	return GET(action, conf);
 
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
@@ -222,7 +223,7 @@ std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
 	else if (req.method == std::string("HEAD"))
 		return HEAD(req.URL);
 	else if (req.method == std::string("POST"))
-		return POST(req.URL);
+		return POST(req.URL, conf);
 	else if (req.method == std::string("PUT"))
 		return error_page(405);
 	else if (req.method == std::string("DELETE"))

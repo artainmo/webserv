@@ -6,6 +6,8 @@
 #include <list>
 #include <unistd.h>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 std::string find_file(std::string path_no_extension);
 std::string dir_no_file(std::string path);

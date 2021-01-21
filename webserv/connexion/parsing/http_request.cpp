@@ -15,7 +15,14 @@ void parse_first_line(t_http_req &req, std::string line)
 		req.URL = "index";
 	if (req.URL[req.URL.size() - 1] == '/')
 		req.URL = req.URL.substr(0, req.URL.size() - 1);
+	if (req.URL[req.URL.size() - 1] == ':')
+		req.URL = req.URL.substr(0, req.URL.size() - 1);
+	char *path_name = new char[100];
+	getcwd(path_name, 100);
+	std::cout << path_name << std::endl;
+	P(req.URL);
 	req.URL = find_file(req.URL); //If file not found req.URL = "file not found"
+	P(req.URL);
 }
 
 void parse_body(t_http_req &req, std::string line, t_config &conf)
@@ -143,15 +150,17 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	std::list<std::string> lines;
 	unsigned int body_line;
 
-	// P("--------------------------------------------------------------------------");
-	// P(req); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	P("REAL REQUEST:");
+	P(req); //test
+	P("--------------------------------------------------------------------------");
 	body_line = find_body(req);
 	lines = split(req, "\n");
 	default_init(*ret);
 	parse(*ret, lines, body_line, conf);
-	// P("--------------------------------------------------------------------------");
-	// show_http_request(*ret); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	P("PARSED REQUEST:");
+	show_http_request(*ret); //test
+	P("--------------------------------------------------------------------------");
 	return (ret);
 }

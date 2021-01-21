@@ -60,7 +60,7 @@ void write_to_upload_file(int fd_upload_location, std::string path)
 		P("Error: fork failed");
 		exit(1);
 	}
-	dup2(fd_upload_location, 1); //dup the execve output towards the upload location file
+	dup2(fd_upload_location, 1); //dup the execve output towards the upload location file, php will generate an HTML that can be send back
 	if (!pid)
 	{
 		if (execve("/usr/bin/php", (char *[]) {(char *)"php", (char *)path.c_str(), 0}, 0) == -1) //brew install php, use php as CGI script, output file in upload location
