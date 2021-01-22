@@ -39,10 +39,17 @@ int main(int argc , char *argv[])
       if (FD_ISSET(s->server_socket, &s->active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
       	new_incoming_connection(*s, *config);
 			change_directory(std::string("/frontend"));
-			if ((request = get_client_request(*s, *config)) != std::string("None") && request.find_first_not_of(" \t\n\v\f\r") != std::string::npos)
+			get_client_request(*s, *config);
+			if (s->socket_to_answer.size() != 0)
       {
-				req = parse_http_request(request, *config);
-				answer_http_request(*s, *req, *config);
+				for (std::map<int, std::string>::iterator i = s->socket_to_answer.begin(); i != s->socket_to_answer.end(); i++)
+				{
+					if (i->second.find_first_not_of(" \t\n\v\f\r") != std::string::npos) //CHANGE!!!
+					{
+						req = parse_http_request(i->second, *config);
+						answer_http_request(i->first, *req, *config);
+					}
+				}
       }
 			change_directory("/..");
   }

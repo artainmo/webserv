@@ -51,7 +51,7 @@ void setup_server(t_server &s, t_config &config)
     }
 }
 
-std::string client_disconnection(t_server &s, unsigned int i)
+void client_disconnection(t_server &s, unsigned int i)
 {
   //Show to debug
   getpeername(s.client_socket[i] , (struct sockaddr*)&s.address , (socklen_t*)&s.addrlen);
@@ -60,10 +60,9 @@ std::string client_disconnection(t_server &s, unsigned int i)
   //Close the socket and reset to zero for re-use
   close(s.client_socket[i]);
   s.client_socket[i] = 0;
-  return (std::string("None"));
 }
 
-std::string get_client_request(t_server &s, t_config &config)
+void get_client_request(t_server &s, t_config &config)
 {
   (void)config;
   int message_len = -1; //Receive message lenght to add a /0 at end str
@@ -76,15 +75,14 @@ std::string get_client_request(t_server &s, t_config &config)
       {
           message_len = recv(s.client_socket[i] , message_buffer, 1024, 0); //Read the incoming message
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
-            return client_disconnection(s, i);
+            client_disconnection(s, i);
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
-              s.socket_to_answer[s.client_socket[i]] = std::string(message_buffer); //Create key in map with its value
+              s.socket_to_answer[s.client_socket[i]] += std::string(message_buffer); //Create key in map with its value
           }
       }
   }
-  return std::string("None");
 }
 
 void add_new_socket_to_active_sockets(t_server &s)
@@ -124,6 +122,7 @@ void reset_sockets(t_server &s)
       if(s.client_socket[i] > 0)
           FD_SET(s.client_socket[i] , &s.active_socket_read);
   }
+  s.socket_to_answer.clear();
 }
 
 void wait_connexion(t_server &s, t_config &config)

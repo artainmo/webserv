@@ -201,7 +201,7 @@ std::string POST(t_http_req &req)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
-std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
+std::string parse_method(t_http_req &req, t_config &conf)
 {
 	if (req.method == std::string("GET"))
 		return GET(req);
@@ -213,11 +213,10 @@ std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
 		return error_page(405);
 	else if (req.method == std::string("DELETE"))
 		return error_page(405);
-	(void)s;
 	return error_page(404);
 }
 
-void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
+void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf)
 {
 	std::string	answer;
 
@@ -226,13 +225,10 @@ void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
   else if (req.URL == std::string("method not found"))
     answer = error_page(405);
 	else
-    answer = parse_method(s, req, conf);
-  for (std::map<int, std::string>::iterator i = s.socket_to_answer.begin(); i != s.socket_to_answer.end(); i++)
-  {
-	   if (send(i->first, i->second.c_str(), i->second.size(), 0) == -1)
-	   {
-		     std::cout << "Error: send failed" << std::endl;
-		     exit(1);
-	   }
-   }
+    answer = parse_method(req, conf);
+	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
+	 {
+		  std::cout << "Error: send failed" << std::endl;
+		   exit(1);
+	 }
 }

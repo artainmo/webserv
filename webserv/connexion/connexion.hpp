@@ -57,9 +57,9 @@ typedef struct	s_server
 void		setup_server(t_server &s, t_config &config);
 void		wait_connexion(t_server &s, t_config &config);
 void		new_incoming_connection(t_server &s, t_config &config);
-std::string	get_client_request(t_server &s, t_config &config);
+void	get_client_request(t_server &s, t_config &config);
 
-void		answer_http_request(t_server &s, t_http_req &req, t_config &conf);
+void		answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf);
 
 std::string get_cgi(t_http_req &req);
 
