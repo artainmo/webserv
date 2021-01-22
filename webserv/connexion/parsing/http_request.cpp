@@ -1,61 +1,98 @@
 #include "parsing.hpp"
 
-t_location *assigned_location(t_http_req &req, t_config &conf)
+std::string accordance_method_location(std::string url, std::string method, t_location *loc)
 {
-	std::string directory;
-	std::string file_extension;
-
-	directory = dir_no_file(req.URL);
-	if (directory == std::string("."))
-		directory = "/";
-	file_extension = get_file_extension(req.URL);
-
-	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
-			if ((directory == loc->directory || loc->directory == std::string("None"))) //If directory is equal or directory is none
-				for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
-					if ((file_extension == *ext || *ext == std::string("ALL"))) //If file extension is equal or all file extensions are accepted
-							return &(*loc);
-	return 0;
+	if (url == std::string("file not found") || loc == 0)
+		return url;
+	for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
+		if ((method == *met || *met == std::string("ALL")))
+			return url;
+	return "method not found";
 }
 
-void parse_URL(t_http_req &req, t_config &conf)
+std::string find_directory(std::string local_url, t_config &conf)
 {
-	std::string rem;
+	std::string ret;
 
+	if (local_url.size() != 0)
+		local_url += std::string("/");
+	if (conf.index.size() != 0)
+	{
+		for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++) //If directory found search for given indexes
+		{
+			if ((ret = find_file(local_url + *i)) != std::string("file not found") && ret != std::string("directory found"))
+				return ret;
+		}
+	}
+	return "file not found";
+}
+
+std::string find_file_directory(std::string local_root, std::string directory, t_config &conf)
+{
+	std::string ret;
+	std::string local_url;
+
+	if (directory.size() == 0)
+		local_url = local_root;
+	else if (local_root.size() == 0)
+		local_url = directory;
+	else
+		local_url = local_root + std::string("/") + directory;
+	P("local_url: "<< local_url);
+	if (local_url.size() == 0 || (ret = find_file(local_url)) == std::string("directory found"))
+		ret = find_directory(local_url, conf);
+	return ret;
+}
+
+void find_in_file_extension_location(std::string &ret, std::string &last, t_location &loc, t_http_req &req, t_config &conf)
+{
+		if ((ret = find_file_directory(loc.root, req.URL, conf)) != std::string("file not found"))
+		{
+			for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
+			{
+				if (get_file_extension(ret) == *ext) //If file extension is equal or all file extensions are accepted
+				{
+					last = ret;
+					req.loc = &loc;
+				}
+			}
+		}
+}
+
+void find_in_directory_location(std::string &ret, std::string &last, t_location &loc, t_http_req &req, t_config &conf)
+{
+	if ((ret = find_file_directory(loc.root, req.URL, conf)) != std::string("file not found"))
+	{
+		last = ret;
+		req.loc = &loc;
+	}
+}
+
+void URL_to_local_path(t_http_req &req, t_config &conf)
+{
+	std::string ret;
+	std::string last;
+
+	last = "file not found";
 	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == '/')
 		req.URL = req.URL.substr(0, req.URL.size() - 1);
 	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == ':')
 		req.URL = req.URL.substr(0, req.URL.size() - 1);
-	// char *path_name = new char[100];
-	// getcwd(path_name, 100);
-	// std::cout << path_name << std::endl;
-	if (req.URL.size() == 0)
-		rem = req.URL;
-	if (req.URL.size() != 0)
-		rem = req.URL + std::string("/");
-	std::cout << "before: " << req.URL << std::endl;
-	if (req.URL.size() == 0 || (req.URL = find_file(req.URL)) == std::string("directory found"))
+	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
-		if (conf.index.size() != 0)
-		{
-			for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++) //If directory found search for given indexes
-			{
-				if ((req.URL = find_file(rem + *i)) != std::string("file not found") && (rem = find_file(rem + *i)) != std::string("directory found"))
-					return ;
-			}
-		}
-		req.URL = std::string("file not found");
+		P("URL: " << req.URL);
+		P("DIR: " << loc->directory);
+		P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
+		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
+			find_in_directory_location(ret, last, *loc, req, conf);
 	}
-	if (req.URL != std::string("file not found"))
-	{
-		if ((req.loc = assigned_location(req, conf)) == 0)
-			return ;
-		for (std::list<std::string>::iterator met = req.loc->http_methods.begin(); met != req.loc->http_methods.end(); met++)
-			if ((req.method == *met || *met == std::string("ALL")))
-				return ;
-		req.URL = std::string("method not found");
-	}
-	std::cout << "after: " << req.URL << std::endl;
+	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on file extensions
+		if (loc->file_extensions.front() != std::string("None"))
+			find_in_file_extension_location(ret, last, *loc, req, conf);
+	if (req.loc == 0) //Outside of any locations
+		last = find_file_directory(conf.root, req.URL, conf);
+	req.URL = last;
+	req.URL = accordance_method_location(req.URL, req.method, req.loc);
 }
 
 void parse_first_line(t_http_req &req, std::string line, t_config &conf)
@@ -66,7 +103,9 @@ void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
-	parse_URL(req, conf);
+	P(req.URL);
+	URL_to_local_path(req, conf);
+	P(req.URL);
 	parts.pop_front();
 	req.protocol_version = parts.front();
 }

@@ -96,6 +96,11 @@ void show_conf(t_config &conf)
 	P(std::string("server_name: ") + conf.server_name);
 	P(std::string("default_error_page: ") + conf.default_error_page);
 	P(std::string("body_size_limit: ") + std::to_string(conf.body_size_limit));
+	std::cout << conf.index.size();
+	std::cout << "Index: ";
+	for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++)
+			std::cout << *i + std::string(" ");
+	std::cout << std::endl;
 	if (conf.locations.size() != 0)
 	{
 		int i = 0;

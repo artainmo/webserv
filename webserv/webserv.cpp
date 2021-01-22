@@ -38,7 +38,7 @@ int main(int argc , char *argv[])
       wait_connexion(*s, *config);
       if (FD_ISSET(s->server_socket, &s->active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
       	new_incoming_connection(*s, *config);
-			change_directory("/frontend");
+			change_directory(std::string("/frontend"));
 			if ((request = get_client_request(*s, *config)) != std::string("None") && request.find_first_not_of(" \t\n\v\f\r") != std::string::npos)
       {
 				req = parse_http_request(request, *config);

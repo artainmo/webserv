@@ -75,8 +75,7 @@ void parse_location_line_file_extensions(std::string &line, t_location &loc)
 	std::string parsed;
 	std::string extension;
 
-	parsed = parse_between(line, '(', ')');
-	if (parsed != std::string("None"))
+	if ((parsed = parse_between(line, '(', ')')) != std::string("None")) //If () are used multiple file extensions will probably occur
 	{
 		loc.file_extensions.pop_front();
 		while(parsed != std::string("None"))
@@ -85,6 +84,12 @@ void parse_location_line_file_extensions(std::string &line, t_location &loc)
 			loc.file_extensions.push_back(extension);
 			parsed = following_content(parsed, extension);
 		}
+		return ;
+	}
+	if (line.find('.') != std::string::npos && line.find('$') != std::string::npos)
+	{
+		loc.file_extensions.pop_front();
+		loc.file_extensions.push_back(line.substr(line.find_last_of('.') + 1, line.find_last_of('$') - line.find_last_of('.') - 1));
 	}
 }
 
@@ -97,17 +102,17 @@ void parse_location_line_directory(std::string &line, t_location &loc)
 		return ;
 	end = line.find_last_of("/");
 	if (start == end)
-		loc.directory = "/";
+		loc.directory = "";
 	else
 		loc.directory = line.substr(start + 1, end - start - 1);
 }
 
-void init_location(t_location &loc)
+void init_location(t_location &loc, t_config &conf)
 {
-	loc.file_extensions.push_back("ALL");
+	loc.file_extensions.push_back("None");
 	loc.directory = "None";
 	loc.http_methods.push_back("ALL");
-	loc.root = "";
+	loc.root = conf.root;
 	loc.directory_listing = std::string("false");
 	loc.default_file_if_request_directory = "None";
 	loc.CGI = 0;
@@ -118,7 +123,7 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 {
 	t_location *loc = new t_location;
 
-	init_location(*loc);
+	init_location(*loc, conf);
 	parse_location_line_directory(line, *loc);
 	parse_location_line_file_extensions(line, *loc);
 	while (getlinecut(fd, line) && !check_line(line, "}"))
@@ -143,6 +148,7 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 	conf.locations.push_back(*loc);
 }
 
+bool order_location_based_on_directory_lenght(const t_location &first, const t_location &second) { return (first.directory <= second.directory); }
 
 void  parse(t_config &conf, std::ifstream &fd)
 {
@@ -168,6 +174,12 @@ void  parse(t_config &conf, std::ifstream &fd)
 		}
 		else if (check_line(line, "server_name"))
 			conf.server_name = following_content(line, "server_name");
+		else if (check_line(line, "root"))
+		{
+			conf.root = following_content(line, "root");
+			if (conf.root[0] != '/')
+				conf.root = std::string("/") + conf.root;
+		}
 		else if (check_line(line, "default_error_page"))
 			conf.default_error_page = following_content(line, "default_error_page");
 		else if (check_line(line, "body_size_limit"))
@@ -184,7 +196,7 @@ void  parse(t_config &conf, std::ifstream &fd)
 		else if (check_line(line, "index"))
 			conf.index = following_contents(line, "index");
 	}
-	(void)conf;
+	conf.locations.sort(order_location_based_on_directory_lenght); //Order locations for when searching request location link
 }
 
 void default_init(t_config &conf)
@@ -192,6 +204,7 @@ void default_init(t_config &conf)
 	conf.host = "None";
 	conf.port = -1;
 	conf.server_name = "None";
+	conf.root = "";
 	conf.default_error_page = "None";
 	conf.body_size_limit = 1024; //Default max body size
 }

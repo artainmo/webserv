@@ -49,6 +49,7 @@ typedef struct s_config
 	std::string host;
 	int port;
 	std::string server_name;
+	std::string root;
 	std::string default_error_page;
 	int body_size_limit;
 	std::list<t_location> locations;

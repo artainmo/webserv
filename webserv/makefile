@@ -22,7 +22,7 @@ $(CONNEXION):
 	(cd $(CONNEXION_P) && $(MAKE))
 
 run: fclean all
-	./webserv.a conf/webserv2.conf
+	./webserv.a conf/webserv1.conf
 
 clean:
 	(cd $(CONNEXION_P) && $(MAKE) $@)
