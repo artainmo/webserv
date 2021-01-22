@@ -51,6 +51,7 @@ typedef struct	s_server
 	int client_socket[SOMAXCONN]; //Remember already connected clients
 	std::map<int, std::string> socket_to_answer;
 	fd_set active_socket_read; //fd_set struct for select function, takes active sockets for reading
+	fd_set active_socket_write;
 	int connected_socket; //New socket connected between server and client
 }				t_server;
 
@@ -59,7 +60,7 @@ void		wait_connexion(t_server &s, t_config &config);
 void		new_incoming_connection(t_server &s, t_config &config);
 void	get_client_request(t_server &s, t_config &config);
 
-void		answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf);
+void		answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s);
 
 std::string get_cgi(t_http_req &req);
 

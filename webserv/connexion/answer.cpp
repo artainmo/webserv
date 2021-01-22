@@ -216,7 +216,7 @@ std::string parse_method(t_http_req &req, t_config &conf)
 	return error_page(404);
 }
 
-void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf)
+void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s)
 {
 	std::string	answer;
 
@@ -226,9 +226,12 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf)
     answer = error_page(405);
 	else
     answer = parse_method(req, conf);
+  if (FD_ISSET(socket_to_answer , &s.active_socket_write)) //If socket still in active write sockets, the socket is writable
+  {
 	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	 {
 		  std::cout << "Error: send failed" << std::endl;
 		   exit(1);
 	 }
+  }
 }

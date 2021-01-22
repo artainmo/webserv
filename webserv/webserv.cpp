@@ -38,7 +38,7 @@ int main(int argc , char *argv[])
       wait_connexion(*s, *config);
       if (FD_ISSET(s->server_socket, &s->active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
       	new_incoming_connection(*s, *config);
-			change_directory(std::string("/frontend"));
+			change_directory("/frontend");
 			get_client_request(*s, *config);
 			if (s->socket_to_answer.size() != 0)
       {
@@ -47,7 +47,7 @@ int main(int argc , char *argv[])
 					if (i->second.find_first_not_of(" \t\n\v\f\r") != std::string::npos) //CHANGE!!!
 					{
 						req = parse_http_request(i->second, *config);
-						answer_http_request(i->first, *req, *config);
+						answer_http_request(i->first, *req, *config, *s);
 					}
 				}
       }

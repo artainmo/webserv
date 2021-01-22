@@ -70,8 +70,7 @@ void get_client_request(t_server &s, t_config &config)
 
   for (unsigned int i = 0; i < SOMAXCONN; i++)
   {
-      //If returns true, something happened on client socket, meaning this specific client socket is sending a request
-      if (FD_ISSET(s.client_socket[i] , &s.active_socket_read))
+      if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
       {
           message_len = recv(s.client_socket[i] , message_buffer, 1024, 0); //Read the incoming message
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
@@ -115,12 +114,17 @@ void reset_sockets(t_server &s)
 {
   FD_ZERO(&s.active_socket_read); //Deactivate the active sockets
   FD_SET(s.server_socket, &s.active_socket_read); //Add the server socket to active sockets
+  FD_ZERO(&s.active_socket_write); //Deactivate the active sockets
+  FD_SET(s.server_socket, &s.active_socket_write); //Add the server socket to active sockets
 
   //Add active client sockets to the active sockets
   for (unsigned int i = 0 ; i < SOMAXCONN ; i++)
   {
       if(s.client_socket[i] > 0)
+      {
           FD_SET(s.client_socket[i] , &s.active_socket_read);
+          FD_SET(s.client_socket[i] , &s.active_socket_write);
+      }
   }
   s.socket_to_answer.clear();
 }
@@ -130,17 +134,16 @@ void wait_connexion(t_server &s, t_config &config)
   (void)config;
   int ret;
   reset_sockets(s);
-  //Wait untill a socket gets activated
-  //NULL is used to indicate wait indefinitevely
+  //Wait untill a socket gets activated, NULL means wait indefinitely
   //Select helps manipulate multiple active clients (cleaner way of handling it than using threads)
-  if ((ret = select(FD_SETSIZE , &s.active_socket_read, NULL, NULL , NULL)) == -1)//check if ready to read and write at same time
+  if ((ret = select(FD_SETSIZE , &s.active_socket_read, &s.active_socket_write, NULL , NULL)) == -1)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
   {
       std::cout << "Error: select failed" << std::endl;
       exit(1);
   }
-  else if (ret == 0)
+  else if (ret == 0) //If return is zero timeout happened
     wait_connexion(s, config);
-  //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
-  //If multiple sets for reading are send their messages should be merged together
-  //Returns -1 on error but 0 on timeout
+  // else if (ret % 2 != 0) //If read and write are not open at the same time //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
+  //   wait_connexion(s, config);
+  // std::cout << "RET SELECT: " << ret << std::endl;
 }
