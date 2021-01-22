@@ -227,9 +227,12 @@ void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
     answer = error_page(405);
 	else
     answer = parse_method(s, req, conf);
-	if (send(s.socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
-	{
-		std::cout << "Error: send failed" << std::endl;
-		exit(1);
-	}
+  for (std::map<int, std::string>::iterator i = s.socket_to_answer.begin(); i != s.socket_to_answer.end(); i++)
+  {
+	   if (send(i->first, i->second.c_str(), i->second.size(), 0) == -1)
+	   {
+		     std::cout << "Error: send failed" << std::endl;
+		     exit(1);
+	   }
+   }
 }

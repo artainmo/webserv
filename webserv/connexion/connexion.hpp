@@ -4,6 +4,7 @@
 #include "parsing/parsing.hpp"
 #include "utils/utils.hpp"
 
+#include <map>
 #include <stdio.h>
 #include <iostream>
 #include <string.h>//strlen
@@ -48,7 +49,7 @@ typedef struct	s_server
 	struct sockaddr_in address; //Socket address struct for socket functions
 	int addrlen; //Size in int that can be casted for socket functions
 	int client_socket[SOMAXCONN]; //Remember already connected clients
-	int socket_to_answer;
+	std::map<int, std::string> socket_to_answer;
 	fd_set active_socket_read; //fd_set struct for select function, takes active sockets for reading
 	int connected_socket; //New socket connected between server and client
 }				t_server;
