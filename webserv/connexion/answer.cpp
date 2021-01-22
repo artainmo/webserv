@@ -221,15 +221,16 @@ void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
 {
 	std::string	answer;
 
-  if (req.URL == std::string("file not found"))
-    answer = error_page(404);
-  else if (req.URL == std::string("method not found"))
-    answer = error_page(405);
+	if (req.URL == std::string("file not found"))
+		answer = error_page(404);
+	else if (req.URL == std::string("method not found"))
+		answer = error_page(405);
 	else
-    answer = parse_method(s, req, conf);
-	if (send(s.socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
+		answer = parse_method(s, req, conf);
+	s.reply[s.socket_to_answer] = answer;
+	/*if (send(s.socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	{
 		std::cout << "Error: send failed" << std::endl;
 		exit(1);
-	}
+	}*/
 }

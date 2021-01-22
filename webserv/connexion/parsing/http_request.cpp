@@ -222,7 +222,7 @@ void default_init(t_http_req &req)
 	req.header_fields.Server.push_back("None");
 	req.header_fields.Transfer_Encoding.push_back("None");
 	req.header_fields.User_Agent.push_back("None");
-  req.header_fields.WWW_Authenticate.push_back("None");
+	req.header_fields.WWW_Authenticate.push_back("None");
 	req.method = std::string("None");
 	req.URL = std::string("None");
 	req.loc = 0;
@@ -230,23 +230,23 @@ void default_init(t_http_req &req)
 	req.message_body = std::string("None");
 }
 
-t_http_req *parse_http_request(std::string req, t_config &conf)
+t_http_req parse_http_request(std::string req, t_config &conf)
 {
-	t_http_req *ret = new t_http_req;
+	t_http_req ret;// = new t_http_req;
 	std::list<std::string> lines;
 	unsigned int body_line;
 
-	P("--------------------------------------------------------------------------");
+	/*P("--------------------------------------------------------------------------");
 	P("REAL REQUEST:");
 	P(req); //test
 	P("--------------------------------------------------------------------------");
-	body_line = find_body(req);
+	*/body_line = find_body(req);
 	lines = split(req, "\n");
-	default_init(*ret);
-	parse(*ret, lines, body_line, conf);
+	default_init(ret);
+	parse(ret, lines, body_line, conf);
 	P("--------------------------------------------------------------------------");
 	P("PARSED REQUEST:");
-	show_http_request(*ret); //test
+	show_http_request(ret); //test
 	P("--------------------------------------------------------------------------");
 	return (ret);
 }

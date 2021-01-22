@@ -10,3 +10,7 @@ GET REQUEST:
 - Parse the file and put it in the body if successful
 - Fill the response headers
 - Send the response
+
+
+
+Only check the maximum connection already set and not the theoritical maximum

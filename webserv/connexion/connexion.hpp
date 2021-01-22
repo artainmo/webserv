@@ -17,6 +17,7 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <map>
 
 typedef struct	s_answer_headers
 {
@@ -44,13 +45,16 @@ typedef struct	s_answer_headers
 
 typedef struct	s_server
 {
-	int server_socket; //Our server socket, whereby clients can connect to
+	int	server_socket; //Our server socket, whereby clients can connect to
 	struct sockaddr_in address; //Socket address struct for socket functions
 	int addrlen; //Size in int that can be casted for socket functions
 	int client_socket[SOMAXCONN]; //Remember already connected clients
 	int socket_to_answer;
 	fd_set active_socket_read; //fd_set struct for select function, takes active sockets for reading
+	fd_set active_socket_write; //fd_set struct for select function, takes active sockets for writing
 	int connected_socket; //New socket connected between server and client
+	int	number_connection;
+	std::map<int, std::string> reply;
 }				t_server;
 
 void		setup_server(t_server &s, t_config &config);
