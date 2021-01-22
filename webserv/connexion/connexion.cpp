@@ -130,13 +130,19 @@ void reset_sockets(t_server &s)
 void wait_connexion(t_server &s, t_config &config)
 {
   (void)config;
+  int ret;
   reset_sockets(s);
   //Wait untill a socket gets activated
   //NULL is used to indicate wait indefinitevely
   //Select helps manipulate multiple active clients (cleaner way of handling it than using threads)
-  if (select(FD_SETSIZE , &s.active_socket_read , NULL , NULL , NULL) == -1)// && (errno!=EINTR))
+  if ((ret = select(FD_SETSIZE , &s.active_socket_read, NULL, NULL , NULL)) == -1)//check if ready to read and write at same time
   {
       std::cout << "Error: select failed" << std::endl;
       exit(1);
   }
+  else if (ret == 0)
+    wait_connexion(s, config);
+  //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
+  //If multiple sets for reading are send their messages should be merged together
+  //Returns -1 on error but 0 on timeout
 }
