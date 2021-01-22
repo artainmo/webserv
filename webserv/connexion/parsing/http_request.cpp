@@ -10,15 +10,15 @@ std::string accordance_method_location(std::string url, std::string method, t_lo
 	return "method not found";
 }
 
-std::string find_directory(std::string local_url, t_config &conf)
+std::string find_directory(std::string local_url, std::list<std::string> &index)
 {
 	std::string ret;
 
 	if (local_url.size() != 0)
 		local_url += std::string("/");
-	if (conf.index.size() != 0)
+	if (index.size() != 0)
 	{
-		for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++) //If directory found search for given indexes
+		for (std::list<std::string>::iterator i = index.begin(); i != index.end(); i++) //If directory found search for given indexes
 		{
 			if ((ret = find_file(local_url + *i)) != std::string("file not found") && ret != std::string("directory found"))
 				return ret;
@@ -27,7 +27,7 @@ std::string find_directory(std::string local_url, t_config &conf)
 	return "file not found";
 }
 
-std::string find_file_directory(std::string local_root, std::string directory, t_config &conf)
+std::string find_file_directory(std::string local_root, std::string directory, std::list<std::string> &index)
 {
 	std::string ret;
 	std::string local_url;
@@ -40,13 +40,13 @@ std::string find_file_directory(std::string local_root, std::string directory, t
 		local_url = local_root + std::string("/") + directory;
 	P("local_url: "<< local_url);
 	if (local_url.size() == 0 || (ret = find_file(local_url)) == std::string("directory found"))
-		ret = find_directory(local_url, conf);
+		ret = find_directory(local_url, index);
 	return ret;
 }
 
 void find_in_file_extension_location(std::string &ret, std::string &last, t_location &loc, t_http_req &req, t_config &conf)
 {
-		if ((ret = find_file_directory(loc.root, req.URL, conf)) != std::string("file not found"))
+		if ((ret = find_file_directory(loc.root, req.URL, loc.index)) != std::string("file not found"))
 		{
 			for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
 			{
@@ -61,7 +61,7 @@ void find_in_file_extension_location(std::string &ret, std::string &last, t_loca
 
 void find_in_directory_location(std::string &ret, std::string &last, t_location &loc, t_http_req &req, t_config &conf)
 {
-	if ((ret = find_file_directory(loc.root, req.URL, conf)) != std::string("file not found"))
+	if ((ret = find_file_directory(loc.root, req.URL, loc.index)) != std::string("file not found"))
 	{
 		last = ret;
 		req.loc = &loc;
@@ -90,7 +90,7 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		if (loc->file_extensions.front() != std::string("None"))
 			find_in_file_extension_location(ret, last, *loc, req, conf);
 	if (req.loc == 0) //Outside of any locations
-		last = find_file_directory(conf.root, req.URL, conf);
+		last = find_file_directory(conf.root, req.URL, conf.index);
 	req.URL = last;
 	req.URL = accordance_method_location(req.URL, req.method, req.loc);
 }

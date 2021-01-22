@@ -113,6 +113,7 @@ void init_location(t_location &loc, t_config &conf)
 	loc.directory = "None";
 	loc.http_methods.push_back("ALL");
 	loc.root = conf.root;
+	loc.index = conf.index;
 	loc.directory_listing = std::string("false");
 	loc.default_file_if_request_directory = "None";
 	loc.CGI = 0;
@@ -136,6 +137,8 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 			if (loc->root[0] == '/')
 				loc->root =loc->root.substr(1, loc->root.size());
 		}
+		else if (check_line(line, "index"))
+			loc->index = following_contents(line, "index");
 		else if (check_line(line, "directory_listing"))
 			loc->directory_listing = following_content(line, "directory_listing");
 		else if (check_line(line, "default_file_if_request_directory"))

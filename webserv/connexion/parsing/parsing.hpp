@@ -38,6 +38,7 @@ typedef struct s_location //Config routes
 	std::string directory;
 	std::list<std::string> http_methods;
 	std::string root;
+	std::list<std::string> index;
 	std::string  directory_listing;
 	std::string default_file_if_request_directory;
 	t_CGI *CGI; //If equal to NULL no CGI server, but http static content server

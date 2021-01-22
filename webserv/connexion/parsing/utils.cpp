@@ -122,6 +122,10 @@ void show_conf(t_config &conf)
 			std::cout << std::endl;
 			std::cout << "root: ";
 			P(locs->root);
+			std::cout << "index: ";
+			for (std::list<std::string>::iterator i = locs->index.begin(); i != locs->index.end(); i++)
+				std::cout << *i + std::string(" ");
+			std::cout << std::endl;
 			std::cout << "directory_listing: ";
 			P(locs->directory_listing);
 			std::cout << "default_file_if_request_directory: ";
