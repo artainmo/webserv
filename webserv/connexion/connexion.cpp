@@ -72,7 +72,7 @@ void get_client_request(t_server &s, t_config &config)
   {
       if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
       {
-          message_len = recv(s.client_socket[i] , message_buffer, 1024, 0); //Read the incoming message
+          message_len = recv(s.client_socket[i] , message_buffer, 1024, MSG_PEEK); //Read the incoming message //MSG_PEEK //read whole message
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
             client_disconnection(s, i);
           else
@@ -145,5 +145,5 @@ void wait_connexion(t_server &s, t_config &config)
     wait_connexion(s, config);
   // else if (ret % 2 != 0) //If read and write are not open at the same time //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
   //   wait_connexion(s, config);
-  // std::cout << "RET SELECT: " << ret << std::endl;
+  std::cout << "RET SELECT: " << ret << std::endl;
 }

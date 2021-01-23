@@ -228,8 +228,10 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
     answer = parse_method(req, conf);
   if (FD_ISSET(socket_to_answer , &s.active_socket_write)) //If socket still in active write sockets, the socket is writable
   {
+    P("YES");
 	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	 {
+      P("YES");
 		  std::cout << "Error: send failed" << std::endl;
 		   exit(1);
 	 }
