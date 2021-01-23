@@ -13,15 +13,15 @@ UTILS_LIB = $(CONNEXION_P)/utils/utils.a
 
 OBJ = $(SRCS:.cpp=.o)
 
-all: $(CONNEXION) $(NAME)
+all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(CONNEXION) $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) $(CONNEXION_LIB) $(PARSING_LIB) $(UTILS_LIB) -o $(NAME)
 
 $(CONNEXION):
 	(cd $(CONNEXION_P) && $(MAKE))
 
-run: fclean all
+run: all
 	./webserv.a conf/webserv1.conf
 
 clean:

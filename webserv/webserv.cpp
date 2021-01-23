@@ -43,12 +43,12 @@ int main(int argc , char *argv[])
 		change_directory(std::string("/frontend"));
 		if ((request = get_client_request(s, *config)) != std::string("None") && request.find_first_not_of(" \t\n\v\f\r") != std::string::npos)
 		{
-			P("--------------------------------------------------------------------------");
+			/*P("--------------------------------------------------------------------------");
 			P("YVES REAL REQUEST:");
 			std::cout << ">|" << request << "|<" << "size:" << request.size() << std::endl;
 			//	P(req); //test
 			P("--------------------------------------------------------------------------");
-			req = parse_http_request(request, *config);
+			*/req = parse_http_request(request, *config);
 			answer_http_request(s, req, *config);
 		}
 		change_directory("/..");
