@@ -228,6 +228,7 @@ void default_init(t_http_req &req)
 	req.loc = 0;
 	req.protocol_version = std::string("None");
 	req.message_body = std::string("None");
+	req.error = false;
 }
 
 t_http_req *parse_http_request(std::string req, t_config &conf)
@@ -240,7 +241,12 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	P("REAL REQUEST:");
 	P(req); //test
 	P("--------------------------------------------------------------------------");
-	body_line = find_body(req);
+	if ((body_line = find_body(req)) <= 2)
+	{
+		std::cout << "ERROR: request"<< std::endl;
+		ret->error = true;
+		return ret;
+	}
 	lines = split(req, "\n");
 	default_init(*ret);
 	parse(*ret, lines, body_line, conf);

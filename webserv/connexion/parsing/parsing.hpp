@@ -87,6 +87,7 @@ typedef struct s_http_req
 	std::string protocol_version;
 	t_header_fields header_fields;
 	std::string message_body;
+	bool error;
 } t_http_req;
 
 t_config *parse_config(std::string path);

@@ -22,6 +22,8 @@ std::string get_header_line(size_t const& number)
 			return (protocol + std::string("404 Not Found"));
 		case 405:
 			return (protocol + std::string("405 Not Allowed"));
+    case 400:
+      return (protocol + std::string("400 Bad Request"));
 		default:
 			return (protocol + std::string("404 Not Found"));
 	}
@@ -220,6 +222,8 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 {
 	std::string	answer;
 
+  if (req.error == true)
+    answer = error_page(400);
   if (req.URL == std::string("file not found"))
     answer = error_page(404);
   else if (req.URL == std::string("method not found"))
@@ -231,7 +235,6 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
     P("YES");
 	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	 {
-      P("YES");
 		  std::cout << "Error: send failed" << std::endl;
 		   exit(1);
 	 }
