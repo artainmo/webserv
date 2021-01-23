@@ -1,5 +1,6 @@
 NAME = utils.a
-SRCS = directory.cpp
+SRCS = directory.cpp \
+				utils.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 
@@ -42,4 +43,3 @@ re: fclean all
 # 	rm -rf $(NAME)
 
 # re: fclean all
-

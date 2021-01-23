@@ -67,6 +67,7 @@ void get_client_request(t_server &s, t_config &config)
   (void)config;
   int message_len = -1; //Receive message lenght to add a /0 at end str
   char message_buffer[1025];  //Received message is taken into a char* message_buffer because we use C functions
+  std::string message;
 
   for (unsigned int i = 0; i < SOMAXCONN; i++)
   {
@@ -78,7 +79,8 @@ void get_client_request(t_server &s, t_config &config)
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
-              s.socket_to_answer[s.client_socket[i]] += std::string(message_buffer); //Create key in map with its value
+              message = message_buffer;
+              s.socket_to_answer[s.client_socket[i]] += message; //Create key in map with its value
           }
       }
   }

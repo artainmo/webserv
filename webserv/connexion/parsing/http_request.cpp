@@ -4,6 +4,8 @@ std::string accordance_method_location(std::string url, std::string method, t_lo
 {
 	if (url == std::string("file not found") || loc == 0)
 		return url;
+	if (method == std::string("HEAD") || method == std::string("GET")) //Method and get should never be disabled
+		return url;
 	for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
 		if ((method == *met || *met == std::string("ALL")))
 			return url;
@@ -38,7 +40,7 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 		local_url = directory;
 	else
 		local_url = local_root + std::string("/") + directory;
-	P("local_url: "<< local_url);
+	// P("local_url: "<< local_url);
 	if (local_url.size() == 0 || (ret = find_file(local_url)) == std::string("directory found"))
 		ret = find_directory(local_url, index);
 	return ret;
@@ -80,9 +82,9 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		req.URL = req.URL.substr(0, req.URL.size() - 1);
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
-		P("URL: " << req.URL);
-		P("DIR: " << loc->directory);
-		P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
+		// P("URL: " << req.URL);
+		// P("DIR: " << loc->directory);
+		// P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
 		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
 			find_in_directory_location(ret, last, *loc, req, conf);
 	}
@@ -103,9 +105,7 @@ void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
-	P(req.URL);
 	URL_to_local_path(req, conf);
-	P(req.URL);
 	parts.pop_front();
 	req.protocol_version = parts.front();
 }
@@ -180,7 +180,7 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 	}
 }
 
-unsigned int find_body(std::string req)
+int find_body(std::string req)
 {
 	unsigned int counter;
 	bool follow;
@@ -192,7 +192,7 @@ unsigned int find_body(std::string req)
 		if (req[i] == '\n')
 		{
 			if (follow == true) //Following \n found meaning empty line found meaning next line is body
-				break ;
+				return counter ;
 			counter++;
 		}
 		if (req[i] == '\n')
@@ -200,7 +200,7 @@ unsigned int find_body(std::string req)
 		else if (req[i] != '\r')
 			follow = false;
 	}
-	return counter; //Returns line number of body
+	return counter; //Returns -1 if not found
 }
 
 void default_init(t_http_req &req)
@@ -231,24 +231,36 @@ void default_init(t_http_req &req)
 	req.error = false;
 }
 
+
+bool is_valid(std::string message)
+{
+	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
+		return false;
+	message = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
+	if (is_non_ascii(message) == true)
+		return false;
+	std::list<std::string> lines = split(message, "\n");
+	return (lines.front().find("HTTP/1.1") != std::string::npos);
+}
+
 t_http_req *parse_http_request(std::string req, t_config &conf)
 {
 	t_http_req *ret = new t_http_req;
 	std::list<std::string> lines;
-	unsigned int body_line;
+	int body_line;
 
 	P("--------------------------------------------------------------------------");
 	P("REAL REQUEST:");
 	P(req); //test
 	P("--------------------------------------------------------------------------");
-	if ((body_line = find_body(req)) <= 2)
+	if (is_valid(req) == false)
 	{
 		std::cout << "ERROR: request"<< std::endl;
 		ret->error = true;
 		return ret;
 	}
-	P(body_line);
 	lines = split(req, "\n");
+	body_line = find_body(req);
 	default_init(*ret);
 	parse(*ret, lines, body_line, conf);
 	P("--------------------------------------------------------------------------");

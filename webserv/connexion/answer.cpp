@@ -223,7 +223,7 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 	std::string	answer;
 
   if (req.error == true)
-    answer = error_page(400);
+    return ;
   else if (req.URL == std::string("file not found"))
     answer = error_page(404);
   else if (req.URL == std::string("method not found"))
@@ -232,7 +232,7 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
     answer = parse_method(req, conf);
   if (FD_ISSET(socket_to_answer , &s.active_socket_write)) //If socket still in active write sockets, the socket is writable
   {
-    P("YES");
+   P(answer.c_str());
 	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	 {
 		  std::cout << "Error: send failed" << std::endl;

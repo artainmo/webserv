@@ -45,11 +45,8 @@ int main(int argc , char *argv[])
       {
 				for (std::map<int, std::string>::iterator i = s->socket_to_answer.begin(); i != s->socket_to_answer.end(); i++)
 				{
-					if (i->second.find_first_not_of(" \t\n\v\f\r") != std::string::npos) //CHANGE!!!
-					{
 						req = parse_http_request(i->second, *config);
 						answer_http_request(i->first, *req, *config, *s);
-					}
 				}
       }
 			change_directory("/..");
