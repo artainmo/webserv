@@ -34,13 +34,14 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 	std::string ret;
 	std::string local_url;
 
-	if (directory.size() == 0)
-		local_url = local_root;
-	else if (local_root.size() == 0)
-		local_url = directory;
-	else
-		local_url = local_root + std::string("/") + directory;
-	// P("local_url: "<< local_url);
+	// if (directory.size() == 0) //Based on nginx
+	// 	local_url = local_root;
+	// else if (local_root.size() == 0)
+	// 	local_url = directory;
+	// else
+	// 	local_url = local_root + std::string("/") + directory;
+	local_url = local_root; //Based on tester
+	P("local_url: "<< local_url);
 	if (local_url.size() == 0 || (ret = find_file(local_url)) == std::string("directory found"))
 		ret = find_directory(local_url, index);
 	return ret;
@@ -82,9 +83,9 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		req.URL = req.URL.substr(0, req.URL.size() - 1);
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
-		// P("URL: " << req.URL);
-		// P("DIR: " << loc->directory);
-		// P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
+		P("URL: " << req.URL);
+		P("DIR: " << loc->directory);
+		P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
 		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
 			find_in_directory_location(ret, last, *loc, req, conf);
 	}
@@ -105,7 +106,9 @@ void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
+	P("Before: " << req.URL);
 	URL_to_local_path(req, conf);
+	P("After: " << req.URL);
 	parts.pop_front();
 	req.protocol_version = parts.front();
 }
@@ -240,7 +243,12 @@ bool is_valid(std::string message)
 	if (is_non_ascii(message) == true)
 		return false;
 	std::list<std::string> lines = split(message, "\n");
-	return (lines.front().find("HTTP/1.1") != std::string::npos);
+	return (lines.front().find("HTTP/1.1") != std::string::npos
+					&& (lines.front().find("GET") != std::string::npos 
+					|| lines.front().find("HEAD") != std::string::npos
+					|| lines.front().find("PUT") != std::string::npos
+					|| lines.front().find("POST") != std::string::npos
+					|| lines.front().find("DELETE") != std::string::npos));
 }
 
 t_http_req *parse_http_request(std::string req, t_config &conf)
