@@ -120,6 +120,8 @@ void show_conf(t_config &conf)
 			for (std::list<std::string>::iterator http = locs->http_methods.begin(); http != locs->http_methods.end(); http++)
 				std::cout << *http + std::string(" ");
 			std::cout << std::endl;
+			std::cout << "max_body: ";
+			P(locs->max_body);
 			std::cout << "root: ";
 			P(locs->root);
 			std::cout << "index: ";

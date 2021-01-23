@@ -112,6 +112,7 @@ void init_location(t_location &loc, t_config &conf)
 	loc.file_extensions.push_back("None");
 	loc.directory = "None";
 	loc.http_methods.push_back("ALL");
+	loc.max_body = conf.body_size_limit;
 	loc.root = conf.root;
 	loc.index = conf.index;
 	loc.directory_listing = std::string("false");
@@ -131,6 +132,17 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 	{
 		if (check_line(line, "http_methods"))
 			loc->http_methods = following_contents(line, "http_methods");
+		else if (check_line(line, "body_size_limit"))
+		{
+			try
+			{
+				loc->max_body = std::stoi(following_content(line, "body_size_limit"));
+			}
+			catch(std::exception &e)
+			{
+				P(e.what());
+			}
+		}
 		else if (check_line(line, "root"))
 		{
 			loc->root = following_content(line, "root");
