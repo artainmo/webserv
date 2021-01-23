@@ -236,7 +236,7 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
 	 {
 		  std::cout << "Error: send failed" << std::endl;
-		   exit(1);
+		   // exit(1);
 	 }
   }
 }

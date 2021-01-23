@@ -31,6 +31,7 @@ int main(int argc , char *argv[])
 		std::cout << "ERROR: Wrong Program Arguments" << std::endl;
 		exit(1);
 	}
+	signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
 	config = parse_config(argv[1]);
   setup_server(*s, *config);
   while(true)
