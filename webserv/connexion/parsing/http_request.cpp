@@ -40,10 +40,20 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 	// 	local_url = directory;
 	// else
 	// 	local_url = local_root + std::string("/") + directory;
-	local_url = local_root; //Based on tester
+	P("local_root: "<< local_root);
+	P("directory: "<< directory);
+	if (directory.find("/") != std::string::npos) //Based on tester
+		local_url = local_root + directory.substr(directory.find_first_of("/"));
+	else
+		local_url = local_root;
+	if (local_url[0] == '/')
+		local_url = local_url.substr(1);
 	P("local_url: "<< local_url);
-	if (local_url.size() == 0 || (ret = find_file(local_url)) == std::string("directory found"))
+	if ((ret = find_file(local_url)) == std::string("directory found"))
+	{
+		P("Searching Dir");
 		ret = find_directory(local_url, index);
+	}
 	return ret;
 }
 
@@ -66,6 +76,7 @@ void find_in_directory_location(std::string &ret, std::string &last, t_location 
 {
 	if ((ret = find_file_directory(loc.root, req.URL, loc.index)) != std::string("file not found"))
 	{
+		P("Found: "<< ret);
 		last = ret;
 		req.loc = &loc;
 	}
@@ -244,7 +255,7 @@ bool is_valid(std::string message)
 		return false;
 	std::list<std::string> lines = split(message, "\n");
 	return (lines.front().find("HTTP/1.1") != std::string::npos
-					&& (lines.front().find("GET") != std::string::npos 
+					&& (lines.front().find("GET") != std::string::npos
 					|| lines.front().find("HEAD") != std::string::npos
 					|| lines.front().find("PUT") != std::string::npos
 					|| lines.front().find("POST") != std::string::npos
