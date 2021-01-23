@@ -4,8 +4,8 @@ std::string accordance_method_location(std::string url, std::string method, t_lo
 {
 	if (url == std::string("file not found") || loc == 0)
 		return url;
-	if (method == std::string("HEAD") || method == std::string("GET")) //Method and get should never be disabled
-		return url;
+	// if (method == std::string("HEAD") || method == std::string("GET")) //Method and get should never be disabled
+	// 	return url;
 	for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
 		if ((method == *met || *met == std::string("ALL")))
 			return url;
