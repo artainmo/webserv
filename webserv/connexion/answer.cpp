@@ -123,17 +123,19 @@ std::string construct_head_response(t_answer_headers const& info)
 	return response;
 }
 
-std::string construct_error_response(t_answer_headers const& info)
+std::string construct_error_response(t_answer_headers const& info, std::string methode)
 {
 	std::string response;
 
+	std::cout << "METHOD: " << methode << std::endl;
 	response = info.header_line + "\r\n"
 			+ info.server + "\r\n"
 			+ info.date + "\r\n"
 			+ info.content_type + "\r\n"
 			+ info.content_length + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
-			+ "\r\n"
-			+ info.body;
+			+ "\r\n";
+	if (methode != "HEAD")
+		response += info.body;
 	return response;
 }
 
@@ -150,7 +152,7 @@ void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers
 	fill_response_struct(response, file, path, response_number);
 }
 
-std::string error_page(size_t error_nbr)
+std::string error_page(size_t error_nbr, std::string methode)
 {
 	std::string			path("../default/" + std::to_string(error_nbr) + ".html");
 	std::ifstream 		fd(path);  // charger l'erreur
@@ -162,7 +164,7 @@ std::string error_page(size_t error_nbr)
 		exit(1);
 	}
 	init_head_get(path, fd, info, error_nbr);
-	return construct_error_response(info);
+	return construct_error_response(info, methode);
 }
 
 std::string GET(t_http_req &req)
@@ -212,10 +214,10 @@ std::string parse_method(t_http_req &req, t_config &conf)
 	else if (req.method == std::string("POST"))
 		return POST(req);
 	else if (req.method == std::string("PUT"))
-		return error_page(405);
+		return error_page(405, req.method);
 	else if (req.method == std::string("DELETE"))
-		return error_page(405);
-	return error_page(404);
+		return error_page(405, req.method);
+	return error_page(404, req.method);
 }
 
 void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s)
@@ -225,9 +227,9 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
   if (req.error == true)
     return ;
   else if (req.URL == std::string("file not found"))
-    answer = error_page(404);
+    answer = error_page(404, req.method);
   else if (req.URL == std::string("method not found"))
-    answer = error_page(405);
+    answer = error_page(405, req.method);
 	else
     answer = parse_method(req, conf);
   if (FD_ISSET(socket_to_answer , &s.active_socket_write)) //If socket still in active write sockets, the socket is writable
