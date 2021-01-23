@@ -224,7 +224,7 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 
   if (req.error == true)
     answer = error_page(400);
-  if (req.URL == std::string("file not found"))
+  else if (req.URL == std::string("file not found"))
     answer = error_page(404);
   else if (req.URL == std::string("method not found"))
     answer = error_page(405);

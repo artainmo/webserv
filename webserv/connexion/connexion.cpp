@@ -145,5 +145,5 @@ void wait_connexion(t_server &s, t_config &config)
     wait_connexion(s, config);
   // else if (ret % 2 != 0) //If read and write are not open at the same time //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
   //   wait_connexion(s, config);
-  std::cout << "RET SELECT: " << ret << std::endl;
+  // std::cout << "RET SELECT: " << ret << std::endl;
 }

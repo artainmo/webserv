@@ -247,6 +247,7 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 		ret->error = true;
 		return ret;
 	}
+	P(body_line);
 	lines = split(req, "\n");
 	default_init(*ret);
 	parse(*ret, lines, body_line, conf);
