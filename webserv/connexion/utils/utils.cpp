@@ -13,3 +13,9 @@ bool	is_non_ascii(std::string s) //Returns true if finds one non-ascii char
   }
   return false;
 }
+
+
+std::string get_file_extension(std::string path)
+{
+	return path.substr(path.find_last_of('.') + 1);
+}

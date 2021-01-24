@@ -1,14 +1,15 @@
 NAME = parsing.a
 SRCS = config_file.cpp \
 			http_request.cpp \
-			utils.cpp
+			utils.cpp \
+			url_to_local_path.cpp \
 
 CXX = clang++
 CXXFLAGS = #-Wall -Wextra -Werror
 
 OBJ = $(SRCS:.cpp=.o)
 
-all: $(NAME) 
+all: $(NAME)
 
 $(NAME): $(OBJ)
 	ar rc $(NAME) $(OBJ)

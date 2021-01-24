@@ -1,6 +1,5 @@
 NAME = utils.a
-SRCS = directory.cpp \
-				utils.cpp
+SRCS = utils.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 
