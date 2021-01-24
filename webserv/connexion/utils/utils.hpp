@@ -13,7 +13,12 @@
 #include <map>
 
 std::string get_file_extension(std::string path);
+std::string final_file_in_path(std::string path);
+int is_regular_file(const char *path);
+
 bool	is_non_ascii(std::string s);
+bool equal_to(char c, std::string chars);
+
 void print_sockets(std::map<int, std::string> &socket_to_answer);
 
 #endif

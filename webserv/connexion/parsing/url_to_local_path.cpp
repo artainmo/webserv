@@ -2,18 +2,6 @@
 
 std::string g_method;
 
-int is_regular_file(const char *path)
-{
-    struct stat path_stat;
-
-    if (stat(path, &path_stat) == -1)
-		{
-			std::cout << "Error: stat function" << std::endl;
-			exit(1);
-		}
-    return S_ISREG(path_stat.st_mode);
-}
-
 bool files_in_dir(std::string path_dir, std::list<std::string> &files) //Returns true if directory exists and false if directory does not exist
 {
 	struct dirent *file;
@@ -25,11 +13,6 @@ bool files_in_dir(std::string path_dir, std::list<std::string> &files) //Returns
 		files.push_back(std::string(file->d_name));
 	closedir(directory);
 	return true;
-}
-
-std::string final_file_in_path(std::string path)
-{
-	return path.substr(path.find_last_of("/") + 1);
 }
 
 std::string dir_no_file(std::string path)
@@ -116,15 +99,15 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 	std::string ret;
 	std::string local_url;
 
-	P("local_root: "<< local_root);
-	P("directory: "<< directory);
+	// P("local_root: "<< local_root);
+	// P("directory: "<< directory);
 	if (directory.find("/") != std::string::npos) //Based on tester
 		local_url = local_root + directory.substr(directory.find_first_of("/"));
 	else
 		local_url = local_root;
 	if (local_url[0] == '/')
 		local_url = local_url.substr(1);
-	P("local_url: "<< local_url);
+	// P("local_url: "<< local_url);
   if (g_method == std::string("PUT"))
     return local_url;
 	if ((ret = find_file(local_url)) == std::string("directory found"))
@@ -154,7 +137,7 @@ void find_in_directory_location(std::string &ret, std::string &last, t_location 
 {
 	if ((ret = find_file_directory(loc.root, req.URL, loc.index)) != std::string("file not found"))
 	{
-		P("Found: "<< ret);
+		// P("Found: "<< ret);
 		last = ret;
 		req.loc = &loc;
 	}
@@ -173,9 +156,9 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		req.URL = req.URL.substr(0, req.URL.size() - 1);
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
-		P("URL: " << req.URL);
-		P("DIR: " << loc->directory);
-		P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
+		// P("URL: " << req.URL);
+		// P("DIR: " << loc->directory);
+		// P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
 		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
 			find_in_directory_location(ret, last, *loc, req, conf);
 	}

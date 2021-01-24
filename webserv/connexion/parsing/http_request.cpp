@@ -8,9 +8,9 @@ void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
-	P("Before: " << req.URL);
+	// P("Before: " << req.URL);
 	URL_to_local_path(req, conf);
-	P("After: " << req.URL);
+	// P("After: " << req.URL);
 	parts.pop_front();
 	req.protocol_version = parts.front();
 }
@@ -75,9 +75,10 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 	i = 0;
 	for (std::list<std::string>::iterator line = lines.begin(); line != lines.end(); line++)
 	{
+		P("LINES:"<<i<<"|"<<*line);
 		if (i == 0)
 			parse_first_line(req, *line, conf);
-		else if (i >= body_line && i != -1 && i != 0)
+		else if (i >= body_line)
 			parse_body(req, *line, conf);
 		else
 			parse_header_fields(req, *line);
@@ -102,6 +103,32 @@ std::string find_start(std::string message)
 	return message;
 }
 
+int completed_request(std::string req)
+{
+	unsigned int counter;
+	bool follow;
+
+	counter = 0;
+	follow = false;
+	if (req.size() == 0)
+		return -1; //Returning error in this case does not seem correct, so return not ready, comes from recv fail
+	// P("body find:|" << req << "|" << "size: " << req.size());
+	for (unsigned int i = 0; i < req.size() ; i++)
+	{
+		if (req[i] == '\n' && follow == true)
+				if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
+					return counter;
+		if (req[i] == '\n')
+		{
+			follow = true;
+			counter++;
+		}
+		else if (!equal_to(req[i], " \t\v\f\r"))
+			follow = false;
+	}
+	return -1; //Returns -1 if not found //If not found it means not complete request
+}
+
 int find_body(std::string req)
 {
 	unsigned int counter;
@@ -111,23 +138,17 @@ int find_body(std::string req)
 	follow = false;
 	if (req.size() == 0)
 		return -1; //Returning error in this case does not seem correct, so return not ready, comes from recv fail
-	P("body find:|" << req << "|" << "size: " << req.size());
-	req = find_start(req);
+	// P("body find:|" << req << "|" << "size: " << req.size());
 	for (unsigned int i = 0; i < req.size() ; i++)
 	{
+		if (req[i] == '\n' && follow == true)
+					return counter;
 		if (req[i] == '\n')
 		{
-			if (follow == true) //Following \n found meaning empty line found meaning next line is body
-			{
-				if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
-					return counter ;
-				follow = false;
-			}
+			follow = true;
 			counter++;
 		}
-		if (req[i] == '\n')
-			follow = true;
-		else if (req[i] != '\r')
+		else if (!equal_to(req[i], " \t\v\f\r"))
 			follow = false;
 	}
 	return -1; //Returns -1 if not found //If not found it means not complete request
@@ -184,13 +205,16 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	std::list<std::string> lines;
 	int body_line;
 
-	// P("--------------------------------------------------------------------------");
-	// P("REAL REQUEST:");
-	// P(req); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	P("REAL REQUEST:");
+	P(req); //test
+	P("--------------------------------------------------------------------------");
 	default_init(*ret);
-	if ((body_line = find_body(req)) != -1) //If body line found, request is complete
+	req = find_start(req);
+	if (completed_request(req) != -1) //If body line found, request is complete
 		ret->ready = true;
+	body_line = find_body(req);
+	P("BODY LINE: " << body_line);
 	if (is_valid(req) == false)
 	{
 		std::cout << "ERROR: request"<< std::endl;
@@ -199,9 +223,9 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	}
 	lines = split(req, "\n");
 	parse(*ret, lines, body_line, conf);
-	// P("--------------------------------------------------------------------------");
-	// P("PARSED REQUEST:");
-	// show_http_request(*ret); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	P("PARSED REQUEST:");
+	show_http_request(*ret); //test
+	P("--------------------------------------------------------------------------");
 	return (ret);
 }
