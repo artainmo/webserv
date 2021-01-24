@@ -24,6 +24,9 @@ $(CONNEXION):
 run: fclean all
 	./webserv.a conf/webserv1.conf
 
+test:
+	yes | ./../tests/tester http://localhost 80
+
 clean:
 	(cd $(CONNEXION_P) && $(MAKE) $@)
 	rm -rf $(OBJ)
