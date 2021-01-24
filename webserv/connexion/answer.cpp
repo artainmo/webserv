@@ -281,12 +281,14 @@ std::string parse_method(t_http_req &req, t_config &conf)
 	return error_page(404, req.method);
 }
 
-void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s)
+bool answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s)
 {
 	std::string	answer;
 
+  if (req.ready == false)
+    return false; //If request is not ready do not respond
   if (req.error == true)
-    return ;
+    return true; //Do nothing and consider the request as wrong
   else if (req.URL == std::string("file not found") && req.method != "PUT")
     answer = error_page(404, req.method);
   else if (req.URL == std::string("method not found"))
@@ -302,4 +304,5 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 		   // exit(1);
 	 }
   }
+  return true; //If request got responded delete it from the map
 }

@@ -105,7 +105,7 @@ int find_body(std::string req)
 		else if (req[i] != '\r')
 			follow = false;
 	}
-	return counter; //Returns -1 if not found
+	return -1; //Returns -1 if not found //If not found it means not complete request
 }
 
 void default_init(t_http_req &req)
@@ -134,8 +134,8 @@ void default_init(t_http_req &req)
 	req.protocol_version = std::string("None");
 	req.message_body = std::string("None");
 	req.error = false;
+	req.ready = false;
 }
-
 
 bool is_valid(std::string message)
 {
@@ -169,9 +169,10 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 		ret->error = true;
 		return ret;
 	}
-	lines = split(req, "\n");
-	body_line = find_body(req);
 	default_init(*ret);
+	if ((body_line = find_body(req)) != -1) //If body line found, request is complete
+		ret->ready = true;
+	lines = split(req, "\n");
 	parse(*ret, lines, body_line, conf);
 	P("--------------------------------------------------------------------------");
 	P("PARSED REQUEST:");

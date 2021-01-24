@@ -128,7 +128,6 @@ void reset_sockets(t_server &s)
           FD_SET(s.client_socket[i] , &s.active_socket_write);
       }
   }
-  s.socket_to_answer.clear();
 }
 
 void wait_connexion(t_server &s, t_config &config)

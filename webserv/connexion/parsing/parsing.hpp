@@ -89,6 +89,7 @@ typedef struct s_http_req
 	t_header_fields header_fields;
 	std::string message_body;
 	bool error;
+	bool ready;
 } t_http_req;
 
 t_config *parse_config(std::string path);

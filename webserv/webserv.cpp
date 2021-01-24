@@ -1,5 +1,14 @@
 #include "connexion/connexion.hpp"
 
+void responded_socket(std::map<int, std::string>::iterator &socket, t_server &s)
+{
+	int rem;
+
+	rem = socket->first;
+	socket++;
+	s.socket_to_answer.erase(rem);
+}
+
 void change_directory(std::string relative_path)
 {
 	char *path_name = new char[100];
@@ -25,6 +34,7 @@ int main(int argc , char *argv[])
 	t_config *config;
 	t_http_req *req;
 	std::string request;
+	std::map<int, std::string>::iterator socket;
 
 	if (argc != 2)
 	{
@@ -36,17 +46,27 @@ int main(int argc , char *argv[])
   setup_server(*s, *config);
   while(true)
   {
+			// P("HE1");
       wait_connexion(*s, *config);
+			// P("HE2");
       if (FD_ISSET(s->server_socket, &s->active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
       	new_incoming_connection(*s, *config);
+			// P("HE3");
 			change_directory("/frontend");
+			// P("HE4");
 			get_client_request(*s, *config);
+			// P("HE5");
 			if (s->socket_to_answer.size() != 0)
       {
-				for (std::map<int, std::string>::iterator i = s->socket_to_answer.begin(); i != s->socket_to_answer.end(); i++)
+				socket = s->socket_to_answer.begin(); //socket is iterator map with socket fd (first) and request text (second)
+				while(socket != s->socket_to_answer.end())
 				{
-						req = parse_http_request(i->second, *config);
-						answer_http_request(i->first, *req, *config, *s);
+						req = parse_http_request(socket->second, *config);
+						if (answer_http_request(socket->first, *req, *config, *s) == true)
+							responded_socket(socket, *s);
+						else
+							socket++;
+						P("HE");
 				}
       }
 			change_directory("/..");
