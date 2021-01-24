@@ -1,5 +1,7 @@
 #include "parsing.hpp"
 
+std::string g_method;
+
 int is_regular_file(const char *path)
 {
     struct stat path_stat;
@@ -114,12 +116,6 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 	std::string ret;
 	std::string local_url;
 
-	// if (directory.size() == 0) //Based on nginx
-	// 	local_url = local_root;
-	// else if (local_root.size() == 0)
-	// 	local_url = directory;
-	// else
-	// 	local_url = local_root + std::string("/") + directory;
 	P("local_root: "<< local_root);
 	P("directory: "<< directory);
 	if (directory.find("/") != std::string::npos) //Based on tester
@@ -129,6 +125,8 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 	if (local_url[0] == '/')
 		local_url = local_url.substr(1);
 	P("local_url: "<< local_url);
+  if (g_method == std::string("PUT"))
+    return local_url;
 	if ((ret = find_file(local_url)) == std::string("directory found"))
 	{
 		P("Searching Dir");
@@ -166,6 +164,7 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 {
 	std::string ret;
 	std::string last;
+  g_method = req.method;
 
 	last = "file not found";
 	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == '/')
