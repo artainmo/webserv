@@ -77,12 +77,29 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 	{
 		if (i == 0)
 			parse_first_line(req, *line, conf);
-		else if (i >= body_line)
+		else if (i >= body_line && i != -1 && i != 0)
 			parse_body(req, *line, conf);
 		else
 			parse_header_fields(req, *line);
 		i++;
 	}
+}
+
+std::string find_start(std::string message)
+{
+	int ret;
+
+	if ((ret = message.find("GET")) != std::string::npos)
+		return message.substr(ret);
+	if ((ret = message.find("HEAD")) != std::string::npos)
+		return message.substr(ret);
+	if ((ret = message.find("PUT")) != std::string::npos)
+		return message.substr(ret);
+	if ((ret = message.find("POST")) != std::string::npos)
+		return message.substr(ret);
+	if ((ret = message.find("DELETE")) != std::string::npos)
+		return message.substr(ret);
+	return message;
 }
 
 int find_body(std::string req)
@@ -92,9 +109,10 @@ int find_body(std::string req)
 
 	counter = 0;
 	follow = false;
-	if (req.size() != 0)
-		req = req.substr(req.find_first_not_of(" \t\n\v\f\r"), req.size());
-	P("body find: |" << req << "|");
+	if (req.size() == 0)
+		return -1; //Returning error in this case does not seem correct, so return not ready, comes from recv fail
+	P("body find:|" << req << "|" << "size: " << req.size());
+	req = find_start(req);
 	for (unsigned int i = 0; i < req.size() ; i++)
 	{
 		if (req[i] == '\n')
@@ -112,8 +130,6 @@ int find_body(std::string req)
 		else if (req[i] != '\r')
 			follow = false;
 	}
-	if (req.size() == 0)
-		return 0;
 	return -1; //Returns -1 if not found //If not found it means not complete request
 }
 
@@ -153,13 +169,13 @@ bool is_valid(std::string message)
 	message = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
 	if (is_non_ascii(message) == true)
 		return false;
-	std::list<std::string> lines = split(message, "\n");
-	return (lines.front().find("HTTP/1.1") != std::string::npos
-					&& (lines.front().find("GET") != std::string::npos
-					|| lines.front().find("HEAD") != std::string::npos
-					|| lines.front().find("PUT") != std::string::npos
-					|| lines.front().find("POST") != std::string::npos
-					|| lines.front().find("DELETE") != std::string::npos));
+	// std::list<std::string> lines = split(message, "\n");
+	return (message.find("HTTP/1.1") != std::string::npos
+					&& (message.find("GET") != std::string::npos
+					|| message.find("HEAD") != std::string::npos
+					|| message.find("PUT") != std::string::npos
+					|| message.find("POST") != std::string::npos
+					|| message.find("DELETE") != std::string::npos));
 }
 
 t_http_req *parse_http_request(std::string req, t_config &conf)

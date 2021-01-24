@@ -285,8 +285,8 @@ bool answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 {
 	std::string	answer;
 
-  P(req.ready);
-  P(req.error);
+  P("READY: " << req.ready);
+  P("ERROR: " << req.error);
   if (req.ready == false)
     return false; //If request is not ready do not respond
   else if (req.error == true)
