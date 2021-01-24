@@ -248,10 +248,10 @@ std::string PUT(t_http_req &req)
   /*if (req.loc != 0 && req.loc->CGI != 0)
 	   req.URL = get_cgi(req);*/
 	req.URL = req.loc->file_upload_location + std::string("/") + final_file_in_path(req.URL);
-	if (stat(req.URL.c_str(), &buffer) == 0)
-		status_code = 200;
+	if (file_exists(req.URL))
+		status_code = 200; //OK (file already existed)
 	else
-		status_code = 201;
+		status_code = 201; //CREATED (new file)
   fd.open(req. URL.c_str(),  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
   if (!fd.is_open())
     return error_page(500, req.method); // CHANGE THE ERROR CODE?

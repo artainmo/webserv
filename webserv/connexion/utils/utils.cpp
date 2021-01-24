@@ -58,3 +58,14 @@ bool equal_to(char c, std::string chars)
       return true;
   return false;
 }
+
+bool file_exists(std::string name)
+{
+    std::ifstream f;
+    int ret;
+
+    f.open(name);
+    ret = f.is_open();
+    f.close();
+    return ret;
+}
