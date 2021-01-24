@@ -112,14 +112,18 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 {
 	std::list<std::string> parts;
+	std::string		before_req_url;
 
 	parts = split(line, " ");
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
+	before_req_url = req.URL;
 	P("Before: " << req.URL);
 	URL_to_local_path(req, conf);
 	P("After: " << req.URL);
+	if (req.method == "PUT")
+		req.URL = before_req_url;
 	parts.pop_front();
 	req.protocol_version = parts.front();
 }

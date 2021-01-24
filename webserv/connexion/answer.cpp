@@ -18,12 +18,16 @@ std::string get_header_line(size_t const& number)
 	{
 		case 200:
 			return (protocol + std::string("200 OK"));
+		case 201:
+			return (protocol + std::string("201 Created"));
 		case 404:
 			return (protocol + std::string("404 Not Found"));
 		case 405:
 			return (protocol + std::string("405 Not Allowed"));
-    case 400:
-      return (protocol + std::string("400 Bad Request"));
+    	case 400:
+      		return (protocol + std::string("400 Bad Request"));
+		case 500:
+      		return (protocol + std::string("500 Internal Server Error"));
 		default:
 			return (protocol + std::string("404 Not Found"));
 	}
@@ -81,6 +85,7 @@ void	init_response_struct(t_answer_headers & response)
 	response.content_type = std::string("Content-Type: ");
 	response.content_length = std::string("Content-Length: ");
 	response.last_modified = std::string("Last-Modified: ");
+	response.location = std::string("Location: ");
 }
 
 void	fill_response_struct(t_answer_headers & response, std::string const& file, std::string const& path, size_t const& response_number)
@@ -92,6 +97,7 @@ void	fill_response_struct(t_answer_headers & response, std::string const& file, 
 	response.header_line += get_header_line(response_number);
 	response.body = file;
 	response.content_type += get_content_type(path);
+	response.location += path;
 }
 
 std::string construct_get_response(t_answer_headers const& info)
@@ -119,6 +125,21 @@ std::string construct_head_response(t_answer_headers const& info)
 			+ info.content_type + "\r\n"
 			+ info.content_length + "\r\n"
 			+ info.last_modified + "\r\n"
+			+ "\r\n";
+	return response;
+}
+
+std::string construct_put_response(t_answer_headers const& info)
+{
+	std::string response;
+
+	response = info.header_line + "\r\n"
+			+ info.server + "\r\n"
+			+ info.date + "\r\n"
+		//	+ info.content_type + "\r\n"
+		//	+ info.content_length + "\r\n"
+		//	+ info.last_modified + "\r\n"
+			+ info.location + "\r\n"
 			+ "\r\n";
 	return response;
 }
@@ -152,6 +173,17 @@ void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers
 	fill_response_struct(response, file, path, response_number);
 }
 
+void init_put(std::string const& path, std::ofstream & fd, t_answer_headers & response, size_t const& response_number)
+{
+	std::string			file;
+	std::string			line;
+	struct stat			stat_file;
+
+	stat(path.c_str(), &stat_file);
+	init_response_struct(response);
+	fill_response_struct(response, file, path, response_number);
+}
+
 std::string error_page(size_t error_nbr, std::string methode)
 {
 	std::string			path("../default/" + std::to_string(error_nbr) + ".html");
@@ -180,7 +212,7 @@ std::string GET(t_http_req &req)
 	return construct_get_response(response);
 }
 
-std::string HEAD(std::string path)
+std::string HEAD(std::string path) // Ne devrait pas fonctionner
 {
 	std::ifstream		fd;
 	t_answer_headers	response;
@@ -205,6 +237,33 @@ std::string POST(t_http_req &req)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
+std::string PUT(t_http_req &req)
+{
+	std::ofstream		fd;
+	t_answer_headers	response;
+	size_t				pos_slash;
+
+  /*if (req.loc != 0 && req.loc->CGI != 0)
+	   req.URL = get_cgi(req);*/
+	   if ((pos_slash = req.URL.find_last_of("/")) != std::string::npos)
+		   req.URL = std::string(req.URL, pos_slash + 1, req.URL.size());
+		req.URL = "upload/" + req.URL;
+  fd.open(req. URL.c_str(),  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
+  if (fd)
+  {
+	  fd << req.message_body;
+	  init_put(req.URL, fd, response, 201);
+	  return construct_put_response(response);
+  }
+  else
+  {
+	return error_page(500, "PUT"); // CHANGE THE ERROR CODE
+  }
+	// init_head_get(req.URL, fd, response, 200);
+	// fd.close();
+	// return construct_get_response(response);
+}
+
 std::string parse_method(t_http_req &req, t_config &conf)
 {
 	if (req.method == std::string("GET"))
@@ -214,7 +273,7 @@ std::string parse_method(t_http_req &req, t_config &conf)
 	else if (req.method == std::string("POST"))
 		return POST(req);
 	else if (req.method == std::string("PUT"))
-		return error_page(405, req.method);
+		return PUT(req);
 	else if (req.method == std::string("DELETE"))
 		return error_page(405, req.method);
 	return error_page(404, req.method);
@@ -226,7 +285,7 @@ void answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 
   if (req.error == true)
     return ;
-  else if (req.URL == std::string("file not found"))
+  else if (req.URL == std::string("file not found") && req.method != "PUT")
     answer = error_page(404, req.method);
   else if (req.URL == std::string("method not found"))
     answer = error_page(405, req.method);

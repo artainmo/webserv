@@ -10,3 +10,10 @@ GET REQUEST:
 - Parse the file and put it in the body if successful
 - Fill the response headers
 - Send the response
+
+----------------------------------------------
+
+- Check HEAD request
+- PUT request
+
+- htt_request.cpp ligne 125
