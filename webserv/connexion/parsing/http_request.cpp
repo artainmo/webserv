@@ -101,7 +101,7 @@ int find_body(std::string req)
 		{
 			if (follow == true) //Following \n found meaning empty line found meaning next line is body
 			{
-				if (req[i + 1] == 0 || req[i + 2] == 0)
+				if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
 					return counter ;
 				follow = false;
 			}
