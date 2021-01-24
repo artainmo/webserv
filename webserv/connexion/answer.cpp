@@ -241,10 +241,7 @@ std::string PUT(t_http_req &req)
 {
 	std::ofstream		fd;
 	t_answer_headers	response;
-	struct stat			buffer;
-	size_t				pos_slash;
-	size_t				status_code;
-
+  int status_code;
   /*if (req.loc != 0 && req.loc->CGI != 0)
 	   req.URL = get_cgi(req);*/
 	req.URL = req.loc->file_upload_location + std::string("/") + final_file_in_path(req.URL);
