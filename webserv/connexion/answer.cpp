@@ -285,10 +285,12 @@ bool answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 {
 	std::string	answer;
 
+  P(req.ready);
+  P(req.error);
   if (req.ready == false)
     return false; //If request is not ready do not respond
-  if (req.error == true)
-    return true; //Do nothing and consider the request as wrong
+  else if (req.error == true)
+    answer = error_page(400, req.method); //Do nothing and consider the request as wrong
   else if (req.URL == std::string("file not found") && req.method != "PUT")
     answer = error_page(404, req.method);
   else if (req.URL == std::string("method not found"))

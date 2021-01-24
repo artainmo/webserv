@@ -4,6 +4,7 @@ void responded_socket(std::map<int, std::string>::iterator &socket, t_server &s)
 {
 	int rem;
 
+	std::cout << "Erasing socket: "<< socket->first << std::endl;
 	rem = socket->first;
 	socket++;
 	s.socket_to_answer.erase(rem);
@@ -56,6 +57,7 @@ int main(int argc , char *argv[])
 			// P("HE4");
 			get_client_request(*s, *config);
 			// P("HE5");
+			print_sockets(s->socket_to_answer);
 			if (s->socket_to_answer.size() != 0)
       {
 				socket = s->socket_to_answer.begin(); //socket is iterator map with socket fd (first) and request text (second)
@@ -66,9 +68,9 @@ int main(int argc , char *argv[])
 							responded_socket(socket, *s);
 						else
 							socket++;
-						P("HE");
 				}
       }
+			print_sockets(s->socket_to_answer);
 			change_directory("/..");
   }
   return 0;

@@ -19,3 +19,15 @@ std::string get_file_extension(std::string path)
 {
 	return path.substr(path.find_last_of('.') + 1);
 }
+
+void print_sockets(std::map<int, std::string> &socket_to_answer)
+{
+  for (std::map<int, std::string>::iterator i = socket_to_answer.begin(); i != socket_to_answer.end(); i++)
+  {
+      P("--------------------------------------------------------------------------");
+      P("fd: " << i->first);
+      P("req: " << i->second);
+      P("--------------------------------------------------------------------------");
+
+  }
+}
