@@ -241,27 +241,29 @@ std::string PUT(t_http_req &req)
 {
 	std::ofstream		fd;
 	t_answer_headers	response;
+	struct stat			buffer;
 	size_t				pos_slash;
+	size_t				status_code;
 
   /*if (req.loc != 0 && req.loc->CGI != 0)
 	   req.URL = get_cgi(req);*/
 	   if ((pos_slash = req.URL.find_last_of("/")) != std::string::npos)
 		   req.URL = std::string(req.URL, pos_slash + 1, req.URL.size());
 		req.URL = "upload/" + req.URL;
+	if (stat(req.URL.c_str(), &buffer) == 0)
+		status_code = 200;
+	else
+		status_code = 201;
   fd.open(req. URL.c_str(),  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
   if (fd)
   {
 	  fd << req.message_body;
-	  init_put(req.URL, fd, response, 201);
+	  init_put(req.URL, fd, response, status_code);
+	  fd.close();
 	  return construct_put_response(response);
   }
   else
-  {
-	return error_page(500, "PUT"); // CHANGE THE ERROR CODE
-  }
-	// init_head_get(req.URL, fd, response, 200);
-	// fd.close();
-	// return construct_get_response(response);
+	return error_page(500, req.method); // CHANGE THE ERROR CODE
 }
 
 std::string parse_method(t_http_req &req, t_config &conf)
