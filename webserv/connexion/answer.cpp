@@ -10,7 +10,7 @@ std::string header_field(std::string header, std::string text)
   return header + std::string(": ") + text + std::string("\r\n");
 }
 
-std::string get_header_line(size_t const& number)
+std::string get_header_line(int const& number)
 {
 	std::string	protocol("HTTP/1.1 ");
 
@@ -88,7 +88,7 @@ void	init_response_struct(t_answer_headers & response)
 	response.location = std::string("Location: ");
 }
 
-void	fill_response_struct(t_answer_headers & response, std::string const& file, std::string const& path, size_t const& response_number)
+void	fill_response_struct(t_answer_headers & response, std::string const& file, std::string const& path, int const& response_number)
 {
 	response.server += std::string("webserv/1.0");
 	response.date += get_date();
@@ -160,31 +160,26 @@ std::string construct_error_response(t_answer_headers const& info, std::string m
 	return response;
 }
 
-void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers & response, size_t const& response_number)
+void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers & response, int const& response_number)
 {
 	std::string			file;
 	std::string			line;
-	struct stat			stat_file;
 
-	stat(path.c_str(), &stat_file);
 	while (getline(fd, line))
 		file += line + "\n";
 	init_response_struct(response);
 	fill_response_struct(response, file, path, response_number);
 }
 
-void init_put(std::string const& path, std::ofstream & fd, t_answer_headers & response, size_t const& response_number)
+void init_put(std::string const& path, std::ofstream & fd, t_answer_headers & response, int const& response_number)
 {
 	std::string			file;
-	std::string			line;
-	struct stat			stat_file;
 
-	stat(path.c_str(), &stat_file);
 	init_response_struct(response);
 	fill_response_struct(response, file, path, response_number);
 }
 
-std::string error_page(size_t error_nbr, std::string methode)
+std::string error_page(int error_nbr, std::string methode)
 {
 	std::string			path("../default/" + std::to_string(error_nbr) + ".html");
 	std::ifstream 		fd(path);  // charger l'erreur
@@ -207,6 +202,8 @@ std::string GET(t_http_req &req)
   if (req.loc != 0 && req.loc->CGI != 0)
 	   req.URL = get_cgi(req);
   fd.open(req.URL);
+  if (!fd.is_open())
+    return error_page(500, req.method);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
 	return construct_get_response(response);
