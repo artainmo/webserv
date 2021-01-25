@@ -7,14 +7,14 @@ std::string get_file_extension(std::string path)
 
 int is_regular_file(const char *path)
 {
-    struct stat path_stat;
+	struct stat path_stat;
 
-    if (stat(path, &path_stat) == -1)
-		{
-			std::cout << "Error: stat function" << std::endl;
-			exit(1);
-		}
-    return S_ISREG(path_stat.st_mode);
+	if (stat(path, &path_stat) == -1)
+	{
+		std::cout << "Error: stat function" << std::endl;
+		exit(1);
+	}
+	return S_ISREG(path_stat.st_mode);
 }
 
 bool files_in_dir(std::string path_dir, std::list<std::string> &files) //Returns true if directory exists and false if directory does not exist

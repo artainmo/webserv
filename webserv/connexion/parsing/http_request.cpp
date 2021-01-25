@@ -46,17 +46,17 @@ std::string find_file_directory(std::string local_root, std::string directory, s
 
 void find_in_file_extension_location(std::string &ret, std::string &last, t_location &loc, t_http_req &req, t_config &conf)
 {
-		if ((ret = find_file_directory(loc.root, req.URL, loc.index)) != std::string("file not found"))
+	if ((ret = find_file_directory(loc.root, req.URL, loc.index)) != std::string("file not found"))
+	{
+		for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
 		{
-			for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
+			if (get_file_extension(ret) == *ext) //If file extension is equal or all file extensions are accepted
 			{
-				if (get_file_extension(ret) == *ext) //If file extension is equal or all file extensions are accepted
-				{
-					last = ret;
-					req.loc = &loc;
-				}
+				last = ret;
+				req.loc = &loc;
 			}
 		}
+	}
 }
 
 void find_in_directory_location(std::string &ret, std::string &last, t_location &loc, t_http_req &req, t_config &conf)
@@ -128,39 +128,39 @@ void parse_header_fields(t_http_req &req, std::string line)
 	if (check_line(line, "Accept-Charsets"))
 		req.header_fields.Accept_Charsets = following_contents(line, "Accept-Charsets:");
 	else if (check_line(line, "Accept-Language"))
-			req.header_fields.Accept_Language = following_contents(line, "Accept-Language:");
+		req.header_fields.Accept_Language = following_contents(line, "Accept-Language:");
 	else if (check_line(line, "Allow"))
-			req.header_fields.Allow = following_contents(line, "Allow:");
+		req.header_fields.Allow = following_contents(line, "Allow:");
 	else if (check_line(line, "Authorization"))
-			req.header_fields.Authorization = following_contents(line, "Authorization:");
+		req.header_fields.Authorization = following_contents(line, "Authorization:");
 	else if (check_line(line, "Content-Language"))
-			req.header_fields.Content_Language = following_contents(line, "Content-Language:");
+		req.header_fields.Content_Language = following_contents(line, "Content-Language:");
 	else if (check_line(line, "Content-Length"))
-			req.header_fields.Content_Length = following_contents(line, "Content-Length:");
+		req.header_fields.Content_Length = following_contents(line, "Content-Length:");
 	else if (check_line(line, "Content-Location"))
-			req.header_fields.Content_Location = following_contents(line, "Content-Location:");
+		req.header_fields.Content_Location = following_contents(line, "Content-Location:");
 	else if (check_line(line, "Content-Type"))
-			req.header_fields.Content_Type = following_contents(line, "Content-Type:");
+		req.header_fields.Content_Type = following_contents(line, "Content-Type:");
 	else if (check_line(line, "Date"))
-			req.header_fields.Date = following_contents(line, "Date:");
+		req.header_fields.Date = following_contents(line, "Date:");
 	else if (check_line(line, "Host"))
-			req.header_fields.Host = following_contents(line, "Host:");
+		req.header_fields.Host = following_contents(line, "Host:");
 	else if (check_line(line, "Last-Modified"))
-			req.header_fields.Last_Modified = following_contents(line, "Last-Modified:");
+		req.header_fields.Last_Modified = following_contents(line, "Last-Modified:");
 	else if (check_line(line, "Location"))
-			req.header_fields.Location = following_contents(line, "Location:");
+		req.header_fields.Location = following_contents(line, "Location:");
 	else if (check_line(line, "Referer"))
-			req.header_fields.Referer = following_contents(line, "Referer:");
+		req.header_fields.Referer = following_contents(line, "Referer:");
 	else if (check_line(line, "Retry-After"))
-			req.header_fields.Retry_After = following_contents(line, "Retry-After:");
+		req.header_fields.Retry_After = following_contents(line, "Retry-After:");
 	else if (check_line(line, "Server"))
-			req.header_fields.Server = following_contents(line, "Server:");
+		req.header_fields.Server = following_contents(line, "Server:");
 	else if (check_line(line, "Transfer-Encoding"))
-			req.header_fields.Transfer_Encoding = following_contents(line, "Transfer-Encoding:");
+		req.header_fields.Transfer_Encoding = following_contents(line, "Transfer-Encoding:");
 	else if (check_line(line, "User-Agent"))
-			req.header_fields.User_Agent = following_contents(line, "User-Agent:");
+		req.header_fields.User_Agent = following_contents(line, "User-Agent:");
 	else if (check_line(line, "WWW_Authenticate"))
-			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
+		req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
 }
 
 void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line, t_config &conf)
@@ -237,10 +237,10 @@ t_http_req parse_http_request(std::string req, t_config &conf)
 	unsigned int body_line;
 
 	/*P("--------------------------------------------------------------------------");
-	P("REAL REQUEST:");
-	P(req); //test
-	P("--------------------------------------------------------------------------");
-	*/body_line = find_body(req);
+	  P("REAL REQUEST:");
+	  P(req); //test
+	  P("--------------------------------------------------------------------------");
+	  */body_line = find_body(req);
 	lines = split(req, "\n");
 	default_init(ret);
 	parse(ret, lines, body_line, conf);

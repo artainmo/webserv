@@ -2,12 +2,12 @@
 
 std::string header_line(std::string protocol_version, std::string code, std::string text)
 {
-  return protocol_version + std::string(" ") + code + std::string(" ") + text + std::string("\r\n");
+	return protocol_version + std::string(" ") + code + std::string(" ") + text + std::string("\r\n");
 }
 
 std::string header_field(std::string header, std::string text)
 {
-  return header + std::string(": ") + text + std::string("\r\n");
+	return header + std::string(": ") + text + std::string("\r\n");
 }
 
 std::string get_header_line(size_t const& number)
@@ -97,13 +97,13 @@ std::string construct_get_response(t_answer_headers const& info)
 	std::string response;
 
 	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-			+ info.content_type + "\r\n"
-			+ info.content_length + "\r\n"
-			+ info.last_modified + "\r\n"
-			+ "\r\n"
-			+ info.body;
+		+ info.server + "\r\n"
+		+ info.date + "\r\n"
+		+ info.content_type + "\r\n"
+		+ info.content_length + "\r\n"
+		+ info.last_modified + "\r\n"
+		+ "\r\n"
+		+ info.body;
 	return response;
 }
 
@@ -112,12 +112,12 @@ std::string construct_head_response(t_answer_headers const& info)
 	std::string response;
 
 	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-			+ info.content_type + "\r\n"
-			+ info.content_length + "\r\n"
-			+ info.last_modified + "\r\n"
-			+ "\r\n";
+		+ info.server + "\r\n"
+		+ info.date + "\r\n"
+		+ info.content_type + "\r\n"
+		+ info.content_length + "\r\n"
+		+ info.last_modified + "\r\n"
+		+ "\r\n";
 	return response;
 }
 
@@ -126,12 +126,12 @@ std::string construct_error_response(t_answer_headers const& info)
 	std::string response;
 
 	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-			+ info.content_type + "\r\n"
-			+ info.content_length + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
-			+ "\r\n"
-			+ info.body;
+		+ info.server + "\r\n"
+		+ info.date + "\r\n"
+		+ info.content_type + "\r\n"
+		+ info.content_length + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
+		+ "\r\n"
+		+ info.body;
 	return response;
 }
 
@@ -168,9 +168,9 @@ std::string GET(t_http_req &req)
 	std::ifstream		fd;
 	t_answer_headers	response;
 
-  if (req.loc != 0 && req.loc->CGI != 0)
-	   req.URL = get_cgi(req);
-  fd.open(req.URL);
+	if (req.loc != 0 && req.loc->CGI != 0)
+		req.URL = get_cgi(req);
+	fd.open(req.URL);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
 	return construct_get_response(response);
@@ -194,11 +194,11 @@ std::string POST(t_http_req &req)
 	return GET(req);
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
-  // return header_line("HTTP/1.1", "304", "Not Modified");
+	// return header_line("HTTP/1.1", "304", "Not Modified");
 	//
-  // return header_line("HTTP/1.1", "416", "Range Not Satisfiable");
+	// return header_line("HTTP/1.1", "416", "Range Not Satisfiable");
 	//
-  // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
+	// return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
 std::string parse_method(t_server &s, t_http_req &req, t_config &conf)
@@ -229,8 +229,8 @@ void answer_http_request(t_server &s, t_http_req &req, t_config &conf)
 		answer = parse_method(s, req, conf);
 	s.reply[s.socket_to_answer] = answer;
 	/*if (send(s.socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
-	{
-		std::cout << "Error: send failed" << std::endl;
-		exit(1);
-	}*/
+	  {
+	  std::cout << "Error: send failed" << std::endl;
+	  exit(1);
+	  }*/
 }

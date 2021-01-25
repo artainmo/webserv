@@ -4,10 +4,10 @@ t_location *get_location(std::string file_extension, std::string method, t_confi
 {
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++)
 		for (std::list<std::string>::iterator ext = loc->file_extensions.begin(); ext != loc->file_extensions.end(); ext++)
-				if ((file_extension == *ext || *ext == std::string("ALL")) && loc->CGI != 0)
-					for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
-						if ((method == *met || *met == std::string("ALL")) && loc->CGI != 0)
-							return &(*loc);
+			if ((file_extension == *ext || *ext == std::string("ALL")) && loc->CGI != 0)
+				for (std::list<std::string>::iterator met = loc->http_methods.begin(); met != loc->http_methods.end(); met++)
+					if ((method == *met || *met == std::string("ALL")) && loc->CGI != 0)
+						return &(*loc);
 	return 0;
 }
 
