@@ -80,89 +80,86 @@ std::string get_content_type(std::string const& filename)
 	return std::string("text/html");
 }
 
-void	init_response_struct(t_answer_headers & response)
+void	init_response_struct(t_header_fields & response)
 {
-	response.server = std::string("Server: ");
-	response.date = std::string("Date: ");
-	response.content_type = std::string("Content-Type: ");
-	response.content_length = std::string("Content-Length: ");
-	response.last_modified = std::string("Last-Modified: ");
-	response.location = std::string("Location: ");
+	response.Server.push_front(std::string("Server: "));
+	response.Date.push_front(std::string("Date: "));
+	response.Content_Type.push_front(std::string("Content-Type: "));
+	response.Content_Length.push_front(std::string("Content-Length: "));
+	response.Last_Modified.push_front(std::string("Last-Modified: "));
+	response.Location.push_front(std::string("Location: "));
 }
 
-void	fill_response_struct(t_answer_headers & response, std::string const& file, std::string const& path, int const& response_number)
+void	fill_response_struct(t_header_fields & response, std::string const& file, std::string const& path, int const& response_number)
 {
-	response.server += std::string("webserv/1.0");
-	response.date += get_date();
-	response.last_modified += get_last_modified(path);
-	response.content_length += std::to_string(file.size());
-	response.header_line += get_header_line(response_number);
-	response.body = file;
-	response.content_type += get_content_type(path);
-	response.location += path;
+	response.Server.front() += std::string("webserv/1.0");
+	response.Date.front() += get_date();
+	response.Last_Modified.front() += get_last_modified(path);
+	response.Content_Length.front() += std::to_string(file.size());
+	response.Header_Line.front() += get_header_line(response_number);
+	response.Body.front() = file;
+	response.Content_Type.front() += get_content_type(path);
+	response.Location.front() += path;
 }
 
-std::string construct_get_response(t_answer_headers const& info)
-{
-	std::string response;
-
-	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-			+ info.content_type + "\r\n"
-			+ info.content_length + "\r\n"
-			+ info.last_modified + "\r\n"
-			+ "\r\n"
-			+ info.body;
-	return response;
-}
-
-std::string construct_head_response(t_answer_headers const& info)
+std::string construct_get_response(t_header_fields const& info)
 {
 	std::string response;
 
-	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-			+ info.content_type + "\r\n"
-			+ info.content_length + "\r\n"
-			+ info.last_modified + "\r\n"
-			+ "\r\n";
+	response = info.Header_Line.front() + "\r\n"
+		+ info.Server.front() + "\r\n"
+		+ info.Date.front() + "\r\n"
+		+ info.Content_Type.front() + "\r\n"
+		+ info.Content_Length.front() + "\r\n"
+		+ info.Last_Modified.front() + "\r\n"
+		+ "\r\n"
+		+ info.Body.front();
 	return response;
 }
 
-std::string construct_put_response(t_answer_headers const& info)
+std::string construct_head_response(t_header_fields const& info)
 {
 	std::string response;
 
-	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-		//	+ info.content_type + "\r\n"
-		//	+ info.content_length + "\r\n"
-		//	+ info.last_modified + "\r\n"
-			+ info.location + "\r\n"
-			+ "\r\n";
+	response = info.Header_Line.front() + "\r\n"
+		+ info.Server.front() + "\r\n"
+		+ info.Date.front() + "\r\n"
+		+ info.Content_Type.front() + "\r\n"
+		+ info.Content_Length.front() + "\r\n"
+		+ info.Last_Modified.front() + "\r\n"
+		+ "\r\n";
 	return response;
 }
 
-std::string construct_error_response(t_answer_headers const& info, std::string methode)
+std::string construct_put_response(t_header_fields const& info)
+{
+	std::string response;
+
+  response = info.Header_Line.front() + "\r\n"
+		+ info.Server.front() + "\r\n"
+		+ info.Date.front() + "\r\n"
+		+ info.Location.front() + "\r\n"
+		+ "\r\n";
+	return response;
+}
+
+std::string construct_error_response(t_header_fields const& info, std::string methode)
 {
 	std::string response;
 
 	std::cout << "METHOD: " << methode << std::endl;
-	response = info.header_line + "\r\n"
-			+ info.server + "\r\n"
-			+ info.date + "\r\n"
-			+ info.content_type + "\r\n"
-			+ info.content_length + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
-			+ "\r\n";
+	response = info.Header_Line.front() + "\r\n"
+		+ info.Server.front() + "\r\n"
+		+ info.Date.front() + "\r\n"
+		+ info.Content_Type.front() + "\r\n"
+		+ info.Content_Length.front() + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
+		+ "\r\n";
 	if (methode != "HEAD")
-		response += info.body;
+		response += info.Body.front();
 	return response;
 }
 
-void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers & response, int const& response_number)
+void init_head_get(std::string const& path, std::ifstream & fd, t_header_fields & response, int const& response_number)
 {
 	std::string			file;
 	std::string			line;
@@ -173,7 +170,7 @@ void init_head_get(std::string const& path, std::ifstream & fd, t_answer_headers
 	fill_response_struct(response, file, path, response_number);
 }
 
-void init_put(std::string const& path, std::ofstream & fd, t_answer_headers & response, int const& response_number)
+void init_put(std::string const& path, std::ofstream & fd, t_header_fields & response, int const& response_number)
 {
 	std::string			file;
 
@@ -185,7 +182,7 @@ std::string error_page(int error_nbr, std::string methode)
 {
 	std::string			path("../default/" + std::to_string(error_nbr) + ".html");
 	std::ifstream 		fd(path);  // charger l'erreur
-	t_answer_headers	info;
+	t_header_fields	info;
 
 	if (!fd.is_open())
 	{
@@ -199,7 +196,7 @@ std::string error_page(int error_nbr, std::string methode)
 std::string GET(t_http_req &req)
 {
 	std::ifstream		fd;
-	t_answer_headers	response;
+	t_header_fields	response;
 
   if (req.loc != 0 && req.loc->CGI != 0)
 	   req.URL = get_cgi(req);
@@ -214,7 +211,7 @@ std::string GET(t_http_req &req)
 std::string HEAD(std::string path) // Ne devrait pas fonctionner
 {
 	std::ifstream		fd;
-	t_answer_headers	response;
+	t_header_fields	response;
 
 	fd.open(path);
 	init_head_get(path, fd, response, 200);
@@ -257,7 +254,7 @@ void    write_put_file(std::ofstream & fd, std::string message_body)
 std::string PUT(t_http_req &req)
 {
 	std::ofstream			fd;
-	t_answer_headers		response;
+	t_header_fields		response;
 	int						status_code;
   /*if (req.loc != 0 && req.loc->CGI != 0)
 	   req.URL = get_cgi(req);*/
@@ -297,7 +294,7 @@ void socket_erase(std::map<int, std::string>::iterator &socket, t_server &s)
 	std::cout << "Erasing socket: "<< socket->first << std::endl;
 	rem = socket->first;
 	socket++;
-	s.socket_to_answer.erase(rem);
+	s.requests.erase(rem);
 }
 
 void get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t_config &conf, t_server &s)
@@ -312,6 +309,6 @@ void get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t
     answer = error_page(405, req.method);
 	else
     answer = parse_method(req, conf);
-	s.answer_to_send[socket->first] = answer;
+	s.answer[socket->first] = answer;
   socket_erase(socket, s);
 }

@@ -39,9 +39,9 @@ int is_regular_file(const char *path)
     return S_ISREG(path_stat.st_mode);
 }
 
-void print_sockets(std::map<int, std::string> &socket_to_answer)
+void print_sockets(std::map<int, std::string> &requests)
 {
-  for (std::map<int, std::string>::iterator i = socket_to_answer.begin(); i != socket_to_answer.end(); i++)
+  for (std::map<int, std::string>::iterator i = requests.begin(); i != requests.end(); i++)
   {
       P("--------------------------------------------------------------------------");
       P("fd: " << i->first);

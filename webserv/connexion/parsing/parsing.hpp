@@ -64,11 +64,13 @@ typedef struct s_header_fields
 	std::list<std::string> Accept_Language;
 	std::list<std::string> Allow;
 	std::list<std::string> Authorization;
+	std::list<std::string> Body;
 	std::list<std::string> Content_Language;
 	std::list<std::string> Content_Length;
 	std::list<std::string> Content_Location;
 	std::list<std::string> Content_Type;
 	std::list<std::string> Date;
+	std::list<std::string> Header_Line;
 	std::list<std::string> Host;
 	std::list<std::string> Last_Modified;
 	std::list<std::string> Location;
