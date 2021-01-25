@@ -53,13 +53,13 @@ typedef struct	s_server
 	fd_set active_socket_read; //fd_set struct for select function, takes active sockets for reading
 	fd_set active_socket_write;
 	int connected_socket; //New socket connected between server and client
+	std::map< int, std::string>	answer_to_send;
 }				t_server;
 
 void		setup_server(t_server &s, t_config &config);
 void		wait_connexion(t_server &s, t_config &config);
 void		new_incoming_connection(t_server &s, t_config &config);
 void	get_client_request(t_server &s, t_config &config);
-void client_disconnection(t_server &s, unsigned int socket);
 
 bool		answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s);
 

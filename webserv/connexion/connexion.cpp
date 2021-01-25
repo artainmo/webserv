@@ -51,13 +51,8 @@ void setup_server(t_server &s, t_config &config)
     }
 }
 
-void client_disconnection(t_server &s, unsigned int socket)
+void client_disconnection(t_server &s, unsigned int i)
 {
-  int i;
-
-  i = 0;
-  while(i < SOMAXCONN && s.client_socket[i] != socket)
-    i++;
   //Show to debug
   getpeername(s.client_socket[i] , (struct sockaddr*)&s.address , (socklen_t*)&s.addrlen);
   printf("Host disconnected\n-ip: %s\n-port: %d \n" , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port));
@@ -71,20 +66,31 @@ void get_client_request(t_server &s, t_config &config)
 {
   (void)config;
   int message_len = -1; //Receive message lenght to add a /0 at end str
+  int message_ret = -1;
+  std::string message_to_send;
   char message_buffer[1025];  //Received message is taken into a char* message_buffer because we use C functions
   std::string message;
 
   for (unsigned int i = 0; i < SOMAXCONN; i++)
   {
+	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
+	  {
+			message_to_send = s.answer_to_send[s.client_socket[i]];
+			message_ret = send(s.client_socket[i], message_to_send.c_str(), message_to_send.size(), 0);
+			if (message_ret < message_to_send.size())
+				s.answer_to_send[s.client_socket[i]] = s.answer_to_send[s.client_socket[i]].substr(message_ret + 1, message_to_send.size());
+			else
+				s.answer_to_send.erase(s.client_socket[i]);
+	  }
       if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
       {
-          if ((message_len = recv(s.client_socket[i], message_buffer, 1024, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
+          if ((message_len = recv(s.client_socket[i] , message_buffer, 1024, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
           {
             P("Error: recv failed");
             P(strerror(errno));
           }
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
-            client_disconnection(s, s.client_socket[i]);
+            client_disconnection(s, i);
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
@@ -118,7 +124,7 @@ void new_incoming_connection(t_server &s, t_config &config)
       std::cout << "Error: listen failed" << std::endl;
       exit(1);
     }
-    // fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
+    fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
     add_new_socket_to_active_sockets(s);
     printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
 }
@@ -131,12 +137,17 @@ void reset_sockets(t_server &s)
   FD_SET(s.server_socket, &s.active_socket_write); //Add the server socket to active sockets
 
   //Add active client sockets to the active sockets
+  //std::cout << "SOCKET REPLY: " << s.socket_to_answer.size() << std::endl;
   for (unsigned int i = 0 ; i < SOMAXCONN ; i++)
   {
       if(s.client_socket[i] > 0)
       {
           FD_SET(s.client_socket[i] , &s.active_socket_read);
-          FD_SET(s.client_socket[i] , &s.active_socket_write);
+		  if (s.answer_to_send.find(s.client_socket[i]) != s.answer_to_send.end())
+		  {
+		  	//std::cout << "SOCKET: " << s.client_socket[i] << " BUFFER-size: ~>" << s.answer_to_send[s.client_socket[i]].size() << std::endl;
+        	FD_SET(s.client_socket[i] , &s.active_socket_write);
+		  }
       }
   }
 }
@@ -145,17 +156,28 @@ void wait_connexion(t_server &s, t_config &config)
 {
   (void)config;
   int ret;
+
+  struct timeval timeout = {1, 0};
   reset_sockets(s);
   //Wait untill a socket gets activated, NULL means wait indefinitely
   //Select helps manipulate multiple active clients (cleaner way of handling it than using threads)
-  if ((ret = select(FD_SETSIZE , &s.active_socket_read, &s.active_socket_write, NULL , NULL)) == -1)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
+  if ((ret = select(FD_SETSIZE , &s.active_socket_read, &s.active_socket_write, NULL , &timeout)) == -1)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
   {
       std::cout << "Error: select failed" << std::endl;
       exit(1);
   }
   else if (ret == 0) //If return is zero timeout happened
+  {
+	  P("~~~~TIMEOUT~~~~~");
+	  for (unsigned int i = 0 ; i < SOMAXCONN ; i++)
+  	{
+    	if(s.client_socket[i] > 0)
+	  		client_disconnection(s, i);
+  	}
     wait_connexion(s, config);
-  // else if (ret % 2 != 0) //If read and write are not open at the same time //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
+  }
+  //else if (ret % 2 != 0) //If read and write are not open at the same time //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
   //   wait_connexion(s, config);
-  // std::cout << "RET SELECT: " << ret << std::endl;
+  //else
+  	//std::cout << "RET SELECT: " << ret << std::endl;
 }

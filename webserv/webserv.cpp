@@ -56,8 +56,8 @@ int main(int argc , char *argv[])
 			change_directory("/frontend");
 			// P("HE4");
 			get_client_request(*s, *config);
-			// P("HE5");
-			print_sockets(s->socket_to_answer);
+	//		 P("HE5");
+			// print_sockets(s->socket_to_answer);
 			if (s->socket_to_answer.size() != 0)
       {
 				socket = s->socket_to_answer.begin(); //socket is iterator map with socket fd (first) and request text (second)
@@ -70,7 +70,7 @@ int main(int argc , char *argv[])
 							socket++;
 				}
       }
-			print_sockets(s->socket_to_answer);
+			// print_sockets(s->socket_to_answer);
 			change_directory("/..");
   }
   return 0;

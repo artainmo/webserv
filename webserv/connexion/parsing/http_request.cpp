@@ -75,7 +75,7 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 	i = 0;
 	for (std::list<std::string>::iterator line = lines.begin(); line != lines.end(); line++)
 	{
-		P("LINES:"<<i<<"|"<<*line);
+		//P("LINES:"<<i<<"|"<<*line);
 		if (i == 0)
 			parse_first_line(req, *line, conf);
 		else if (i >= body_line)
@@ -205,27 +205,27 @@ t_http_req *parse_http_request(std::string req, t_config &conf)
 	std::list<std::string> lines;
 	int body_line;
 
-	P("--------------------------------------------------------------------------");
-	P("REAL REQUEST:");
-	P(req); //test
-	P("--------------------------------------------------------------------------");
+	// P("--------------------------------------------------------------------------");
+	// P("REAL REQUEST:");
+	// //P(req); //test
+	// P("--------------------------------------------------------------------------");
 	default_init(*ret);
 	req = find_start(req);
 	if (completed_request(req) != -1) //If body line found, request is complete
 		ret->ready = true;
 	body_line = find_body(req);
-	P("BODY LINE: " << body_line);
+	//P("BODY LINE: " << body_line);
 	if (is_valid(req) == false)
 	{
-		std::cout << "ERROR: request"<< std::endl;
+		//std::cout << "ERROR: request"<< std::endl;
 		ret->error = true;
 		return ret;
 	}
 	lines = split(req, "\n");
 	parse(*ret, lines, body_line, conf);
-	P("--------------------------------------------------------------------------");
-	P("PARSED REQUEST:");
-	show_http_request(*ret); //test
-	P("--------------------------------------------------------------------------");
+	// P("--------------------------------------------------------------------------");
+	// P("PARSED REQUEST:");
+	// //show_http_request(*ret); //test
+	// P("--------------------------------------------------------------------------");
 	return (ret);
 }
