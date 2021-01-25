@@ -44,8 +44,8 @@ int main(int argc , char *argv[])
 		if ((request = get_client_request(s, *config)) != std::string("None") && request.find_first_not_of(" \t\n\v\f\r") != std::string::npos)
 		{
 			/*P("--------------------------------------------------------------------------");
-			P("YVES REAL REQUEST:");
-			std::cout << ">|" << request << "|<" << "size:" << request.size() << std::endl;
+			  P("YVES REAL REQUEST:");
+			  std::cout << ">|" << request << "|<" << "size:" << request.size() << std::endl;
 			//	P(req); //test
 			P("--------------------------------------------------------------------------");
 			*/req = parse_http_request(request, *config);
