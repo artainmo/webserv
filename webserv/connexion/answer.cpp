@@ -294,6 +294,8 @@ bool answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
 		  std::cout << "Error: send failed" << std::endl;
 		   // exit(1);
 	 }
+   if (req.method == std::string("PUT"))
+    client_disconnection(s, socket_to_answer);
   }
   return true; //If request got responded delete it from the map
 }

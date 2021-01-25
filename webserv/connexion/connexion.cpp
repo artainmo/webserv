@@ -51,8 +51,13 @@ void setup_server(t_server &s, t_config &config)
     }
 }
 
-void client_disconnection(t_server &s, unsigned int i)
+void client_disconnection(t_server &s, unsigned int socket)
 {
+  int i;
+
+  i = 0;
+  while(i < SOMAXCONN && s.client_socket[i] != socket)
+    i++;
   //Show to debug
   getpeername(s.client_socket[i] , (struct sockaddr*)&s.address , (socklen_t*)&s.addrlen);
   printf("Host disconnected\n-ip: %s\n-port: %d \n" , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port));
@@ -73,13 +78,13 @@ void get_client_request(t_server &s, t_config &config)
   {
       if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
       {
-          if ((message_len = recv(s.client_socket[i] , message_buffer, 1024, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
+          if ((message_len = recv(s.client_socket[i], message_buffer, 1024, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
           {
             P("Error: recv failed");
             P(strerror(errno));
           }
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
-            client_disconnection(s, i);
+            client_disconnection(s, s.client_socket[i]);
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
