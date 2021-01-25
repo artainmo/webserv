@@ -23,16 +23,15 @@ void wait_connexion(t_server &s, t_config &config)
 void handle_write(t_server &s, t_config &config)
 {
   (void)config;
-  int message_ret = -1; //Receive message lenght to add a /0 at end str
-  std::string message_to_send;
-  std::string message;
+  int message_ret; //Receive message lenght to add a /0 at end str
 
   for (unsigned int i = 0; i < SOMAXCONN; i++)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
-			message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0);
-			if (message_ret < message_to_send.size())
+			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
+        P("Error: send failed");
+			if (message_ret < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
