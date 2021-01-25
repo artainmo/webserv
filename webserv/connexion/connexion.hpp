@@ -43,12 +43,19 @@ typedef struct	s_answer_headers
 	std::string body;
 }				t_answer_headers;
 
+// typedef struct s_socket
+// {
+// 	std::string request;
+// 	std::string answer;
+// } t_socket;
+
 typedef struct	s_server
 {
 	int server_socket; //Our server socket, whereby clients can connect to
 	struct sockaddr_in address; //Socket address struct for socket functions
 	int addrlen; //Size in int that can be casted for socket functions
 	int client_socket[SOMAXCONN]; //Remember already connected clients
+	// std::map<int, t_socket> socket
 	std::map<int, std::string> socket_to_answer;
 	fd_set active_socket_read; //fd_set struct for select function, takes active sockets for reading
 	fd_set active_socket_write;
@@ -59,9 +66,10 @@ typedef struct	s_server
 void		setup_server(t_server &s, t_config &config);
 void		wait_connexion(t_server &s, t_config &config);
 void		new_incoming_connection(t_server &s, t_config &config);
+void	send_answer(t_server &s, t_config &config);
 void	get_client_request(t_server &s, t_config &config);
 
-bool		answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s);
+void		get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t_config &conf, t_server &s);
 
 std::string get_cgi(t_http_req &req);
 

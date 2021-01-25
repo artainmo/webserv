@@ -53,7 +53,7 @@ typedef struct s_config
 	std::string server_name;
 	std::string root;
 	std::string default_error_page;
-	int body_size_limit;
+	size_t body_size_limit;
 	std::list<t_location> locations;
 	std::list<std::string> index;
 } t_config;

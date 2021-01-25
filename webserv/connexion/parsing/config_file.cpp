@@ -221,7 +221,7 @@ void default_init(t_config &conf)
 	conf.server_name = "None";
 	conf.root = "";
 	conf.default_error_page = "None";
-	conf.body_size_limit = 1024; //Default max body size
+	conf.body_size_limit = std::string::npos; //Default max body size
 }
 
 t_config *parse_config(std::string path)

@@ -20,5 +20,6 @@ bool	is_non_ascii(std::string s);
 bool equal_to(char c, std::string chars);
 void print_sockets(std::map<int, std::string> &socket_to_answer);
 bool file_exists(std::string name);
+void change_directory(std::string relative_path);
 
 #endif

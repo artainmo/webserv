@@ -236,50 +236,24 @@ std::string POST(t_http_req &req)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
-/*
-void	write_put_file(std::ofstream & fd, std::string message_body)
+void    write_put_file(std::ofstream & fd, std::string message_body)
 {
-	std::list<std::string>	line_of_body;
-	size_t					newline;
-	size_t					size_of_message;
-
-	for (size_t i = 0; ; )
-	{
-		newline = message_body.find_first_of("\n");
-		if (newline == std::string::npos)
-			newline = (message_body.size() - 1);
-		line_of_body.push_back(message_body.substr(i, newline));
-		if (newline == (message_body.size() - 1))
-			break;
-		message_body = message_body.substr(newline + 1, message_body.size());
-		i = newline;
-	}
-	size_of_message = std::stoi(line_of_body.front(), nullptr, 16);
-	line_of_body.pop_front();
-	while (size_of_message > 0 && line_of_body.size() > 0)
-	{
-		if (line_of_body.front().size() <= size_of_message)
-		{
-			fd << line_of_body.front();
-			size_of_message -= line_of_body.front().size();
-			if (size_of_message > 0)
-			{
-				fd << "\n";
-				size_of_message--;
-			}
-		}
-		else
-		{
-			for (int i = 0; size_of_message > 0; i++)
-			{
-				fd << line_of_body.front()[i];
-				size_of_message--;
-			}
-		}
-		line_of_body.pop_front();
-	}
+    std::list<std::string>  line_of_body;
+    std::string             new_body;
+    std::string             line;
+    line_of_body = split(message_body, "\n");
+    while (line_of_body.size() > 0)
+    {
+        if (line_of_body.front()[0] == '0')
+            break ;
+        line_of_body.pop_front();
+        line = line_of_body.front();
+        new_body += std::string(line, 0, line.size() - 1);
+        line_of_body.pop_front();
+    }
+    fd << new_body;
 }
-*/
+
 std::string PUT(t_http_req &req)
 {
 	std::ofstream			fd;
@@ -295,9 +269,7 @@ std::string PUT(t_http_req &req)
   fd.open(req. URL.c_str(),  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
   if (!fd.is_open())
     return error_page(500, req.method); // CHANGE THE ERROR CODE?
-	
-	fd << req.message_body;  // METTRE LA FONCTION
-
+  write_put_file(fd,req.message_body);
 	init_put(req.URL, fd, response, status_code);
 	fd.close();
 	return construct_put_response(response);
@@ -318,15 +290,21 @@ std::string parse_method(t_http_req &req, t_config &conf)
 	return error_page(404, req.method);
 }
 
-bool answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, t_server &s)
+void socket_erase(std::map<int, std::string>::iterator &socket, t_server &s)
+{
+	int rem;
+
+	std::cout << "Erasing socket: "<< socket->first << std::endl;
+	rem = socket->first;
+	socket++;
+	s.socket_to_answer.erase(rem);
+}
+
+void get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t_config &conf, t_server &s)
 {
 	std::string	answer;
 
-//   P("READY: " << req.ready);
-//   P("ERROR: " << req.error);
-  if (req.ready == false)
-    return false; //If request is not ready do not respond
-  else if (req.error == true)
+  if (req.error == true)
     answer = error_page(400, req.method); //Do nothing and consider the request as wrong
   else if (req.URL == std::string("file not found") && req.method != "PUT")
     answer = error_page(404, req.method);
@@ -334,23 +312,6 @@ bool answer_http_request(int socket_to_answer, t_http_req &req, t_config &conf, 
     answer = error_page(405, req.method);
 	else
     answer = parse_method(req, conf);
-
-	s.answer_to_send[socket_to_answer] += answer;
- /* if (FD_ISSET(socket_to_answer , &s.active_socket_write)) //If socket still in active write sockets, the socket is writable
-  {
-//    P(answer.c_str());
-	s.answer_to_send[socket_to_answer].push_back(answer);
-
-	 if (send(socket_to_answer, answer.c_str(), answer.size(), 0) == -1)
-	 {
-		  std::cout << "~~~~~~~~~~~~~~~~~~~Error: send failed~~~~~~~~~~~~~~~~~~~" << std::endl;
-		   // exit(1);
-	 }
-	 else
-	 {
-	//	 FD_ZERO(&s.active_socket_read);
-	 	P("~~~~~~~~~~~~~~~~~~~ MESSAGE SENT ~~~~~~~~~~~~~~~~~");
-	 }
-  }*/
-  return true; //If request got responded delete it from the map
+	s.answer_to_send[socket->first] = answer;
+  socket_erase(socket, s);
 }

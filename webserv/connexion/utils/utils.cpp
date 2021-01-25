@@ -69,3 +69,23 @@ bool file_exists(std::string name)
     f.close();
     return ret;
 }
+
+
+void change_directory(std::string relative_path)
+{
+	char *path_name = new char[100];
+
+	if (!(getcwd(path_name, 100)))
+	{
+		std::cout << "ERROR: getcwd failed" << std::endl;
+		exit(1);
+	}
+	if (chdir((std::string(path_name) + relative_path).c_str()) == -1)
+	{
+		std::cout << "ERROR: chdir failed" << std::endl;
+		exit(1);
+	}
+	// getcwd(path_name, 100);
+	// std::cout << path_name << std::endl;
+	delete [] path_name;
+}

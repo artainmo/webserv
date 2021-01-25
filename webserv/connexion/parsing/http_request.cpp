@@ -116,8 +116,8 @@ int completed_request(std::string req)
 	for (unsigned int i = 0; i < req.size() ; i++)
 	{
 		if (req[i] == '\n' && follow == true)
-				if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
-					return counter;
+			if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
+					return counter; // if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
 		if (req[i] == '\n')
 		{
 			follow = true;

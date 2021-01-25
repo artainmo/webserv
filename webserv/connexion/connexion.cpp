@@ -62,29 +62,39 @@ void client_disconnection(t_server &s, unsigned int i)
   s.client_socket[i] = 0;
 }
 
-void get_client_request(t_server &s, t_config &config)
+
+void send_answer(t_server &s, t_config &config)
 {
   (void)config;
-  int message_len = -1; //Receive message lenght to add a /0 at end str
-  int message_ret = -1;
+  int message_ret = -1; //Receive message lenght to add a /0 at end str
   std::string message_to_send;
-  char message_buffer[1025];  //Received message is taken into a char* message_buffer because we use C functions
   std::string message;
 
   for (unsigned int i = 0; i < SOMAXCONN; i++)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
-			message_to_send = s.answer_to_send[s.client_socket[i]];
-			message_ret = send(s.client_socket[i], message_to_send.c_str(), message_to_send.size(), 0);
+			message_ret = send(s.client_socket[i], s.answer_to_send[s.client_socket[i]].c_str(), s.answer_to_send[s.client_socket[i]].size(), 0);
 			if (message_ret < message_to_send.size())
-				s.answer_to_send[s.client_socket[i]] = s.answer_to_send[s.client_socket[i]].substr(message_ret + 1, message_to_send.size());
+				s.answer_to_send[s.client_socket[i]] = s.answer_to_send[s.client_socket[i]].substr(message_ret + 1, s.answer_to_send[s.client_socket[i]].size());
 			else
 				s.answer_to_send.erase(s.client_socket[i]);
 	  }
+  }
+}
+
+void get_client_request(t_server &s, t_config &config)
+{
+  (void)config;
+  int message_len = -1; //Receive message lenght to add a /0 at end str
+  char message_buffer[1000001];  //Received message is taken into a char* message_buffer because we use C functions
+  std::string message;
+
+  for (unsigned int i = 0; i < SOMAXCONN; i++)
+  {
       if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
       {
-          if ((message_len = recv(s.client_socket[i] , message_buffer, 1024, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
+          if ((message_len = recv(s.client_socket[i] , message_buffer, 1000000, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
           {
             P("Error: recv failed");
             P(strerror(errno));
@@ -143,7 +153,7 @@ void reset_sockets(t_server &s)
       if(s.client_socket[i] > 0)
       {
           FD_SET(s.client_socket[i] , &s.active_socket_read);
-		  if (s.answer_to_send.find(s.client_socket[i]) != s.answer_to_send.end())
+		  if (s.answer_to_send.find(s.client_socket[i]) != s.answer_to_send.end()) //Do not add the sockets that are being answered
 		  {
 		  	//std::cout << "SOCKET: " << s.client_socket[i] << " BUFFER-size: ~>" << s.answer_to_send[s.client_socket[i]].size() << std::endl;
         	FD_SET(s.client_socket[i] , &s.active_socket_write);
@@ -157,7 +167,7 @@ void wait_connexion(t_server &s, t_config &config)
   (void)config;
   int ret;
 
-  struct timeval timeout = {1, 0};
+  struct timeval timeout = {10, 0};
   reset_sockets(s);
   //Wait untill a socket gets activated, NULL means wait indefinitely
   //Select helps manipulate multiple active clients (cleaner way of handling it than using threads)
@@ -176,6 +186,8 @@ void wait_connexion(t_server &s, t_config &config)
   	}
     wait_connexion(s, config);
   }
+  else if (FD_ISSET(s.server_socket, &s.active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
+    new_incoming_connection(s, config);
   //else if (ret % 2 != 0) //If read and write are not open at the same time //select returns total number of sockets ready for reading or ready for writing. Thus if those sockets are both ready for reading and writing, the returned value should be pair (divisible by two)
   //   wait_connexion(s, config);
   //else
