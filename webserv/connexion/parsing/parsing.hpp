@@ -44,6 +44,7 @@ typedef struct s_location //Config routes
 	std::string default_file_if_request_directory;
 	t_CGI *CGI; //If equal to NULL no CGI server, but http static content server
 	std::string file_upload_location;
+	std::string FOUND_URL;
 } t_location;
 
 typedef struct s_config
@@ -104,6 +105,7 @@ std::list<std::string> split(std::string text, std::string const &sp);
 std::string parse_between(std::string &line, char cut, char cut2, bool between=true);
 std::string parse_until(std::string &line, std::string const &until, bool all=false);
 void show_conf(t_config &conf);
+void show_locations(std::list<t_location> &locations);
 void show_http_request(t_http_req &req);
 
 void URL_to_local_path(t_http_req &req, t_config &conf);

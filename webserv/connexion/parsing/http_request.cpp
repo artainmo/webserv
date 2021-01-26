@@ -8,6 +8,10 @@ void parse_first_line(t_http_req &req, std::string const &line, t_config &conf)
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
+	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == '/')
+		req.URL = req.URL.substr(0, req.URL.size() - 1);
+	if (req.URL.size() != 0 && req.URL[req.URL.size() - 1] == ':')
+		req.URL = req.URL.substr(0, req.URL.size() - 1);
 	// P("Before: " << req.URL);
 	URL_to_local_path(req, conf);
 	// P("After: " << req.URL);
@@ -129,11 +133,17 @@ int find_first_two_line_returns(std::string const &req)
 
 bool completed_request_chunked(std::string const &req)
 {
-	int pos;
+	int i;
 
-	if ((pos = req.find_last_of("0")) == std::string::npos)
+	i = req.size() - 1;
+	while (is_white_space(req[i]))
+	{
+		P(req[i]);
+		i--;
+	}
+	if (req[i] != '0')
 		return false;
-	if (find_first_two_line_returns(req.substr(pos)) == -1)
+	if (find_first_two_line_returns(req.substr(i)) == -1)
 		return false;
 	return true;
 }

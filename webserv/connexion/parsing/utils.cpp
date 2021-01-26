@@ -89,6 +89,85 @@ std::string parse_between(std::string &line, char cut, char cut2, bool between)
 		return (line.substr(start + 1, end - 1));
 }
 
+void show_locations(std::list<t_location> &locations)
+{
+	if (locations.size() == 0)
+		return ;
+	int i = 0;
+	P("SIZE: " << locations.size());
+	for (std::list<t_location>::iterator locs = locations.begin(); i < locations.size(); locs++)
+	{
+		i++;
+		std::cout << std::string("Location: ");
+			P(i);
+		std::cout << "file_extensions: ";
+		for (std::list<std::string>::iterator ext = locs->file_extensions.begin(); ext != locs->file_extensions.end(); ext++)
+			std::cout << *ext + std::string(" ");
+		std::cout << std::endl;
+		std::cout << "directory: ";
+		P(locs->directory);
+		std::cout << "http_methods: ";
+		for (std::list<std::string>::iterator http = locs->http_methods.begin(); http != locs->http_methods.end(); http++)
+			std::cout << *http + std::string(" ");
+		std::cout << std::endl;
+		std::cout << "max_body: ";
+		P(locs->max_body);
+		std::cout << "root: ";
+		P(locs->root);
+		std::cout << "index: ";
+		for (std::list<std::string>::iterator i = locs->index.begin(); i != locs->index.end(); i++)
+			std::cout << *i + std::string(" ");
+		std::cout << std::endl;
+		std::cout << "directory_listing: ";
+		P(locs->directory_listing);
+		std::cout << "default_file_if_request_directory: ";
+		P(locs->default_file_if_request_directory);
+		std::cout << "file_upload_location: ";
+		P(locs->file_upload_location);
+		std::cout << "CGI: ";
+		P(locs->CGI);
+		if (locs->CGI != 0)
+		{
+			std::cout << "AUTH_TYPE: ";
+			P(locs->CGI->AUTH_TYPE);
+			std::cout << "CONTENT_LENGTH: ";
+			P(locs->CGI->CONTENT_LENGTH);
+			std::cout << "CONTENT_TYPE: ";
+			P(locs->CGI->CONTENT_TYPE);
+			std::cout << "GATEWAY_INTERFACE: ";
+			P(locs->CGI->GATEWAY_INTERFACE);
+			std::cout << "PATH_INFO: ";
+			P(locs->CGI->PATH_INFO);
+			std::cout << "PATH_TRANSLATED: ";
+			P(locs->CGI->PATH_TRANSLATED);
+			std::cout << "QUERY_STRING: ";
+			P(locs->CGI->QUERY_STRING);
+			std::cout << "REMOTE_ADDR: ";
+			P(locs->CGI->REMOTE_ADDR);
+			std::cout << "REMOTE_INDENT: ";
+			P(locs->CGI->REMOTE_INDENT);
+			std::cout << "REMOTE_USER: ";
+			P(locs->CGI->REMOTE_USER);
+			std::cout << "REQUEST_METHOD: ";
+			P(locs->CGI->REQUEST_METHOD);
+			std::cout << "REQUEST_URI: ";
+			P(locs->CGI->REQUEST_URI);
+			std::cout << "SCRIPT_NAME: ";
+			P(locs->CGI->SCRIPT_NAME);
+			std::cout << "SERVER_NAME: ";
+			P(locs->CGI->SERVER_NAME);
+			std::cout << "SERVER_PORT: ";
+			P(locs->CGI->SERVER_PORT);
+			std::cout << "SERVER_PROTOCOL: ";
+			P(locs->CGI->SERVER_PROTOCOL);
+			std::cout << "SERVER_SOFTWARE: ";
+			P(locs->CGI->SERVER_SOFTWARE);
+		}
+		std::cout << "URL found: ";
+		P(locs->FOUND_URL);
+	}
+}
+
 void show_conf(t_config &conf)
 {
 	P(std::string("host: ") + conf.host);
@@ -101,80 +180,7 @@ void show_conf(t_config &conf)
 	for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++)
 			std::cout << *i + std::string(" ");
 	std::cout << std::endl;
-	if (conf.locations.size() != 0)
-	{
-		int i = 0;
-
-		for (std::list<t_location>::iterator locs = conf.locations.begin(); locs != conf.locations.end(); locs++)
-		{
-			i++;
-			std::cout << std::string("Location: ");
-		   	P(i);
-			std::cout << "file_extensions: ";
-			for (std::list<std::string>::iterator ext = locs->file_extensions.begin(); ext != locs->file_extensions.end(); ext++)
-				std::cout << *ext + std::string(" ");
-			std::cout << std::endl;
-			std::cout << "directory: ";
-			P(locs->directory);
-			std::cout << "http_methods: ";
-			for (std::list<std::string>::iterator http = locs->http_methods.begin(); http != locs->http_methods.end(); http++)
-				std::cout << *http + std::string(" ");
-			std::cout << std::endl;
-			std::cout << "max_body: ";
-			P(locs->max_body);
-			std::cout << "root: ";
-			P(locs->root);
-			std::cout << "index: ";
-			for (std::list<std::string>::iterator i = locs->index.begin(); i != locs->index.end(); i++)
-				std::cout << *i + std::string(" ");
-			std::cout << std::endl;
-			std::cout << "directory_listing: ";
-			P(locs->directory_listing);
-			std::cout << "default_file_if_request_directory: ";
-			P(locs->default_file_if_request_directory);
-			std::cout << "CGI: ";
-			P(locs->CGI);
-			std::cout << "file_upload_location: ";
-			P(locs->file_upload_location);
-			if (locs->CGI != 0)
-			{
-				std::cout << "AUTH_TYPE: ";
-				P(locs->CGI->AUTH_TYPE);
-				std::cout << "CONTENT_LENGTH: ";
-				P(locs->CGI->CONTENT_LENGTH);
-				std::cout << "CONTENT_TYPE: ";
-				P(locs->CGI->CONTENT_TYPE);
-				std::cout << "GATEWAY_INTERFACE: ";
-				P(locs->CGI->GATEWAY_INTERFACE);
-				std::cout << "PATH_INFO: ";
-				P(locs->CGI->PATH_INFO);
-				std::cout << "PATH_TRANSLATED: ";
-				P(locs->CGI->PATH_TRANSLATED);
-				std::cout << "QUERY_STRING: ";
-				P(locs->CGI->QUERY_STRING);
-				std::cout << "REMOTE_ADDR: ";
-				P(locs->CGI->REMOTE_ADDR);
-				std::cout << "REMOTE_INDENT: ";
-				P(locs->CGI->REMOTE_INDENT);
-				std::cout << "REMOTE_USER: ";
-				P(locs->CGI->REMOTE_USER);
-				std::cout << "REQUEST_METHOD: ";
-				P(locs->CGI->REQUEST_METHOD);
-				std::cout << "REQUEST_URI: ";
-				P(locs->CGI->REQUEST_URI);
-				std::cout << "SCRIPT_NAME: ";
-				P(locs->CGI->SCRIPT_NAME);
-				std::cout << "SERVER_NAME: ";
-				P(locs->CGI->SERVER_NAME);
-				std::cout << "SERVER_PORT: ";
-				P(locs->CGI->SERVER_PORT);
-				std::cout << "SERVER_PROTOCOL: ";
-				P(locs->CGI->SERVER_PROTOCOL);
-				std::cout << "SERVER_SOFTWARE: ";
-				P(locs->CGI->SERVER_SOFTWARE);
-			}
-		}
-	}
+	show_locations(conf.locations);
 }
 
 
