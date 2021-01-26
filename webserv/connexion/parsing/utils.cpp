@@ -8,7 +8,7 @@ bool getlinecut(std::ifstream &fd, std::string &line)
 	return true;
 }
 
-bool check_line(std::string line, const std::string &comp)
+bool check_line(std::string const &line, const std::string &comp)
 {
 	unsigned int start = 0;
 	unsigned int end = comp.size();
@@ -19,7 +19,7 @@ bool check_line(std::string line, const std::string &comp)
 }
 
 
-std::string following_content(std::string line, const std::string &after)
+std::string following_content(std::string &line, const std::string &after)
 {
 	if (line.size() == after.size())
 		return std::string("None");
@@ -31,7 +31,7 @@ std::string following_content(std::string line, const std::string &after)
 	return line;
 }
 
-std::list<std::string> split(std::string text, std::string sp)
+std::list<std::string> split(std::string text, std::string const &sp)
 {
 	std::list<std::string> ret;
 	std::string split;
@@ -51,7 +51,7 @@ std::list<std::string> following_contents(std::string line, const std::string &a
 	return split(line, " ,");
 }
 
-std::string parse_until(std::string &line, std::string until, bool all)
+std::string parse_until(std::string &line, std::string const &until, bool all)
 {
 	unsigned int i;
 

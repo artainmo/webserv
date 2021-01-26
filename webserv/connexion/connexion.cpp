@@ -120,8 +120,8 @@ void get_client_request(t_server &s, t_config &config)
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
               message = message_buffer;
               s.requests[s.client_socket[i]] += message; //Create key in map with its value
-              P("Size message char:" << message_len);
-              P("Size message std::string:" << s.requests[s.client_socket[i]].size());
+              // P("Size message char:" << message_len);
+              // P("Size message std::string:" << s.requests[s.client_socket[i]].size());
           }
       }
   }

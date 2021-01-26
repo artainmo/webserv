@@ -2,7 +2,7 @@
 
 std::string g_method;
 
-bool files_in_dir(std::string path_dir, std::list<std::string> &files) //Returns true if directory exists and false if directory does not exist
+bool files_in_dir(std::string const &path_dir, std::list<std::string> &files) //Returns true if directory exists and false if directory does not exist
 {
 	struct dirent *file;
 	DIR *directory;
@@ -15,7 +15,7 @@ bool files_in_dir(std::string path_dir, std::list<std::string> &files) //Returns
 	return true;
 }
 
-std::string dir_no_file(std::string path)
+std::string dir_no_file(std::string const &path)
 {
 	std::string ret;
 	if (path[0] == '/')
@@ -28,7 +28,7 @@ std::string dir_no_file(std::string path)
 	return path.substr(0, path.find_last_of("/") + 1);
 }
 
-std::string found(std::string directory, std::string file)
+std::string found(std::string const &directory, std::string const &file)
 {
 	std::string ret;
 
@@ -41,7 +41,7 @@ std::string found(std::string directory, std::string file)
 	return ret;
 }
 
-std::string find_file(std::string path_no_extension)
+std::string find_file(std::string const &path_no_extension)
 {
 	std::string ret;
 	std::string directory;
@@ -65,7 +65,7 @@ std::string find_file(std::string path_no_extension)
 	return "file not found";
 }
 
-std::string accordance_method_location(std::string url, std::string method, t_location *loc)
+std::string accordance_method_location(std::string const &url, std::string const &method, t_location *loc)
 {
 	if (url == std::string("file not found") || loc == 0)
 		return url;
@@ -94,7 +94,7 @@ std::string find_directory(std::string local_url, std::list<std::string> &index)
 	return "file not found";
 }
 
-std::string find_file_directory(std::string local_root, std::string directory, std::list<std::string> &index)
+std::string find_file_directory(std::string local_root, std::string const &directory, std::list<std::string> &index)
 {
 	std::string ret;
 	std::string local_url;
@@ -112,7 +112,7 @@ std::string find_file_directory(std::string local_root, std::string directory, s
     return local_url;
 	if ((ret = find_file(local_url)) == std::string("directory found"))
 	{
-		P("Searching Dir");
+		// P("Searching Dir");
 		ret = find_directory(local_url, index);
 	}
 	return ret;

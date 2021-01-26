@@ -1,6 +1,6 @@
 #include "parsing.hpp"
 
-void parse_first_line(t_http_req &req, std::string line, t_config &conf)
+void parse_first_line(t_http_req &req, std::string const &line, t_config &conf)
 {
 	std::list<std::string> parts;
 
@@ -15,7 +15,7 @@ void parse_first_line(t_http_req &req, std::string line, t_config &conf)
 	req.protocol_version = parts.front();
 }
 
-void parse_body(t_http_req &req, std::string line, t_config &conf)
+void parse_body(t_http_req &req, std::string const &line, t_config &conf)
 {
 	if (req.message_body == std::string("None"))
 		req.message_body.assign(line);
@@ -28,7 +28,7 @@ void parse_body(t_http_req &req, std::string line, t_config &conf)
 		req.message_body = req.message_body.substr(0, conf.body_size_limit);
 }
 
-void parse_header_fields(t_http_req &req, std::string line)
+void parse_header_fields(t_http_req &req, std::string const &line)
 {
 	if (check_line(line, "Accept-Charsets"))
 		req.header_fields.Accept_Charsets = following_contents(line, "Accept-Charsets:");
@@ -86,7 +86,7 @@ void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line
 	}
 }
 
-std::string find_start(std::string message)
+std::string find_start(std::string &message)
 {
 	int ret;
 
@@ -103,7 +103,7 @@ std::string find_start(std::string message)
 	return message;
 }
 
-int completed_request(std::string req)
+int completed_request(std::string const &req)
 {
 	unsigned int counter;
 	bool follow;
@@ -129,7 +129,7 @@ int completed_request(std::string req)
 	return -1; //Returns -1 if not found //If not found it means not complete request
 }
 
-int find_body(std::string req)
+int find_body(std::string const &req)
 {
 	unsigned int counter;
 	bool follow;
@@ -199,33 +199,33 @@ bool is_valid(std::string message)
 					|| message.find("DELETE") != std::string::npos));
 }
 
-t_http_req *parse_http_request(std::string req, t_config &conf)
+void parse_http_request(t_http_req *ret, std::string &req, t_config &conf)
 {
-	t_http_req *ret = new t_http_req;
 	std::list<std::string> lines;
 	int body_line;
 
-	// P("--------------------------------------------------------------------------");
-	// P("REAL REQUEST:");
-	// //P(req); //test
-	// P("--------------------------------------------------------------------------");
 	default_init(*ret);
 	req = find_start(req);
 	if (completed_request(req) != -1) //If body line found, request is complete
 		ret->ready = true;
+	else
+		return ; //If not complete do not start the parsing
 	body_line = find_body(req);
+	P("--------------------------------------------------------------------------");
+	P("REAL REQUEST:");
+	P(req); //test
+	P("--------------------------------------------------------------------------");
 	//P("BODY LINE: " << body_line);
 	if (is_valid(req) == false)
 	{
 		//std::cout << "ERROR: request"<< std::endl;
 		ret->error = true;
-		return ret;
+		return ;
 	}
 	lines = split(req, "\n");
 	parse(*ret, lines, body_line, conf);
-	// P("--------------------------------------------------------------------------");
-	// P("PARSED REQUEST:");
-	// //show_http_request(*ret); //test
-	// P("--------------------------------------------------------------------------");
-	return (ret);
+	P("--------------------------------------------------------------------------");
+	P("PARSED REQUEST:");
+	show_http_request(*ret); //test
+	P("--------------------------------------------------------------------------");
 }

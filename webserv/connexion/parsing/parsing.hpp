@@ -95,14 +95,14 @@ typedef struct s_http_req
 } t_http_req;
 
 t_config *parse_config(std::string path);
-t_http_req *parse_http_request(std::string req, t_config &conf);
+void parse_http_request(t_http_req *ret, std::string &req, t_config &conf);
 bool getlinecut(std::ifstream &fd, std::string &line);
-bool check_line(std::string line, const std::string &comp);
-std::string following_content(std::string line, const std::string &after);
+bool check_line(std::string const &line, const std::string &comp);
+std::string following_content(std::string &line, const std::string &after);
 std::list<std::string> following_contents(std::string line, const std::string &after);
-std::list<std::string> split(std::string text, std::string sp);
+std::list<std::string> split(std::string text, std::string const &sp);
 std::string parse_between(std::string &line, char cut, char cut2, bool between=true);
-std::string parse_until(std::string &line, std::string until, bool all=false);
+std::string parse_until(std::string &line, std::string const &until, bool all=false);
 void show_conf(t_config &conf);
 void show_http_request(t_http_req &req);
 

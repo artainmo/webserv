@@ -41,7 +41,7 @@ void handle_write(t_server &s, t_config &config)
 
 void handle_read(t_server &s, t_config &conf)
 {
-	t_http_req *req;
+	t_http_req *req = new t_http_req;
 	std::string request;
 	std::map<int, std::string>::iterator requests;
 
@@ -52,14 +52,15 @@ void handle_read(t_server &s, t_config &conf)
 		while(requests != s.requests.end()) //If receiving multiple socket connections at same time handle them all
 		{
 				change_directory("/frontend");
-				req = parse_http_request(requests->second, conf);
+				parse_http_request(req, requests->second, conf);
 				if (req->ready == true)
 					get_answer(requests, *req, conf, s);
-				else
-					requests++;
+        else
+				    requests++;
 				change_directory("/..");
 		}
 	}
+  delete req;
 }
 
 void server(t_server &s, t_config &conf)

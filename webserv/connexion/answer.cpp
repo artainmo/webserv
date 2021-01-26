@@ -147,7 +147,6 @@ std::string construct_error_response(t_header_fields const& info, std::string me
 {
 	std::string response;
 
-	std::cout << "METHOD: " << methode << std::endl;
 	response = info.Header_Line.front() + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
