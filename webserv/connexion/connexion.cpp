@@ -120,6 +120,8 @@ void get_client_request(t_server &s, t_config &config)
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
               message = message_buffer;
               s.requests[s.client_socket[i]] += message; //Create key in map with its value
+              // if (s.requests[s.client_socket[i]].size() > 100000000)
+              //   s.requests[s.client_socket[i]] += "0"; //0 to tell parser end of chunked message
               // P("Size message char:" << message_len);
               // P("Size message std::string:" << s.requests[s.client_socket[i]].size());
           }

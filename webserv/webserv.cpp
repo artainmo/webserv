@@ -29,6 +29,7 @@ void handle_write(t_server &s, t_config &config)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
+      P(s.answer[s.client_socket[i]]);
 			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
         P("Error: send failed");
 			if (message_ret < s.answer[s.client_socket[i]].size())

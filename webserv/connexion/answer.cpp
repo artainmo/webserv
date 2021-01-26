@@ -1,6 +1,5 @@
 #include "connexion.hpp"
 
-void client_disconnection(t_server &s, unsigned int i);
 
 std::string header_line(std::string protocol_version, std::string code, std::string text)
 {
@@ -26,8 +25,10 @@ std::string get_header_line(int const& number)
 			return (protocol + std::string("404 Not Found"));
 		case 405:
 			return (protocol + std::string("405 Not Allowed"));
-    	case 400:
+    case 400:
       		return (protocol + std::string("400 Bad Request"));
+    case 416:
+          return (protocol + std::string("416 Range Not Satisfiable"));
 		case 500:
       		return (protocol + std::string("500 Internal Server Error"));
 		default:
@@ -197,11 +198,11 @@ std::string GET(t_http_req &req)
 	std::ifstream		fd;
 	t_header_fields	response;
 
-  if (req.loc != 0 && req.loc->CGI != 0)
-	   req.URL = get_cgi(req);
   fd.open(req.URL);
   if (!fd.is_open())
-    return error_page(500, req.method);
+    return error_page(404, req.method);
+  if (req.loc != 0 && req.loc->CGI != 0)
+  	 req.URL = get_cgi(req);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
 	return construct_get_response(response);
@@ -220,8 +221,15 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 
 std::string POST(t_http_req &req)
 {
+  // g_test++;
+  // if (g_test == 2)
+  // {
+  //   P("INI");
+  //   return get_header_line(416);
+  // }
 	std::ifstream		fd;
 
+  P("POST");
 	return GET(req);
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
@@ -265,7 +273,7 @@ std::string PUT(t_http_req &req)
 		status_code = 201; //CREATED (new file)
   fd.open(req. URL.c_str(),  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
   if (!fd.is_open())
-    return error_page(500, req.method); // CHANGE THE ERROR CODE?
+    return error_page(404, req.method); // CHANGE THE ERROR CODE?
   write_put_file(fd,req.message_body);
 	init_put(req.URL, fd, response, status_code);
 	fd.close();
@@ -301,9 +309,11 @@ void get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t
 {
 	std::string	answer;
 
+  P("URL" << req.URL);
+  P("ERROR" << req.error);
   if (req.error == true)
     answer = error_page(400, req.method); //Do nothing and consider the request as wrong
-  else if (req.URL == std::string("file not found") && req.method != "PUT")
+  else if (req.URL == std::string("file not found"))
     answer = error_page(404, req.method);
   else if (req.URL == std::string("method not found"))
     answer = error_page(405, req.method);

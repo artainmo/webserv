@@ -49,11 +49,15 @@ void set_meta_variables(t_CGI &c)
 	set_env("SERVER_SOFTWARE", c.SERVER_SOFTWARE);
 }
 
-void write_to_upload_file(int fd_upload_location, std::string path)
+void write_to_upload_file(int fd_upload_location, t_http_req &req)
 {
 	int fd_1;
 	pid_t pid;
+	std::string executable;
 
+	executable = "/usr/bin/php";
+	if (req.loc->CGI->PATH_INFO != std::string("None"))
+		executable = req.loc->CGI->PATH_INFO;
 	fd_1 = dup(1);
 	if ((pid = fork()) == -1)
 	{
@@ -63,7 +67,7 @@ void write_to_upload_file(int fd_upload_location, std::string path)
 	dup2(fd_upload_location, 1); //dup the execve output towards the upload location file, php will generate an HTML that can be send back
 	if (!pid)
 	{
-		if (execve("/usr/bin/php", (char *[]) {(char *)"php", (char *)path.c_str(), 0}, 0) == -1) //brew install php, use php as CGI script, output file in upload location
+		if (execve(executable.c_str(), (char *[]) {(char *)"php", (char *)req.URL.c_str(), 0}, 0) == -1) //brew install php, use php as CGI script, output file in upload location
 		{
 			P("Error: execve cgi php");
 			P(strerror(errno));
@@ -92,6 +96,6 @@ std::string get_cgi(t_http_req &req) //returns false if cgi not used and returns
 		P(strerror(errno));
 		exit(1);
 	}
-	write_to_upload_file(fd_upload_location, req.URL);
+	write_to_upload_file(fd_upload_location, req);
 	return generated_file_path;
 }
