@@ -15,19 +15,6 @@ void parse_first_line(t_http_req &req, std::string const &line, t_config &conf)
 	req.protocol_version = parts.front();
 }
 
-void parse_body(t_http_req &req, std::string const &line, t_config &conf)
-{
-	if (req.message_body == std::string("None"))
-		req.message_body.assign(line);
-	else
-	{
-		req.message_body.insert(req.message_body.size() - 1, "\n"); //Insert is used instead of append due to unexplained bug when using append
-		req.message_body.insert(req.message_body.size() - 1, line);
-	}
-	if (static_cast<int>(req.message_body.size()) > conf.body_size_limit)
-		req.message_body = req.message_body.substr(0, conf.body_size_limit);
-}
-
 void parse_header_fields(t_http_req &req, std::string const &line)
 {
 	if (check_line(line, "Accept-Charsets"))
@@ -68,18 +55,30 @@ void parse_header_fields(t_http_req &req, std::string const &line)
 			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
 }
 
-void parse(t_http_req &req, std::list<std::string> lines, unsigned int body_line, t_config &conf)
+void parse_body(t_http_req &req, std::list<std::string> &body_lines, t_config &conf)
 {
 	unsigned int i;
 
 	i = 0;
-	for (std::list<std::string>::iterator line = lines.begin(); line != lines.end(); line++)
+	req.message_body = "";
+	for (std::list<std::string>::iterator line = body_lines.begin(); line != body_lines.end(); line++)
 	{
-		//P("LINES:"<<i<<"|"<<*line);
+		req.message_body += *line;
+		req.message_body += "\n";
+	}
+	if (static_cast<int>(req.message_body.size()) > conf.body_size_limit)
+		req.message_body = req.message_body.substr(0, conf.body_size_limit);
+}
+
+void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_config &conf)
+{
+	unsigned int i;
+
+	i = 0;
+	for (std::list<std::string>::iterator line = non_body_lines.begin(); line != non_body_lines.end(); line++)
+	{
 		if (i == 0)
 			parse_first_line(req, *line, conf);
-		else if (i >= body_line)
-			parse_body(req, *line, conf);
 		else
 			parse_header_fields(req, *line);
 		i++;
@@ -103,7 +102,7 @@ std::string find_start(std::string &message)
 	return message;
 }
 
-int completed_request(std::string const &req)
+int find_first_two_line_returns(std::string const &req)
 {
 	unsigned int counter;
 	bool follow;
@@ -116,8 +115,7 @@ int completed_request(std::string const &req)
 	for (unsigned int i = 0; i < req.size() ; i++)
 	{
 		if (req[i] == '\n' && follow == true)
-			if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
-					return counter; // if (req.substr(i).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows
+					return i;
 		if (req[i] == '\n')
 		{
 			follow = true;
@@ -129,29 +127,58 @@ int completed_request(std::string const &req)
 	return -1; //Returns -1 if not found //If not found it means not complete request
 }
 
+bool completed_request_chunked(std::string const &req)
+{
+	int pos;
+
+	if ((pos = req.find_last_of("0")) == std::string::npos)
+		return false;
+	if (find_first_two_line_returns(req.substr(pos)) == -1)
+		return false;
+	return true;
+}
+
+bool completed_request_lenght(std::string const &req, std::string const &lenght)
+{
+	size_t len;
+
+	len = 0;
+	try
+	{
+		len = std::stoi(lenght);
+	}
+	catch(std::exception &e)
+	{
+		P(e.what());
+	}
+	if (req.size() >= len)
+		return true;
+	return false;
+}
+
+bool completed_request_norm(std::string const req)
+{
+	int pos;
+
+	if ((pos = find_first_two_line_returns(req)) == -1)
+		return false;
+	if (req.substr(pos).find_first_not_of(" \t\n\v\f\r") == std::string::npos) //Check if body follows, if it does not return end
+		return true;
+	return completed_request_norm(req.substr(pos + 1)); //Continue searching as not until end
+}
+
+bool completed_request(std::string const &message, t_http_req const &req)
+{
+	if (req.header_fields.Transfer_Encoding.front() == std::string("chunked"))
+		return completed_request_chunked(message);
+	else if (req.header_fields.Content_Length.front() != std::string("None"))
+		return completed_request_lenght(message, req.header_fields.Content_Length.front());
+	return completed_request_norm(message);
+}
+
 int find_body(std::string const &req)
 {
-	unsigned int counter;
-	bool follow;
-
-	counter = 0;
-	follow = false;
-	if (req.size() == 0)
-		return -1; //Returning error in this case does not seem correct, so return not ready, comes from recv fail
-	// P("body find:|" << req << "|" << "size: " << req.size());
-	for (unsigned int i = 0; i < req.size() ; i++)
-	{
-		if (req[i] == '\n' && follow == true)
-					return counter;
-		if (req[i] == '\n')
-		{
-			follow = true;
-			counter++;
-		}
-		else if (!equal_to(req[i], " \t\v\f\r"))
-			follow = false;
-	}
-	return -1; //Returns -1 if not found //If not found it means not complete request
+	return find_first_two_line_returns(req);
 }
 
 void default_init(t_http_req &req)
@@ -201,29 +228,31 @@ bool is_valid(std::string message)
 
 void parse_http_request(t_http_req *ret, std::string &req, t_config &conf)
 {
-	std::list<std::string> lines;
-	int body_line;
+	std::list<std::string> non_body_lines;
+	std::list<std::string> body_lines;
+	int body_index;
 
-	default_init(*ret);
-	req = find_start(req);
-	if (completed_request(req) != -1) //If body line found, request is complete
-		ret->ready = true;
-	else
-		return ; //If not complete do not start the parsing
-	body_line = find_body(req);
 	P("--------------------------------------------------------------------------");
 	P("REAL REQUEST:");
 	P(req); //test
 	P("--------------------------------------------------------------------------");
-	//P("BODY LINE: " << body_line);
-	if (is_valid(req) == false)
+	default_init(*ret);
+	req = find_start(req);
+	if ((body_index = find_body(req)) == -1) //If no body line found, no end of non-body part, thus do not start parsing non-body part
+		return ;
+	non_body_lines = split(req.substr(0, body_index), "\n");
+	parse_non_body(*ret, non_body_lines, conf);
+	if (completed_request(req, *ret)) //If body line found, request is complete
+		ret->ready = true;
+	else
+		return ; //If not complete do not start the parsing of whole body
+	if (is_valid(req) == false) //If complete command is invalid directly stop
 	{
-		//std::cout << "ERROR: request"<< std::endl;
 		ret->error = true;
 		return ;
 	}
-	lines = split(req, "\n");
-	parse(*ret, lines, body_line, conf);
+	body_lines = split(req.substr(body_index), "\n");
+	parse_body(*ret, body_lines, conf);
 	P("--------------------------------------------------------------------------");
 	P("PARSED REQUEST:");
 	show_http_request(*ret); //test

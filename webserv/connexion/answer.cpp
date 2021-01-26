@@ -237,6 +237,8 @@ void    write_put_file(std::ofstream & fd, std::string message_body)
     std::list<std::string>  line_of_body;
     std::string             new_body;
     std::string             line;
+
+    message_body = message_body.substr(message_body.find_first_not_of(" \n\r\f\v"));
     line_of_body = split(message_body, "\n");
     while (line_of_body.size() > 0)
     {
@@ -255,8 +257,7 @@ std::string PUT(t_http_req &req)
 	std::ofstream			fd;
 	t_header_fields		response;
 	int						status_code;
-  /*if (req.loc != 0 && req.loc->CGI != 0)
-	   req.URL = get_cgi(req);*/
+
 	req.URL = req.loc->file_upload_location + std::string("/") + final_file_in_path(req.URL);
 	if (file_exists(req.URL))
 		status_code = 200; //OK (file already existed)
