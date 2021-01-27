@@ -246,8 +246,6 @@ void    write_put_file(std::ofstream &fd, std::string &message_body)
 	size_t					size_line_of_body;
 	size_t					i = 0;
 
-	//std::cout << "~~~~BODY :" << message_body << std::endl;
-    //message_body = message_body.erase(0, message_body.find_first_not_of(" \t\n\r\f\v"));
     line_of_body = split(message_body, "\n");
 	std::list<std::string>::iterator it = line_of_body.begin();
 	size_line_of_body = line_of_body.size();
@@ -258,7 +256,9 @@ void    write_put_file(std::ofstream &fd, std::string &message_body)
 		if (*it == "0")
 			break ;
 		else if (i++ % 2)
+		{
 			fd << (*it).substr(0, (*it).size() - 1);
+		}
 	}
 }
 
