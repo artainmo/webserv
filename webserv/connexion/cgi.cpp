@@ -77,8 +77,8 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	pid_t pid;
 	std::string executable = "/usr/bin/php";
 
-	// if (req.loc->CGI->PATH_INFO != std::string("None"))
-	//  	executable = req.loc->CGI->SCRIPT_NAME;
+	if (req.loc->CGI->PATH_INFO != std::string("None"))
+	 	executable = req.loc->CGI->SCRIPT_NAME;
 	if ((pid = fork()) == -1)
 	{
 		P("Error: fork failed");
