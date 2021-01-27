@@ -108,26 +108,26 @@ void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_c
 	}
 }
 
-// void find_start(std::string &message)
-// {
-// 	int ret;
-// 	std::string begin;
-//
-// 	if ((ret = message.find("HTTP/1.1")) == std::string::npos)
-// 		return ;
-// 	else
-// 		begin = message.substr(0, ret);
-// 	if ((ret = begin.find("GET")) != std::string::npos)
-// 		message.erase(0, ret);
-// 	else if ((ret = begin.find("HEAD")) != std::string::npos)
-// 		message.erase(0, ret);
-// 	else if ((ret = begin.find("PUT")) != std::string::npos)
-// 		message.erase(0, ret);
-// 	else if ((ret = begin.find("POST")) != std::string::npos)
-// 		message.erase(0, ret);
-// 	else if ((ret = begin.find("DELETE")) != std::string::npos)
-// 		message.erase(0, ret);
-// }
+void find_start(std::string &message)
+{
+	int ret;
+	std::string begin;
+
+	if ((ret = message.find("HTTP/1.1")) == std::string::npos)
+		return ;
+	else
+		begin = message.substr(0, ret);
+	if ((ret = begin.find("GET")) != std::string::npos)
+		message.erase(0, ret);
+	else if ((ret = begin.find("HEAD")) != std::string::npos)
+		message.erase(0, ret);
+	else if ((ret = begin.find("PUT")) != std::string::npos)
+		message.erase(0, ret);
+	else if ((ret = begin.find("POST")) != std::string::npos)
+		message.erase(0, ret);
+	else if ((ret = begin.find("DELETE")) != std::string::npos)
+		message.erase(0, ret);
+}
 
 // std::string find_start(std::string &message)
 // {
@@ -162,23 +162,23 @@ void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_c
 // 	}
 // 		return message;
 // }
-
-std::string find_start(std::string &message)
-{
-	int ret;
-
-	if ((ret = message.find("GET")) != std::string::npos)
-		return message.substr(ret);
-	if ((ret = message.find("HEAD")) != std::string::npos)
-		return message.substr(ret);
-	if ((ret = message.find("PUT")) != std::string::npos)
-		return message.substr(ret);
-	if ((ret = message.find("POST")) != std::string::npos)
-		return message.substr(ret);
-	if ((ret = message.find("DELETE")) != std::string::npos)
-		return message.substr(ret);
-	return message;
-}
+//
+// std::string find_start(std::string &message)
+// {
+// 	int ret;
+//
+// 	if ((ret = message.find("GET")) != std::string::npos)
+// 		return message.substr(ret);
+// 	if ((ret = message.find("HEAD")) != std::string::npos)
+// 		return message.substr(ret);
+// 	if ((ret = message.find("PUT")) != std::string::npos)
+// 		return message.substr(ret);
+// 	if ((ret = message.find("POST")) != std::string::npos)
+// 		return message.substr(ret);
+// 	if ((ret = message.find("DELETE")) != std::string::npos)
+// 		return message.substr(ret);
+// 	return message;
+// }
 
 int find_first_two_line_returns(std::string const &req)
 {
@@ -294,42 +294,42 @@ void default_init(t_http_req &req)
 	req.ready = false;
 }
 
-// bool is_valid(std::string const &message)
-// {
-// 	int ret;
-// 	std::string begin;
-// 	std::string new_mes;
-//
-// 	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
-// 		return false;
-// 	new_mes = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
-// 	if (is_non_ascii(new_mes) == true)
-// 		return false;
-// 	if ((ret = new_mes.find("HTTP/1.1")) == std::string::npos)
-// 		return false;
-// 	else
-// 		begin = new_mes.substr(0, ret);
-// 	return (begin.find("GET") != std::string::npos
-// 					|| begin.find("HEAD") != std::string::npos
-// 					|| begin.find("PUT") != std::string::npos
-// 					|| begin.find("POST") != std::string::npos
-// 					|| begin.find("DELETE") != std::string::npos);
-// }
-
-bool is_valid(std::string message)
+bool is_valid(std::string const &message)
 {
+	int ret;
+	std::string begin;
+	std::string new_mes;
+
 	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
 		return false;
-	message = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
-	if (is_non_ascii(message) == true)
+	new_mes = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
+	if (is_non_ascii(new_mes) == true)
 		return false;
-	return (message.find("HTTP/1.1") != std::string::npos
-					&& (message.find("GET") != std::string::npos
-					|| message.find("HEAD") != std::string::npos
-					|| message.find("PUT") != std::string::npos
-					|| message.find("POST") != std::string::npos
-					|| message.find("DELETE") != std::string::npos));
+	if ((ret = new_mes.find("HTTP/1.1")) == std::string::npos)
+		return false;
+	else
+		begin = new_mes.substr(0, ret);
+	return (begin.find("GET") != std::string::npos
+					|| begin.find("HEAD") != std::string::npos
+					|| begin.find("PUT") != std::string::npos
+					|| begin.find("POST") != std::string::npos
+					|| begin.find("DELETE") != std::string::npos);
 }
+
+// bool is_valid(std::string message)
+// {
+// 	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
+// 		return false;
+// 	message = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
+// 	if (is_non_ascii(message) == true)
+// 		return false;
+// 	return (message.find("HTTP/1.1") != std::string::npos
+// 					&& (message.find("GET") != std::string::npos
+// 					|| message.find("HEAD") != std::string::npos
+// 					|| message.find("PUT") != std::string::npos
+// 					|| message.find("POST") != std::string::npos
+// 					|| message.find("DELETE") != std::string::npos));
+// }
 
 void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 {
@@ -342,7 +342,7 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 	P(req); //test
 	P("--------------------------------------------------------------------------");
 	default_init(ret);
-	req = find_start(req);
+	find_start(req);
 	if ((body_index = find_body(req)) == -1) //If no body line found, no end of non-body part, thus do not start parsing non-body part
 		return ;
 	non_body_lines = split(req.substr(0, body_index), "\n");

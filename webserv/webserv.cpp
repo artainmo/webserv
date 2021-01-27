@@ -68,8 +68,8 @@ void server(t_server &s, t_config &conf)
 	while(true)
   {
     wait_connexion(s, conf);
-	handle_write(s, conf);
-	handle_read(s, conf);
+	  handle_write(s, conf);
+	  handle_read(s, conf);
   }
 }
 
