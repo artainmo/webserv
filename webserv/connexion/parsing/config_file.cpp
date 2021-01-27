@@ -1,38 +1,31 @@
 #include "parsing.hpp"
 
-void init_cgi(t_location &loc)
+void init_cgi(t_location &loc, t_config &conf)
 {
 	loc.CGI = new t_CGI;
 	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->CONTENT_LENGTH = std::string("None");
+	loc.CGI->CONTENT_LENGTH = std::string("0"); //If no body default is 0
 	loc.CGI->CONTENT_TYPE = std::string("None");
 	loc.CGI->GATEWAY_INTERFACE = std::string("None");
 	loc.CGI->PATH_INFO = std::string("None");
 	loc.CGI->PATH_TRANSLATED = std::string("None");
-	loc.CGI->QUERY_STRING = std::string("None");
+	loc.CGI->QUERY_STRING = std::string(""); //Empty by default
 	loc.CGI->REMOTE_ADDR = std::string("None");
 	loc.CGI->REMOTE_INDENT = std::string("None");
 	loc.CGI->REMOTE_USER = std::string("None");
 	loc.CGI->REQUEST_METHOD = std::string("None");
 	loc.CGI->REQUEST_URI = std::string("None");
-	loc.CGI->SCRIPT_NAME = std::string("None");
-	loc.CGI->SERVER_NAME = std::string("None");
-	loc.CGI->SERVER_PORT = std::string("None");
-	loc.CGI->SERVER_PROTOCOL = std::string("None");
+	loc.CGI->SCRIPT_NAME = std::string("0");
+	loc.CGI->SERVER_NAME = conf.server_name;
+	loc.CGI->SERVER_PORT = std::to_string(conf.port);
+	loc.CGI->SERVER_PROTOCOL = std::string("HTTP/1.1");
 	loc.CGI->SERVER_SOFTWARE = std::string("None");
 }
 
-void parse_cgi(std::string &line, t_location &loc)
+void parse_cgi(std::string &line, t_location &loc, t_config &conf)
 {
 	if (loc.CGI == 0)
-		init_cgi(loc);
+		init_cgi(loc, conf);
 	line = following_content(line, "fastcgi_param");
 	if (check_line(line, "AUTH_TYPE"))
 		loc.CGI->AUTH_TYPE = following_content(line, "AUTH_TYPE");
@@ -156,7 +149,7 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 		else if (check_line(line, "default_file_if_request_directory"))
 			loc->default_file_if_request_directory = following_content(line, "default_file_if_request_directory");
 		else if (check_line(line, "fastcgi_param"))
-			parse_cgi(line, *loc);
+			parse_cgi(line, *loc, conf);
 		else if (check_line(line, "file_upload_location"))
 			loc->file_upload_location = following_content(line, "file_upload_location");
 	}

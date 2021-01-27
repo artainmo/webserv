@@ -42,6 +42,6 @@ void reset_sockets(t_server &s);
 
 void		get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t_config &conf, t_server &s);
 
-std::string get_cgi(t_http_req &req);
+std::string get_cgi(t_http_req &req, t_config &conf, t_server &s);
 
 #	endif

@@ -193,7 +193,7 @@ std::string error_page(int error_nbr, std::string methode)
 	return construct_error_response(info, methode);
 }
 
-std::string GET(t_http_req &req)
+std::string GET(t_http_req &req, t_config &conf, t_server &s)
 {
 	std::ifstream		fd;
 	t_header_fields	response;
@@ -202,7 +202,7 @@ std::string GET(t_http_req &req)
   if (!fd.is_open())
     return error_page(404, req.method);
   if (req.loc != 0 && req.loc->CGI != 0)
-  	 req.URL = get_cgi(req);
+  	 req.URL = get_cgi(req, conf, s);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
 	return construct_get_response(response);
@@ -219,18 +219,12 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 	return construct_head_response(response);
 }
 
-std::string POST(t_http_req &req)
+std::string POST(t_http_req &req, t_config &conf, t_server &s)
 {
-  // g_test++;
-  // if (g_test == 2)
-  // {
-  //   P("INI");
-  //   return get_header_line(416);
-  // }
 	std::ifstream		fd;
 
   P("POST");
-	return GET(req);
+	return GET(req, conf, s);
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
   // return header_line("HTTP/1.1", "304", "Not Modified");
@@ -266,14 +260,14 @@ std::string PUT(t_http_req &req)
 	return construct_put_response(response);
 }
 
-std::string parse_method(t_http_req &req, t_config &conf)
+std::string parse_method(t_http_req &req, t_config &conf, t_server &s)
 {
 	if (req.method == std::string("GET"))
-		return GET(req);
+		return GET(req, conf, s);
 	else if (req.method == std::string("HEAD"))
 		return HEAD(req.URL);
 	else if (req.method == std::string("POST"))
-		return POST(req);
+		return POST(req, conf, s);
 	else if (req.method == std::string("PUT"))
 		return PUT(req);
 	else if (req.method == std::string("DELETE"))
@@ -305,7 +299,7 @@ void get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t
   else if (req.URL == std::string("method not found"))
     answer = error_page(405, req.method);
 	else
-    answer = parse_method(req, conf);
+    answer = parse_method(req, conf, s);
 	s.answer[socket->first] = answer;
   socket_erase(socket, s);
 }

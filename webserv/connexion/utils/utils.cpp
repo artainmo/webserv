@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-bool	is_non_ascii(std::string s) //Returns true if finds one non-ascii char
+bool	is_non_ascii(std::string const &s) //Returns true if finds one non-ascii char
 {
   int i;
 

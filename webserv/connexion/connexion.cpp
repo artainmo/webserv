@@ -20,7 +20,7 @@ void setup_server(t_server &s, t_config &config)
         std::cout << "Error: socket failed" << std::endl;
         exit(1);
     }
-	s.fd_max = s.server_socket;
+	   s.fd_max = s.server_socket;
 
     //set server socket to allow multiple connections
     int opt = 1;
