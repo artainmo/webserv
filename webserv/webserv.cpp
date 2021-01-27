@@ -34,9 +34,8 @@ void handle_write(t_server &s, t_config &config)
       {
         P("Error: send failed");
         P(strerror(errno)); //If send fails due to client disconnection, disconnect client
-        P(errno);
-        if (errno == 54) //Functions properly
-          client_restart(s, i);
+        // if (errno == 54) //Functions properly
+        client_restart(s, i);
       }
 			else if (message_ret < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());

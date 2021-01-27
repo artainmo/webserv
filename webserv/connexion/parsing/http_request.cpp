@@ -211,10 +211,7 @@ bool completed_request_chunked(std::string const &req)
 
 	i = req.size() - 1;
 	while (is_white_space(req[i]))
-	{
-		P(req[i]);
 		i--;
-	}
 	if (req[i] != '0')
 		return false;
 	// if (find_first_two_line_returns(req.substr(i)) == -1)
@@ -262,6 +259,8 @@ bool completed_request(std::string const &message, t_http_req const &req)
 
 int find_body(std::string const &req)
 {
+	if (req.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
+		return -1;
 	return find_first_two_line_returns(req);
 }
 
@@ -333,19 +332,21 @@ bool is_valid(std::string const &message)
 void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 {
 	std::list<std::string> non_body_lines;
-	std::list<std::string> body_lines;
-	int body_index;
 
 	// P("--------------------------------------------------------------------------");
 	// P("REAL REQUEST:");
 	// P(req); //test
 	// P("--------------------------------------------------------------------------");
-	default_init(ret);
-	find_start(req);
-	if ((body_index = find_body(req)) == -1) //If no body line found, no end of non-body part, thus do not start parsing non-body part
-		return ;
-	non_body_lines = split(req.substr(0, body_index), "\n");
-	parse_non_body(ret, non_body_lines, conf);
+	if (ret.non_body_parsed == false)
+	{
+		default_init(ret);
+		find_start(req);
+		if ((ret.body_index = find_body(req)) == -1) //If no body line found, no end of non-body part, thus do not start parsing non-body part
+			return ;
+		ret.non_body_parsed = true;
+		non_body_lines = split(req.substr(req.find_first_not_of(" \t\n\v\f\r"), ret.body_index), "\n");
+		parse_non_body(ret, non_body_lines, conf);
+	}
 	if (completed_request(req, ret)) //If body line found, request is complete
 		ret.ready = true;
 	else
@@ -355,7 +356,7 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 		ret.error = true;
 		return ;
 	}
-	ret.message_body = req.substr(body_index);
+	ret.message_body = req.substr(ret.body_index);
 	parse_body(ret.message_body, ret.header_fields.Transfer_Encoding.front(), conf.body_size_limit);
 	// P("--------------------------------------------------------------------------");
 	// P("PARSED REQUEST:");
