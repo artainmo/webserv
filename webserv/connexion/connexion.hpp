@@ -5,6 +5,7 @@
 #include "parsing/parsing.hpp"
 
 #include <map>
+#include <vector>
 #include <stdio.h>
 #include <iostream>
 #include <string.h>//strlen
