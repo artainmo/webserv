@@ -85,6 +85,7 @@ typedef struct s_header_fields
 
 typedef struct s_http_req
 {
+	std::string complete_request;
 	std::string method;
 	std::string URL;
 	t_location *loc;
@@ -93,7 +94,6 @@ typedef struct s_http_req
 	std::string message_body;
 	bool error;
 	bool ready;
-	bool non_body_parsed;
 } t_http_req;
 
 void parse_config(std::string path, t_config &config);

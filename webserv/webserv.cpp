@@ -35,8 +35,10 @@ void handle_write(t_server &s, t_config &config)
         P("Error: send failed");
         P(strerror(errno)); //If send fails due to client disconnection, disconnect client
         P(errno);
+        if (errno == 54) //Functions properly
+          client_restart(s, i);
       }
-			if (message_ret < s.answer[s.client_socket[i]].size())
+			else if (message_ret < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
@@ -46,9 +48,7 @@ void handle_write(t_server &s, t_config &config)
 
 void handle_read(t_server &s, t_config &conf)
 {
-	t_http_req req;
-	std::string request;
-	std::map<int, std::string>::iterator requests;
+	std::map<int, t_http_req>::iterator requests;
 
   get_client_request(s);
 	if (s.requests.size() != 0)
@@ -57,9 +57,9 @@ void handle_read(t_server &s, t_config &conf)
 		while(requests != s.requests.end()) //If receiving multiple socket connections at same time handle them all
 		{
 				change_directory("/frontend");
-				parse_http_request(req, requests->second, conf);
-				if (req.ready == true)
-					get_answer(requests, req, conf, s);
+				parse_http_request(requests->second, requests->second.complete_request, conf);
+				if (requests->second.ready == true)
+					get_answer(requests, requests->second, conf, s);
         else
 				    requests++;
 				change_directory("/..");

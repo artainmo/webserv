@@ -298,17 +298,16 @@ bool is_valid(std::string const &message)
 {
 	int ret;
 	std::string begin;
-	std::string new_mes;
 
 	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
 		return false;
-	new_mes = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
-	if (is_non_ascii(new_mes) == true)
+	// new_mes = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
+	if (is_ascii(message) == true)
 		return false;
-	if ((ret = new_mes.find("HTTP/1.1")) == std::string::npos)
+	if ((ret = message.find("HTTP/1.1")) == std::string::npos)
 		return false;
 	else
-		begin = new_mes.substr(0, ret);
+		begin = message.substr(0, ret);
 	return (begin.find("GET") != std::string::npos
 					|| begin.find("HEAD") != std::string::npos
 					|| begin.find("PUT") != std::string::npos

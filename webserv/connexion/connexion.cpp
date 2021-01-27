@@ -52,6 +52,13 @@ void setup_server(t_server &s, t_config &config)
     }
 }
 
+void client_restart(t_server &s, unsigned int i) //Connection has been closed but restarted, do not disconnect but restart answer and request
+{
+  //Close the socket and reset to zero for re-use
+  s.answer.erase(s.client_socket[i]); //does not need to be protected erase key_type
+  s.requests.erase(s.client_socket[i]);
+}
+
 void client_disconnection(t_server &s, unsigned int i)
 {
   //Show to debug
@@ -116,14 +123,16 @@ void get_client_request(t_server &s)
             P("Error: recv failed");
             P(strerror(errno)); //If recv fails due to client disconnection, disconnect client
             P(errno);
+            if (errno == 54) //Functions properly!!
+              client_restart(s, i);
           }
-          if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
+          else if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
             client_disconnection(s, i);
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
               message = message_buffer;
-              s.requests[s.client_socket[i]] += message; //Create key in map with its value
+              s.requests[s.client_socket[i]].complete_request += message; //Create key in map with its value
               // if (s.requests[s.client_socket[i]].size() > 100000000)
               //   s.requests[s.client_socket[i]] += "0"; //0 to tell parser end of chunked message
               // P("Size message char:" << message_len);
