@@ -11,45 +11,46 @@ t_location *get_location(std::string file_extension, std::string method, t_confi
 	return 0;
 }
 
-void set_env(std::string var, std::string equal_to) //Maybe avoid creating env variables in another process
+void set_env(std::string var, std::string equal_to, std::vector<std::string> &vec) //Maybe avoid creating env variables in another process
 {
-	pid_t	pid;
+	vec.push_back(var + "=" + equal_to);
+	// pid_t	pid;
 
-	if ((pid = fork()) == -1)
-	{
-		P("Error: fork failed");
-		exit(1);
-	}
-	if (!pid)
-	{
-		execve("/bin/export", (char *[]) {(char *)(var + std::string("=") + equal_to).c_str(), 0}, 0);
-		exit(1);
-	}
-	waitpid(pid, 0, 0);
+	// if ((pid = fork()) == -1)
+	// {
+	// 	P("Error: fork failed");
+	// 	exit(1);
+	// }
+	// if (!pid)
+	// {
+	// 	execve("/bin/export", (char *[]) {(char *)(var + std::string("=") + equal_to).c_str(), 0}, 0);
+	// 	exit(1);
+	// }
+	// waitpid(pid, 0, 0);
 }
 
-void env_meta_variables(t_CGI &c) //env variables is correct
+void env_meta_variables(t_CGI &c, std::vector<std::string> &vec_env) //env variables is correct
 {
-	set_env("AUTH_TYPE", c.AUTH_TYPE);
-	set_env("CONTENT_LENGTH", c.CONTENT_LENGTH);
-	set_env("CONTENT_TYPE", c.CONTENT_TYPE);
-	set_env("GATEWAY_INTERFACE", c.GATEWAY_INTERFACE);
-	set_env("PATH_INFO", c.PATH_INFO); //req.URL
-	set_env("PATH_TRANSLATED", c.PATH_TRANSLATED);
-	set_env("QUERY_STRING", c.QUERY_STRING);
-	set_env("REMOTE_ADDR", c.REMOTE_ADDR);
-	set_env("REMOTE_INDENT", c.REMOTE_INDENT);
-	set_env("REMOTE_USER", c.REMOTE_USER);
-	set_env("REQUEST_METHOD", c.REQUEST_METHOD); //env variable -> POST/GET/....
-	set_env("REQUEST_URI", c.REQUEST_URI);
-	set_env("SCRIPT_NAME", c.SCRIPT_NAME);
-	set_env("SERVER_NAME", c.SERVER_NAME);
-	set_env("SERVER_PORT", c.SERVER_PORT);
-	set_env("SERVER_PROTOCOL", c.SERVER_PROTOCOL); //HTTP/1.1
-	set_env("SERVER_SOFTWARE", c.SERVER_SOFTWARE);
+	set_env("AUTH_TYPE", c.AUTH_TYPE, vec_env);
+	set_env("CONTENT_LENGTH", c.CONTENT_LENGTH, vec_env);
+	set_env("CONTENT_TYPE", c.CONTENT_TYPE, vec_env);
+	set_env("GATEWAY_INTERFACE", c.GATEWAY_INTERFACE, vec_env);
+	set_env("PATH_INFO", c.PATH_INFO, vec_env); //req.URL
+	set_env("PATH_TRANSLATED", c.PATH_TRANSLATED, vec_env);
+	set_env("QUERY_STRING", c.QUERY_STRING, vec_env);
+	set_env("REMOTE_ADDR", c.REMOTE_ADDR, vec_env);
+	set_env("REMOTE_INDENT", c.REMOTE_INDENT, vec_env);
+	set_env("REMOTE_USER", c.REMOTE_USER, vec_env);
+	set_env("REQUEST_METHOD", c.REQUEST_METHOD, vec_env); //env variable -> POST/GET/....
+	set_env("REQUEST_URI", c.REQUEST_URI, vec_env);
+	set_env("SCRIPT_NAME", c.SCRIPT_NAME, vec_env);
+	set_env("SERVER_NAME", c.SERVER_NAME, vec_env);
+	set_env("SERVER_PORT", c.SERVER_PORT, vec_env);
+	set_env("SERVER_PROTOCOL", c.SERVER_PROTOCOL, vec_env); //HTTP/1.1
+	set_env("SERVER_SOFTWARE", c.SERVER_SOFTWARE, vec_env);
 }
 
-void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s)
+void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s, std::vector<std::string> &vec_env)
 {
 	c.CONTENT_LENGTH = req.message_body.size(); //size of the body
 	c.CONTENT_TYPE = req.header_fields.Content_Type.front();
@@ -66,32 +67,40 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s)
 	c.SERVER_NAME = conf.server_name;
 	c.SERVER_PROTOCOL = req.protocol_version;
 	c.SERVER_SOFTWARE = std::string("None");
-	env_meta_variables(c);
+	env_meta_variables(c, vec_env);
 }
 
 // void unset_metavariables ?? Unset automatically when process dies?
 
-void write_to_upload_file(int fd_upload_location, t_http_req &req)
+void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<std::string> vec_env)
 {
-	int fd_1;
 	pid_t pid;
-	std::string executable;
+	std::string executable = "/usr/bin/php";
 
-	executable = "/usr/bin/php";
-	if (req.loc->CGI->SCRIPT_NAME != std::string("0"))
-		executable = req.loc->CGI->SCRIPT_NAME;
-	P("EXEC:" << executable);
-	P("URL:" << req.URL);
-	fd_1 = dup(1);
+	// if (req.loc->CGI->PATH_INFO != std::string("None"))
+	//  	executable = req.loc->CGI->SCRIPT_NAME;
 	if ((pid = fork()) == -1)
 	{
 		P("Error: fork failed");
 		exit(1);
 	}
-	dup2(fd_upload_location, 1); //dup the execve output towards the upload location file, php will generate an HTML that can be send back
+	//dup2(fd_upload_location, 1);
 	if (!pid)
 	{
-		if (execve(executable.c_str(), (char *[]) {(char *)"php", (char *)req.URL.c_str(), 0}, 0) == -1) //brew install php, use php as CGI script, output file in upload location
+		char *tab_env[vec_env.size() + 1];
+		char *tab_execve[3];
+
+		tab_env[vec_env.size()] = nullptr;
+		for (size_t i = 0; i < vec_env.size(); i++)
+			tab_env[i] = (char*)vec_env[i].c_str();	
+		tab_execve[0] = (char*)executable.c_str();
+		tab_execve[1] = (char*)req.URL.c_str();
+
+		std::cout << "exec: " << tab_execve[0] << " file: " << tab_execve[1] << std::endl;
+		
+		tab_execve[2] = nullptr;
+		dup2(fd_upload_location, 1);
+		if (execve(tab_execve[0], tab_execve, tab_env) == -1)
 		{
 			P("Error: execve cgi php");
 			P(strerror(errno));
@@ -100,27 +109,27 @@ void write_to_upload_file(int fd_upload_location, t_http_req &req)
 		exit(1);
 	}
 	waitpid(pid, 0, 0);
-	dup2(fd_1, 1);
-	close(fd_1);
-	close(fd_upload_location);
+
 }
 
 std::string get_cgi(t_http_req &req, t_config &conf, t_server &s) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
 {
 	int fd_upload_location;
+	std::vector<std::string> vec_env;
 	std::string generated_file_path;
 
 	// if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
 	// 	return std::string("None");
-	set_meta_variables(*req.loc->CGI, req, conf, s);
+	set_meta_variables(*req.loc->CGI, req, conf, s, vec_env);
 	generated_file_path = req.loc->root + req.loc->file_upload_location;
-	P("UPLOAD:" << generated_file_path);
+	//P("UPLOAD:" << generated_file_path);
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P("Error: file upload location error");
 		P(strerror(errno));
 		exit(1);
 	}
-	write_to_upload_file(fd_upload_location, req);
+	write_to_upload_file(fd_upload_location, req, vec_env);
+	close(fd_upload_location);
 	return generated_file_path;
 }

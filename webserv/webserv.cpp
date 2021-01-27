@@ -13,7 +13,7 @@ void wait_connexion(t_server &s, t_config &config)
   }
   else if (ret == 0) //If return is zero timeout happened
 	{
-  	disconnect_all(s, config);
+  		disconnect_all(s, config);
 		wait_connexion(s, config);
 	}
   else if (FD_ISSET(s.server_socket, &s.active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
@@ -29,7 +29,7 @@ void handle_write(t_server &s, t_config &config)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
-      P(s.answer[s.client_socket[i]]);
+      //P(s.answer[s.client_socket[i]]);
 			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
         P("Error: send failed");
 			if (message_ret < s.answer[s.client_socket[i]].size())
@@ -49,6 +49,7 @@ void handle_read(t_server &s, t_config &conf)
   get_client_request(s);
 	if (s.requests.size() != 0)
 	{
+		
 		requests = s.requests.begin(); //socket is iterator map with socket fd (first) and request text (second)
 		while(requests != s.requests.end()) //If receiving multiple socket connections at same time handle them all
 		{
@@ -56,7 +57,7 @@ void handle_read(t_server &s, t_config &conf)
 				parse_http_request(req, requests->second, conf);
 				if (req.ready == true)
 					get_answer(requests, req, conf, s);
-        else
+        		else
 				    requests++;
 				change_directory("/..");
 		}

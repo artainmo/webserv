@@ -238,6 +238,6 @@ void parse_config(std::string path, t_config &ret)
 		P("Error: port not specified");
 		exit(1);
 	}
-	show_conf(ret);
+	// show_conf(ret);
 //	return (ret);
 }

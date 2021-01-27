@@ -212,7 +212,7 @@ bool completed_request_chunked(std::string const &req)
 	i = req.size() - 1;
 	while (is_white_space(req[i]))
 	{
-		P(req[i]);
+		//P(req[i]);
 		i--;
 	}
 	if (req[i] != '0')
@@ -337,10 +337,10 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 	std::list<std::string> body_lines;
 	int body_index;
 
-	P("--------------------------------------------------------------------------");
-	P("REAL REQUEST:");
-	P(req); //test
-	P("--------------------------------------------------------------------------");
+	// P("--------------------------------------------------------------------------");
+	// P("REAL REQUEST:");
+	// P(req); //test
+	// P("--------------------------------------------------------------------------");
 	default_init(ret);
 	find_start(req);
 	if ((body_index = find_body(req)) == -1) //If no body line found, no end of non-body part, thus do not start parsing non-body part
