@@ -95,8 +95,8 @@ typedef struct s_http_req
 	bool ready;
 } t_http_req;
 
-t_config *parse_config(std::string path);
-void parse_http_request(t_http_req *ret, std::string &req, t_config &conf);
+void parse_config(std::string path, t_config &config);
+void parse_http_request(t_http_req &ret, std::string &req, t_config &conf);
 bool getlinecut(std::ifstream &fd, std::string &line);
 bool check_line(std::string const &line, const std::string &comp);
 std::string following_content(std::string &line, const std::string &after);

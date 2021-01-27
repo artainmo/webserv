@@ -236,35 +236,35 @@ bool is_valid(std::string message)
 					|| message.find("DELETE") != std::string::npos));
 }
 
-void parse_http_request(t_http_req *ret, std::string &req, t_config &conf)
+void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 {
 	std::list<std::string> non_body_lines;
 	std::list<std::string> body_lines;
 	int body_index;
 
-	P("--------------------------------------------------------------------------");
-	P("REAL REQUEST:");
-	P(req); //test
-	P("--------------------------------------------------------------------------");
-	default_init(*ret);
+	// P("--------------------------------------------------------------------------");
+	// P("REAL REQUEST:");
+	// P(req); //test
+	// P("--------------------------------------------------------------------------");
+	default_init(ret);
 	req = find_start(req);
 	if ((body_index = find_body(req)) == -1) //If no body line found, no end of non-body part, thus do not start parsing non-body part
 		return ;
 	non_body_lines = split(req.substr(0, body_index), "\n");
-	parse_non_body(*ret, non_body_lines, conf);
-	if (completed_request(req, *ret)) //If body line found, request is complete
-		ret->ready = true;
+	parse_non_body(ret, non_body_lines, conf);
+	if (completed_request(req, ret)) //If body line found, request is complete
+		ret.ready = true;
 	else
 		return ; //If not complete do not start the parsing of whole body
 	if (is_valid(req) == false) //If complete command is invalid directly stop
 	{
-		ret->error = true;
+		ret.error = true;
 		return ;
 	}
 	body_lines = split(req.substr(body_index), "\n");
-	parse_body(*ret, body_lines, conf);
-	P("--------------------------------------------------------------------------");
-	P("PARSED REQUEST:");
-	show_http_request(*ret); //test
-	P("--------------------------------------------------------------------------");
+	parse_body(ret, body_lines, conf);
+	// P("--------------------------------------------------------------------------");
+	// P("PARSED REQUEST:");
+	// show_http_request(*ret); //test
+	// P("--------------------------------------------------------------------------");
 }

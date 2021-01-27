@@ -30,11 +30,12 @@ typedef struct	s_server
 	int connected_socket; //New socket connected between server and client
 	std::map<int, std::string> requests; //To handle multiple incoming requests and requests that are received in packages
 	std::map< int, std::string>	answer; //To handle answers sent in packages
+	int		fd_max;
 }				t_server;
 
 void		setup_server(t_server &s, t_config &config);
-void		new_incoming_connection(t_server &s, t_config &config);
-void	get_client_request(t_server &s, t_config &config);
+void		new_incoming_connection(t_server &s);
+void	get_client_request(t_server &s);
 void client_disconnection(t_server &s, unsigned int i);
 void disconnect_all(t_server &s, t_config &config);
 void reset_sockets(t_server &s);

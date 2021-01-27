@@ -25,9 +25,9 @@ std::string get_header_line(int const& number)
 			return (protocol + std::string("404 Not Found"));
 		case 405:
 			return (protocol + std::string("405 Not Allowed"));
-    case 400:
+    	case 400:
       		return (protocol + std::string("400 Bad Request"));
-    case 416:
+    	case 416:
           return (protocol + std::string("416 Range Not Satisfiable"));
 		case 500:
       		return (protocol + std::string("500 Internal Server Error"));
@@ -243,21 +243,23 @@ std::string POST(t_http_req &req)
 void    write_put_file(std::ofstream &fd, std::string &message_body)
 {
     std::list<std::string>  line_of_body;
-    std::string             new_body;
-    std::string             line;
+	size_t					size_line_of_body;
+	size_t					i = 0;
 
-    message_body = message_body.erase(0, message_body.find_first_not_of(" \t\n\r\f\v"));
+	//std::cout << "~~~~BODY :" << message_body << std::endl;
+    //message_body = message_body.erase(0, message_body.find_first_not_of(" \t\n\r\f\v"));
     line_of_body = split(message_body, "\n");
-    while (line_of_body.size() > 0)
-    {
-        if (line_of_body.front()[0] == '0')
-            break ;
-        line_of_body.pop_front();
-        line = line_of_body.front();
-        new_body += std::string(line, 0, line.size() - 1);
-        line_of_body.pop_front();
-    }
-    fd << new_body;
+	std::list<std::string>::iterator it = line_of_body.begin();
+	size_line_of_body = line_of_body.size();
+	if ((*it).size() == 0)
+		it++;
+	for ( ; it != line_of_body.end(); it++)
+	{
+		if (*it == "0")
+			break ;
+		else if (i++ % 2)
+			fd << (*it).substr(0, (*it).size() - 1);
+	}
 }
 
 std::string PUT(t_http_req &req)

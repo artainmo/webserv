@@ -17,7 +17,7 @@ void wait_connexion(t_server &s, t_config &config)
 		wait_connexion(s, config);
 	}
   else if (FD_ISSET(s.server_socket, &s.active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
-    new_incoming_connection(s, config);
+    new_incoming_connection(s);
 }
 
 void handle_write(t_server &s, t_config &config)
@@ -25,7 +25,7 @@ void handle_write(t_server &s, t_config &config)
   (void)config;
   int message_ret; //Receive message lenght to add a /0 at end str
 
-  for (unsigned int i = 0; i < SOMAXCONN; i++)
+  for (unsigned int i = 0; i < s.fd_max; i++)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
@@ -42,11 +42,11 @@ void handle_write(t_server &s, t_config &config)
 
 void handle_read(t_server &s, t_config &conf)
 {
-	t_http_req *req = new t_http_req;
+	t_http_req req;
 	std::string request;
 	std::map<int, std::string>::iterator requests;
 
-  get_client_request(s, conf);
+  get_client_request(s);
 	if (s.requests.size() != 0)
 	{
 		requests = s.requests.begin(); //socket is iterator map with socket fd (first) and request text (second)
@@ -54,30 +54,29 @@ void handle_read(t_server &s, t_config &conf)
 		{
 				change_directory("/frontend");
 				parse_http_request(req, requests->second, conf);
-				if (req->ready == true)
-					get_answer(requests, *req, conf, s);
+				if (req.ready == true)
+					get_answer(requests, req, conf, s);
         else
 				    requests++;
 				change_directory("/..");
 		}
 	}
-  delete req;
 }
 
 void server(t_server &s, t_config &conf)
 {
 	while(true)
   {
-      wait_connexion(s, conf);
-			handle_write(s, conf);
-			handle_read(s, conf);
+    wait_connexion(s, conf);
+	handle_write(s, conf);
+	handle_read(s, conf);
   }
 }
 
 int main(int argc , char *argv[])
 {
-	t_server *s = new t_server;
-	t_config *config;
+	t_server s;
+	t_config config;
 
 	if (argc != 2)
 	{
@@ -85,8 +84,8 @@ int main(int argc , char *argv[])
 		exit(1);
 	}
 	signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
-	config = parse_config(argv[1]);
-  setup_server(*s, *config);
-	server(*s, *config);
+	parse_config(argv[1], config);
+	setup_server(s, config);
+	server(s, config);
   return 0;
 }

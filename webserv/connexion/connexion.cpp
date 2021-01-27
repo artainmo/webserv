@@ -20,6 +20,7 @@ void setup_server(t_server &s, t_config &config)
         std::cout << "Error: socket failed" << std::endl;
         exit(1);
     }
+	s.fd_max = s.server_socket;
 
     //set server socket to allow multiple connections
     int opt = 1;
@@ -64,7 +65,7 @@ void client_disconnection(t_server &s, unsigned int i)
 
 void disconnect_all(t_server &s, t_config &config)
 {
-	for (unsigned int i = 0 ; i < SOMAXCONN ; i++)
+	for (unsigned int i = 0 ; i < s.fd_max ; i++)
 	{
 		if(s.client_socket[i] > 0)
 			client_disconnection(s, i);
@@ -73,7 +74,7 @@ void disconnect_all(t_server &s, t_config &config)
 
 void add_new_socket_to_active_sockets(t_server &s)
 {
-  for (unsigned int i = 0; i < SOMAXCONN; i++)
+  for (unsigned int i = 0; i < s.fd_max; i++)
   {
       if(s.client_socket[i] == 0)
       {
@@ -83,28 +84,28 @@ void add_new_socket_to_active_sockets(t_server &s)
   }
 }
 
-void new_incoming_connection(t_server &s, t_config &config)
+void new_incoming_connection(t_server &s)
 {
-    (void)config;
     //Extracts first connection request in queue and returns new connected socket (server - client)
     if ((s.connected_socket = accept(s.server_socket, (struct sockaddr *)&s.address, (socklen_t*)&s.addrlen)) == -1)
     {
       std::cout << "Error: listen failed" << std::endl;
       exit(1);
     }
+	if (s.connected_socket > s.fd_max)
+		s.fd_max = s.connected_socket;
     fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
     add_new_socket_to_active_sockets(s);
     printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
 }
 
-void get_client_request(t_server &s, t_config &config)
+void get_client_request(t_server &s)
 {
-  (void)config;
   int message_len = -1; //Receive message lenght to add a /0 at end str
   char message_buffer[1000001];  //Received message is taken into a char* message_buffer because we use C functions
   std::string message;
 
-  for (unsigned int i = 0; i < SOMAXCONN; i++)
+  for (unsigned int i = 0; i < s.fd_max; i++)
   {
       if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
       {
@@ -138,7 +139,7 @@ void reset_sockets(t_server &s)
 
   //Add active client sockets to the active sockets
   //std::cout << "SOCKET REPLY: " << s.requests.size() << std::endl;
-  for (unsigned int i = 0 ; i < SOMAXCONN ; i++)
+  for (unsigned int i = 0 ; i < s.fd_max; i++)
   {
       if(s.client_socket[i] > 0)
       {

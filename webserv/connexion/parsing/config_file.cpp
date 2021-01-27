@@ -224,9 +224,9 @@ void default_init(t_config &conf)
 	conf.body_size_limit = std::string::npos; //Default max body size
 }
 
-t_config *parse_config(std::string path)
+void parse_config(std::string path, t_config &ret)
 {
-	t_config *ret = new t_config;
+	//t_config *ret = new t_config;
 	std::ifstream fd(path);
 
 	if (!fd.is_open())
@@ -237,14 +237,14 @@ t_config *parse_config(std::string path)
 			P("Error: permission denied");
 		exit(1);
 	}
-	default_init(*ret);
-	parse(*ret, fd);
+	default_init(ret);
+	parse(ret, fd);
 	fd.close();
-	if(ret->port == -1)
+	if(ret.port == -1)
 	{
 		P("Error: port not specified");
 		exit(1);
 	}
-	show_conf(*ret);
-	return (ret);
+	show_conf(ret);
+//	return (ret);
 }
