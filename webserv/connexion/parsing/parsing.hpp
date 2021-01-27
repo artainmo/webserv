@@ -85,6 +85,7 @@ typedef struct s_header_fields
 
 typedef struct s_http_req
 {
+	std::string complete_request;
 	std::string method;
 	std::string URL;
 	t_location *loc;

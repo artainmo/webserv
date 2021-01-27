@@ -9,7 +9,7 @@ void wait_connexion(t_server &s, t_config &config)
   if ((ret = select(FD_SETSIZE , &s.active_socket_read, &s.active_socket_write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
   {
       std::cout << "Error: select failed" << std::endl;
-      exit(1);
+      wait_connexion(s, config);
   }
   else if (ret == 0) //If return is zero timeout happened
 	{
@@ -31,8 +31,14 @@ void handle_write(t_server &s, t_config &config)
 	  {
       //P(s.answer[s.client_socket[i]]);
 			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
+      {
         P("Error: send failed");
-			if (message_ret < s.answer[s.client_socket[i]].size())
+        P(strerror(errno)); //If send fails due to client disconnection, disconnect client
+        P(errno);
+        if (errno == 54) //Functions properly
+          client_restart(s, i);
+      }
+			else if (message_ret < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
@@ -42,9 +48,7 @@ void handle_write(t_server &s, t_config &config)
 
 void handle_read(t_server &s, t_config &conf)
 {
-	t_http_req req;
-	std::string request;
-	std::map<int, std::string>::iterator requests;
+	std::map<int, t_http_req>::iterator requests;
 
   get_client_request(s);
 	if (s.requests.size() != 0)
@@ -54,10 +58,10 @@ void handle_read(t_server &s, t_config &conf)
 		while(requests != s.requests.end()) //If receiving multiple socket connections at same time handle them all
 		{
 				change_directory("/frontend");
-				parse_http_request(req, requests->second, conf);
-				if (req.ready == true)
-					get_answer(requests, req, conf, s);
-        		else
+				parse_http_request(requests->second, requests->second.complete_request, conf);
+				if (requests->second.ready == true)
+					get_answer(requests, requests->second, conf, s);
+        else
 				    requests++;
 				change_directory("/..");
 		}

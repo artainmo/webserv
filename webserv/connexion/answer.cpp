@@ -275,7 +275,7 @@ std::string parse_method(t_http_req &req, t_config &conf, t_server &s)
 	return error_page(404, req.method);
 }
 
-void socket_erase(std::map<int, std::string>::iterator &socket, t_server &s)
+void socket_erase(std::map<int, t_http_req>::iterator &socket, t_server &s)
 {
 	int rem;
 
@@ -285,7 +285,7 @@ void socket_erase(std::map<int, std::string>::iterator &socket, t_server &s)
 	s.requests.erase(rem);
 }
 
-void get_answer(std::map<int, std::string>::iterator &socket, t_http_req &req, t_config &conf, t_server &s)
+void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_config &conf, t_server &s)
 {
 	std::string	answer;
 
