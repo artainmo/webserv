@@ -59,6 +59,8 @@ void client_disconnection(t_server &s, unsigned int i)
   printf("Host disconnected\n-ip: %s\n-port: %d \n" , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port));
 
   //Close the socket and reset to zero for re-use
+  s.answer.erase(s.client_socket[i]); //does not need to be protected erase key_type
+  s.requests.erase(s.client_socket[i]);
   close(s.client_socket[i]);
   s.client_socket[i] = 0;
 }
@@ -112,7 +114,8 @@ void get_client_request(t_server &s)
           if ((message_len = recv(s.client_socket[i] , message_buffer, 1000000, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
           {
             P("Error: recv failed");
-            P(strerror(errno));
+            P(strerror(errno)); //If recv fails due to client disconnection, disconnect client
+            P(errno);
           }
           if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
             client_disconnection(s, i);

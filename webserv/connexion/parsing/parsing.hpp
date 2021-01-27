@@ -93,6 +93,7 @@ typedef struct s_http_req
 	std::string message_body;
 	bool error;
 	bool ready;
+	bool non_body_parsed;
 } t_http_req;
 
 void parse_config(std::string path, t_config &config);

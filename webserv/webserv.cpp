@@ -9,7 +9,7 @@ void wait_connexion(t_server &s, t_config &config)
   if ((ret = select(FD_SETSIZE , &s.active_socket_read, &s.active_socket_write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
   {
       std::cout << "Error: select failed" << std::endl;
-      exit(1);
+      wait_connexion(s, config);
   }
   else if (ret == 0) //If return is zero timeout happened
 	{
@@ -31,7 +31,11 @@ void handle_write(t_server &s, t_config &config)
 	  {
       P(s.answer[s.client_socket[i]]);
 			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
+      {
         P("Error: send failed");
+        P(strerror(errno)); //If send fails due to client disconnection, disconnect client
+        P(errno);
+      }
 			if (message_ret < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());
 			else
