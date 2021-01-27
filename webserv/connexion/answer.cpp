@@ -246,7 +246,6 @@ void    write_put_file(std::ofstream &fd, std::string &message_body)
     std::string             new_body;
     std::string             line;
 
-    message_body = message_body.substr(message_body.find_first_not_of(" \n\r\f\v"));
     message_body = message_body.erase(0, message_body.find_first_not_of(" \t\n\r\f\v"));
     line_of_body = split(message_body, "\n");
     while (line_of_body.size() > 0)
