@@ -143,8 +143,8 @@ bool completed_request_chunked(std::string const &req)
 	}
 	if (req[i] != '0')
 		return false;
-	if (find_first_two_line_returns(req.substr(i)) == -1)
-		return false;
+	// if (find_first_two_line_returns(req.substr(i)) == -1)
+	// 	return false;
 	return true;
 }
 
