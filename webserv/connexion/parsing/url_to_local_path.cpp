@@ -1,17 +1,17 @@
 #include "parsing.hpp"
 
-t_location *init_location(t_location *loc, t_config &conf)
-{
-	loc = new t_location;
-	loc->file_extensions.push_back("None");
-	loc->directory = "None";
-	loc->http_methods.push_back("ALL");
-	loc->directory_listing = std::string("false");
-	loc->default_file_if_request_directory = "None";
-	loc->CGI = 0;
-	loc->file_upload_location = "upload/default";
-	return loc;
-}
+// t_location *init_location(t_location *loc, t_config &conf)
+// {
+// 	loc = new t_location;
+// 	loc->file_extensions.push_back("None");
+// 	loc->directory = "None";
+// 	loc->http_methods.push_back("ALL");
+// 	loc->directory_listing = std::string("false");
+// 	loc->default_file_if_request_directory = "None";
+// 	loc->CGI = 0;
+// 	loc->file_upload_location = "upload/default";
+// 	return loc;
+// }
 
 t_location *add_location(t_location *my_loc, t_location &new_loc, t_config &conf)
 {
@@ -167,19 +167,17 @@ std::string find_file_directory(std::string local_root, std::string const &direc
 
 void find_in_file_extension_location(std::list<t_location> &my_locations, t_location &loc, t_http_req &req, t_config &conf)
 {
-	std::string file;
-
-	if ((file = find_file_directory(loc.root, req.URL, loc.index, req.method)) != std::string("file not found"))
-	{
+	// if ((file = find_file_directory(loc.root, req.URL, loc.index, req.method)) != std::string("file not found"))
+	// {
 		for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
 		{
-			if (get_file_extension(file) == *ext) //If file extension is equal or all file extensions are accepted
+			if (get_file_extension(req.URL) == *ext) //If file extension is equal or all file extensions are accepted
 			{
-				loc.FOUND_URL = file;
+				loc.FOUND_URL = req.URL;
 				my_locations.push_back(loc);
 			}
 		}
-	}
+	// }
 }
 
 void find_in_directory_location(std::list<t_location> &my_locations, t_location &loc, t_http_req &req, t_config &conf)
@@ -187,7 +185,7 @@ void find_in_directory_location(std::list<t_location> &my_locations, t_location 
 	std::string file;
 	if ((file = find_file_directory(loc.root, req.URL, loc.index, req.method)) != std::string("file not found"))
 	{
-		P("Found: "<< file);
+		// P("Found: "<< file);
 		loc.FOUND_URL = file;
 		my_locations.push_back(loc);
 	}
@@ -197,9 +195,9 @@ void prefix_location(std::list<t_location> &my_locations, t_http_req &req, t_con
 {
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
-		P("URL: " << req.URL);
-		P("DIR: " << loc->directory);
-		P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
+		// P("URL: " << req.URL);
+		// P("DIR: " << loc->directory);
+		// P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
 		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
 			find_in_directory_location(my_locations, *loc, req, conf);
 	}
@@ -224,21 +222,18 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 	std::list<t_location> my_locations; //MAP takes location and associated URL
 
 	prefix_location(my_locations, req, conf);
-	set_new_url(my_locations, req);
+	set_new_url(my_locations, req); //For regular expression match use the URL found in prefix_locations
 	regular_expression_location(my_locations, req, conf);
-	show_locations(my_locations);
-	if (my_locations.size() == 0) //Outside of any locations
+	// P("**********************");
+	// show_locations(my_locations);
+	// P("**********************");
+	if (my_locations.size() == 0) //Outside of any locations set to file not found?
 		req.URL = "file not found";
-	else if (!accordance_method_location(req.method, my_locations))
+	else if (!accordance_method_location(req.method, my_locations)) //If not one location has asked http method mark it
 		req.URL = "method not found";
-	else
+	else //Add the found location and change URL only to a valid URL
 	{
-		req.loc = &my_locations.back();
+		req.loc = add_location(req.loc, my_locations.back(), conf);
 		req.URL = my_locations.back().FOUND_URL;
-	}
-	if (req.method == "POST")
-	{
-		show_http_request(req);
-		sleep(5);
 	}
 }

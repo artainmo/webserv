@@ -240,13 +240,14 @@ std::string POST(t_http_req &req)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
-void    write_put_file(std::ofstream & fd, std::string message_body)
+void    write_put_file(std::ofstream &fd, std::string &message_body)
 {
     std::list<std::string>  line_of_body;
     std::string             new_body;
     std::string             line;
 
     message_body = message_body.substr(message_body.find_first_not_of(" \n\r\f\v"));
+    message_body = message_body.erase(0, message_body.find_first_not_of(" \t\n\r\f\v"));
     line_of_body = split(message_body, "\n");
     while (line_of_body.size() > 0)
     {
@@ -271,9 +272,14 @@ std::string PUT(t_http_req &req)
 		status_code = 200; //OK (file already existed)
 	else
 		status_code = 201; //CREATED (new file)
-  fd.open(req.URL.c_str(),  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
+  fd.open(req.URL,  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
   if (!fd.is_open())
+  {
+    P("Error: Put file opening");
+    P(strerror(errno));
+    P(req.URL);
     return error_page(404, req.method); // CHANGE THE ERROR CODE?
+  }
   write_put_file(fd,req.message_body);
 	init_put(req.URL, fd, response, status_code);
 	fd.close();
