@@ -61,17 +61,7 @@ void parse_header_fields(t_http_req &req, std::string const &line)
 
 void parse_body(t_http_req &req, std::list<std::string> &body_lines, t_config &conf)
 {
-	unsigned int i;
-
-	i = 0;
-	req.message_body = "";
-	for (std::list<std::string>::iterator line = body_lines.begin(); line != body_lines.end(); line++)
-	{
-		req.message_body += *line;
-		req.message_body += "\n";
-	}
-	if (static_cast<int>(req.message_body.size()) > conf.body_size_limit)
-		req.message_body = req.message_body.substr(0, conf.body_size_limit);
+	//chunk
 }
 
 void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_config &conf)
@@ -261,8 +251,14 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 		ret.error = true;
 		return ;
 	}
-	body_lines = split(req.substr(body_index), "\n");
-	parse_body(ret, body_lines, conf);
+	ret.message_body = req.substr(body_index);
+	if (static_cast<int>(req.message_body.size()) > conf.body_size_limit)
+	{
+		P("Error: message body has been cut");
+		req.message_body = req.message_body.substr(0, conf.body_size_limit);
+	}
+	if (ret.header_fields.Transfer_Encoding.front() == std::string("chunked"))
+		parse_body(ret.message_body);
 	// P("--------------------------------------------------------------------------");
 	// P("PARSED REQUEST:");
 	// show_http_request(*ret); //test

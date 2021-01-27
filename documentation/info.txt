@@ -54,6 +54,12 @@ inet_addr - Used to convert an IPv4 address string notation into an int notation
 getsockname - returns address of socket
 fcntl - funcion able to perform a range of different commands on file descriptors, here can only be used to set a fd as non-blocking
 
+POST sets received body as env var, that can be used by the URI that is called with cgi or not to produce an upload file. The upload file should be returned in body.
+- Set env var
+- Call upload file with cgi(or not)
+- Produced upload file should be returned in body
+
+
 GUIDELINES
 ----------
 

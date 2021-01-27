@@ -28,26 +28,28 @@ void set_env(std::string var, std::string equal_to)
 	waitpid(pid, 0, 0);
 }
 
-void set_meta_variables(t_CGI &c)
+void set_meta_variables(t_CGI &c) //env variables is correct
 {
 	set_env("AUTH_TYPE", c.AUTH_TYPE);
 	set_env("CONTENT_LENGTH", c.CONTENT_LENGTH);
 	set_env("CONTENT_TYPE", c.CONTENT_TYPE);
 	set_env("GATEWAY_INTERFACE", c.GATEWAY_INTERFACE);
-	set_env("PATH_INFO", c.PATH_INFO);
+	set_env("PATH_INFO", c.PATH_INFO); //upload location?
 	set_env("PATH_TRANSLATED", c.PATH_TRANSLATED);
 	set_env("QUERY_STRING", c.QUERY_STRING);
 	set_env("REMOTE_ADDR", c.REMOTE_ADDR);
 	set_env("REMOTE_INDENT", c.REMOTE_INDENT);
 	set_env("REMOTE_USER", c.REMOTE_USER);
-	set_env("REQUEST_METHOD", c.REQUEST_METHOD);
+	set_env("REQUEST_METHOD", c.REQUEST_METHOD); //env variable -> POST/GET/....
 	set_env("REQUEST_URI", c.REQUEST_URI);
 	set_env("SCRIPT_NAME", c.SCRIPT_NAME);
 	set_env("SERVER_NAME", c.SERVER_NAME);
 	set_env("SERVER_PORT", c.SERVER_PORT);
-	set_env("SERVER_PROTOCOL", c.SERVER_PROTOCOL);
+	set_env("SERVER_PROTOCOL", c.SERVER_PROTOCOL); //HTTP/1.1
 	set_env("SERVER_SOFTWARE", c.SERVER_SOFTWARE);
 }
+
+// void unset_metavariables
 
 void write_to_upload_file(int fd_upload_location, t_http_req &req)
 {
@@ -58,6 +60,8 @@ void write_to_upload_file(int fd_upload_location, t_http_req &req)
 	executable = "/usr/bin/php";
 	if (req.loc->CGI->PATH_INFO != std::string("None"))
 		executable = req.loc->CGI->PATH_INFO;
+	P("EXEC:" << executable);
+	P("URL:" << req.URL);
 	fd_1 = dup(1);
 	if ((pid = fork()) == -1)
 	{
@@ -90,6 +94,7 @@ std::string get_cgi(t_http_req &req) //returns false if cgi not used and returns
 	// 	return std::string("None");
 	set_meta_variables(*req.loc->CGI);
 	generated_file_path = req.loc->root + req.loc->file_upload_location;
+	P("UPLOAD:" << generated_file_path);
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P("Error: file upload location error");
