@@ -59,8 +59,39 @@ void parse_header_fields(t_http_req &req, std::string const &line)
 			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
 }
 
-void parse_body(t_http_req &req, std::list<std::string> &body_lines, t_config &conf)
+void    unchunked_body(std::string &body)
 {
+    std::list<std::string>  line_of_body;
+	size_t					size_line_of_body;
+	size_t					i = 0;
+
+    line_of_body = split(body, "\n");
+	std::list<std::string>::iterator it = line_of_body.begin();
+	size_line_of_body = line_of_body.size();
+	if ((*it).size() == 0)
+		it++;
+	body.clear();
+	for ( ; it != line_of_body.end(); it++)
+	{
+		if (*it == "0")
+			break ;
+		else if (i++ % 2)
+		{
+			body += (*it).substr(0, (*it).size() - 1);
+		}
+	}
+}
+
+void parse_body(std::string &body, std::string const& transfert_encoding, size_t body_size_limit)
+{
+	if (transfert_encoding == std::string("chunked"))
+		unchunked_body(body);
+	if (body.size() > body_size_limit)
+	{
+		P("Error: message body has been cut");
+		body = body.substr(0, body_size_limit);
+	}
+	
 	//chunk
 }
 
@@ -252,13 +283,7 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 		return ;
 	}
 	ret.message_body = req.substr(body_index);
-	if (static_cast<int>(req.message_body.size()) > conf.body_size_limit)
-	{
-		P("Error: message body has been cut");
-		req.message_body = req.message_body.substr(0, conf.body_size_limit);
-	}
-	if (ret.header_fields.Transfer_Encoding.front() == std::string("chunked"))
-		parse_body(ret.message_body);
+	parse_body(ret.message_body, ret.header_fields.Transfer_Encoding.front(), conf.body_size_limit);
 	// P("--------------------------------------------------------------------------");
 	// P("PARSED REQUEST:");
 	// show_http_request(*ret); //test

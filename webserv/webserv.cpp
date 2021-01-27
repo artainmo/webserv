@@ -3,7 +3,7 @@
 void wait_connexion(t_server &s, t_config &config)
 {
   int ret;
-  struct timeval timeout = {10, 0};
+  struct timeval timeout = {1, 0};
 
   reset_sockets(s);
   if ((ret = select(FD_SETSIZE , &s.active_socket_read, &s.active_socket_write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total

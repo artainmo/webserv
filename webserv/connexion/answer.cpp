@@ -240,28 +240,6 @@ std::string POST(t_http_req &req)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
-void    write_put_file(std::ofstream &fd, std::string &message_body)
-{
-    std::list<std::string>  line_of_body;
-	size_t					size_line_of_body;
-	size_t					i = 0;
-
-    line_of_body = split(message_body, "\n");
-	std::list<std::string>::iterator it = line_of_body.begin();
-	size_line_of_body = line_of_body.size();
-	if ((*it).size() == 0)
-		it++;
-	for ( ; it != line_of_body.end(); it++)
-	{
-		if (*it == "0")
-			break ;
-		else if (i++ % 2)
-		{
-			fd << (*it).substr(0, (*it).size() - 1);
-		}
-	}
-}
-
 std::string PUT(t_http_req &req)
 {
 	std::ofstream			fd;
@@ -281,7 +259,8 @@ std::string PUT(t_http_req &req)
     P(req.URL);
     return error_page(404, req.method); // CHANGE THE ERROR CODE?
   }
-  write_put_file(fd,req.message_body);
+  //write_put_file(fd,req.message_body);
+  fd << req.message_body;
 	init_put(req.URL, fd, response, status_code);
 	fd.close();
 	return construct_put_response(response);
