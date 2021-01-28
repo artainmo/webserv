@@ -47,8 +47,7 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s, 
 	c.SERVER_NAME = conf.server_name;
 	c.SERVER_PROTOCOL = req.protocol_version;
 	c.SERVER_SOFTWARE = std::string("None");
-
-	P("~~~~~~Body size:" << c.CONTENT_LENGTH );
+	// P("~~~~~~Body size:" << c.CONTENT_LENGTH );
 	env_meta_variables(c, vec_env);
 }
 
@@ -98,9 +97,9 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 		{
 			P("Error: execve cgi php");
 			P(strerror(errno));
-			throw internal_server_error_exc();
+			close(pp[0]);
+			exit(1);
 		}
-		close(pp[0]);
 	}
 	else
 	{
@@ -127,7 +126,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 
 // }
 
-std::string get_cgi(t_http_req &req, t_config &conf, t_server &s) //returns false if cgi not used and returns true if cgi used and file_upload_location should be used
+std::string get_cgi(t_http_req &req, t_config &conf, t_server &s)
 {
 	int fd_upload_location;
 	std::vector<std::string> vec_env;

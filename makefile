@@ -9,17 +9,17 @@ SRCS = ./webserv/webserv.cpp \
 				./webserv/connexion/parsing/utils.cpp \
 				./webserv/connexion/utils/utils.cpp
 
-COMP = clang++
-FLAGS = #-Wall -Wextra -Werror
+CXX = clang++
+CXXFLAGS = #-Wall -Wextra -Werror
 
 OBJ = $(SRCS:.cpp=.o)
 
-all: compile
+all: $(NAME)
 
-compile: $(OBJ)
-	$(COMP) $(FLAGS) $(OBJ) -o $(NAME)
+$(NAME): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 
-run: re
+run: all
 	./webserv.a conf/webserv1.conf
 
 test:
