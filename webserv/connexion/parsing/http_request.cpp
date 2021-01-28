@@ -212,11 +212,11 @@ bool completed_request_chunked(std::string const &req)
 	i = req.size() - 1;
 	while (is_white_space(req[i]))
 		i--;
-	if (req[i] != '0')
-		return false;
+	if (req[i] == '0' && req[i - 1] == '\n')
+		return true;
 	// if (find_first_two_line_returns(req.substr(i)) == -1)
 	// 	return false;
-	return true;
+	return false;
 }
 
 bool completed_request_lenght(std::string const &req, std::string const &lenght)
