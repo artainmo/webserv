@@ -8,12 +8,12 @@ void set_env(std::string var, std::string equal_to, std::vector<std::string> &ve
 	// if ((pid = fork()) == -1)
 	// {
 	// 	P("Error: fork failed");
-	// 	exit(1);
+	// 	throw internal_server_error_exc();
 	// }
 	// if (!pid)
 	// {
 	// 	execve("/bin/export", (char *[]) {(char *)(var + std::string("=") + equal_to).c_str(), 0}, 0);
-	// 	exit(1);
+	// 	throw internal_server_error_exc();
 	// }
 	// waitpid(pid, 0, 0);
 }
@@ -71,7 +71,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	if ((pid = fork()) == -1)
 	{
 		P("Error: fork failed");
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	//dup2(fd_upload_location, 1);
 	if (!pid)
@@ -93,9 +93,9 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 		{
 			P("Error: execve cgi php");
 			P(strerror(errno));
-			exit(1);
+			throw internal_server_error_exc();
 		}
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	waitpid(pid, 0, 0);
 
@@ -116,7 +116,7 @@ std::string get_cgi(t_http_req &req, t_config &conf, t_server &s) //returns fals
 	{
 		P("Error: file upload location error");
 		P(strerror(errno));
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	write_to_upload_file(fd_upload_location, req, vec_env);
 	close(fd_upload_location);

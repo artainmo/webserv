@@ -13,8 +13,8 @@ void wait_connexion(t_server &s, t_config &config)
   }
   else if (ret == 0) //If return is zero timeout happened
 	{
-  		disconnect_all(s, config);
-		wait_connexion(s, config);
+  		disconnect_all(s);
+		  wait_connexion(s, config);
 	}
   else if (FD_ISSET(s.server_socket, &s.active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
     new_incoming_connection(s);
@@ -29,7 +29,7 @@ void handle_write(t_server &s, t_config &config)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
-      //P(s.answer[s.client_socket[i]]);
+      P(s.answer[s.client_socket[i]]);
 			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
       {
         P("Error: send failed");
@@ -52,29 +52,51 @@ void handle_read(t_server &s, t_config &conf)
   get_client_request(s);
 	if (s.requests.size() != 0)
 	{
-		
+
 		requests = s.requests.begin(); //socket is iterator map with socket fd (first) and request text (second)
 		while(requests != s.requests.end()) //If receiving multiple socket connections at same time handle them all
 		{
-				change_directory("/frontend");
 				parse_http_request(requests->second, requests->second.complete_request, conf);
 				if (requests->second.ready == true)
 					get_answer(requests, requests->second, conf, s);
         else
 				    requests++;
-				change_directory("/..");
 		}
 	}
 }
 
 void server(t_server &s, t_config &conf)
 {
-	while(true)
+  change_directory("/frontend");
+  try //catch exceptions if an exception occurs in catch block
   {
-    wait_connexion(s, conf);
-	  handle_write(s, conf);
-	  handle_read(s, conf);
+	   while(true)
+     {
+       try //catch exceptions during server working
+       {
+         wait_connexion(s, conf);
+	       handle_write(s, conf);
+	       handle_read(s, conf);
+       }
+       catch (const std::out_of_range &e) //If out of range error, parsing error, meaning parsing received wrong request thus restart client request
+       {
+         P(e.what());
+         client_restart_all(s);
+       }
+       catch (const std::exception &e) //All other exceptions catch them to keep server running, return internal server error to clients
+       {
+         P(e.what());
+         internal_server_error(s);
+       }
+     }
   }
+  catch (std::exception &e)
+  {
+    P("Exception occured in catch block: relaunch server");
+    change_directory("/..");
+    server(s, conf);
+  }
+  change_directory("/..");
 }
 
 int main(int argc , char *argv[])

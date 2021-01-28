@@ -3,6 +3,7 @@
 
 #define P(x) std::cout << x << std::endl
 
+#include "../parsing/parsing.hpp"
 #include <stdio.h>
 #include <dirent.h>
 #include <list>

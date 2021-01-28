@@ -52,11 +52,37 @@ void setup_server(t_server &s, t_config &config)
     }
 }
 
+const char *internal_server_error_exc::what() const _NOEXCEPT
+{
+  return "Internal server error";
+}
+
+void internal_server_error(t_server &s)
+{
+	for (unsigned int i = 0 ; i < s.fd_max ; i++)
+	{
+		if(s.client_socket[i] > 0)
+    {
+      s.answer[s.client_socket[i]] = error_page(500, "None"); //method does not matter
+      s.requests[s.client_socket[i]].ready = true;
+    }
+	}
+}
+
 void client_restart(t_server &s, unsigned int i) //Connection has been closed but restarted, do not disconnect but restart answer and request
 {
   //Close the socket and reset to zero for re-use
   s.answer.erase(s.client_socket[i]); //does not need to be protected erase key_type
   s.requests.erase(s.client_socket[i]);
+}
+
+void client_restart_all(t_server &s)
+{
+	for (unsigned int i = 0 ; i < s.fd_max ; i++)
+	{
+		if(s.client_socket[i] > 0)
+			client_disconnection(s, i);
+	}
 }
 
 void client_disconnection(t_server &s, unsigned int i)
@@ -72,7 +98,7 @@ void client_disconnection(t_server &s, unsigned int i)
   s.client_socket[i] = 0;
 }
 
-void disconnect_all(t_server &s, t_config &config)
+void disconnect_all(t_server &s)
 {
 	for (unsigned int i = 0 ; i < s.fd_max ; i++)
 	{
@@ -99,7 +125,7 @@ void new_incoming_connection(t_server &s)
     if ((s.connected_socket = accept(s.server_socket, (struct sockaddr *)&s.address, (socklen_t*)&s.addrlen)) == -1)
     {
       std::cout << "Error: listen failed" << std::endl;
-      exit(1);
+      throw internal_server_error_exc();
     }
 	if (s.connected_socket > s.fd_max)
 		s.fd_max = s.connected_socket;

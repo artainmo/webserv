@@ -40,7 +40,7 @@ int is_regular_file(const char *path)
     if (stat(path, &path_stat) == -1)
 		{
 			std::cout << "Error: stat function" << std::endl;
-			exit(1);
+			throw internal_server_error_exc();
 		}
     return S_ISREG(path_stat.st_mode);
 }
@@ -84,12 +84,12 @@ void change_directory(std::string relative_path)
 	if (!(getcwd(path_name, 100)))
 	{
 		std::cout << "ERROR: getcwd failed" << std::endl;
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	if (chdir((std::string(path_name) + relative_path).c_str()) == -1)
 	{
 		std::cout << "ERROR: chdir failed" << std::endl;
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	// getcwd(path_name, 100);
 	// std::cout << path_name << std::endl;

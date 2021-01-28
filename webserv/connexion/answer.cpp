@@ -152,7 +152,7 @@ std::string construct_error_response(t_header_fields const& info, std::string me
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Content_Type.front() + "\r\n"
-		+ info.Content_Length.front() + "\r\n"   ////////////////////// NOT GOUD BUT I DON'T KNOW WHY
+		+ info.Content_Length.front() + "\r\n"
 		+ "\r\n";
 	if (methode != "HEAD")
 		response += info.Body.front();
@@ -186,8 +186,8 @@ std::string error_page(int error_nbr, std::string methode)
 
 	if (!fd.is_open())
 	{
-		std::cout << "Error: file opening ../default/error.html" << std::endl;
-		exit(1);
+		std::cout << "Error: file opening " << path << std::endl;
+		throw internal_server_error_exc();
 	}
 	init_head_get(path, fd, info, error_nbr);
 	return construct_error_response(info, methode);
@@ -293,7 +293,7 @@ void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_
   P("method" << req.method);
   P("ERROR" << req.error);
   if (req.error == true)
-    answer = error_page(400, req.method); //Do nothing and consider the request as wrong
+    answer = error_page(400, req.method);
   else if (req.URL == std::string("file not found"))
     answer = error_page(404, req.method);
   else if (req.URL == std::string("method not found"))

@@ -45,7 +45,7 @@ std::string		parse_time(std::string const& t)
 	info.clock = tab[3];
 	info.year = tab[4];
 
-	return std::string(info.D + ", " 
+	return std::string(info.D + ", "
 					+ info.day + " "
 					+ info.month + " "
 					+ info.year + " "
@@ -61,10 +61,10 @@ int main(int argc, char **argv)
 	if (stat("index.html", &file) == -1)
 	{
 		printf("stat error\n");
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	//timeinfo = time(file.st_mtime);
-	//std::cout << strftime(buf, 200, "Now it's %I:%M%p.", timeinfo) << std::endl; 
+	//std::cout << strftime(buf, 200, "Now it's %I:%M%p.", timeinfo) << std::endl;
 	printf("Last file access:         %s\n", ctime(&file.st_mtime));
 	strptime(ctime(&file.st_mtime), "%a %b %d %T %Y", &timeinfo);
 	strftime(buf, 255, "%a, %d %b %Y %T GMT+1", &timeinfo);
