@@ -30,8 +30,8 @@ void setup_server(t_config &c)
     }
     //type of socket created
     c.s.address.sin_family = AF_INET; //= IPv4
-    c.s.address.sin_addr.s_addr = INADDR_ANY; //Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks
-    c.s.address.sin_port = htons(c.port); //decode port adress with htons
+    c.s.address.sin_addr.s_addr = inet_addr(c.host.c_str()); //INADDR_ANY Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks //server address can only bind to network interfaces  //inet_addr function is used to transform string to IPv4 decimal notation
+    c.s.address.sin_port = htons(c.port); //decode port adress from host byte order to network byte order
 
     if (bind(c.s.server_socket, (struct sockaddr *)&c.s.address, c.s.addrlen) == -1)
     {
@@ -39,10 +39,7 @@ void setup_server(t_config &c)
         P(strerror(errno));
         exit(1);
     }
-
-    std::cout << "Listening on port: ";
-    std:: cout << c.port << std::endl;
-    //Server socket waits for a client socket to connect
+    std::cout << "Host: " << c.host << " listening on port: " << c.port << std::endl;
     //SOMAXCONN is constant of max number of client requests we could wait for
     if (listen(c.s.server_socket, SOMAXCONN) == -1)
     {

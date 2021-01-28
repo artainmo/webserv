@@ -9,9 +9,9 @@ Search for all read/recv/write/send on a socket and check that if an error retur
 Search for all read/recv/write/send and check if the returned value is well checked. (checking only -1 or 0 is not good you should check both) \
 
 1)CONF
-Parse the multiple servers /
-setup multiple servers with different ports
-setup multiple servers with different host name
+Parse the multiple servers \
+setup multiple servers with different ports \
+setup multiple servers with different host name \
 setup default error page (try to change the error 404)
 
 3)Headers

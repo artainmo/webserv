@@ -44,7 +44,7 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<s
 	c.REQUEST_METHOD = req.method;
 	c.REQUEST_URI = req.URL;
 	// c.SCRIPT_NAME = std::string("None"); //Already init
-	c.SERVER_NAME = conf.server_name;
+	c.SERVER_NAME = conf.host;
 	c.SERVER_PROTOCOL = req.protocol_version;
 	// c.SERVER_SOFTWARE = std::string("None");
 	// P("~~~~~~Body size:" << c.CONTENT_LENGTH );

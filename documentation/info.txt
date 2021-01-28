@@ -59,6 +59,10 @@ POST sets received body as env var, that can be used by the URI that is called w
 - Call upload file with cgi(or not)
 - Produced upload file should be returned in body
 
+SERVER HOST NAME AND PORT
+-------------------------
+port 1024 and above are not privileged and free to use and will not fail at binding. localhost can bind to ports under 1024.
+Not all host addresses can be assigned, locally only network interfaces can be used. All available network addresses can be found using ifconfig -a, to parse the useful information use : ifconfig -a | grep "inet "
 
 GUIDELINES
 ----------
