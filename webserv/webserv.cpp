@@ -22,22 +22,23 @@ void wait_connexion(t_server &s, t_config &config)
 
 void handle_write(t_server &s)
 {
-  int message_ret; //Receive message lenght to add a /0 at end str
+  int message_len; //Receive message lenght to add a /0 at end str
 
   for (unsigned int i = 0; i < s.fd_max; i++)
   {
 	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
 	  {
       P(s.answer[s.client_socket[i]]);
-			if ((message_ret = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
+			if ((message_len = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
       {
         P("Error: send failed");
         P(strerror(errno)); //If send fails due to client disconnection, disconnect client
-        // if (errno == 54) //Functions properly
         client_restart(s, i);
       }
-			else if ((size_t)message_ret < s.answer[s.client_socket[i]].size())
-				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());
+      // else if (message_len == 0) //If message lenght is equal to 0, the client socket closed connection, thus disconnect
+      //   client_disconnection(s, i);
+			else if ((size_t)message_len < s.answer[s.client_socket[i]].size())
+				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_len + 1, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
 	  }
@@ -101,7 +102,7 @@ void server(t_server &s, t_config &conf)
 int main(int argc , char *argv[])
 {
 	t_server s;
-	t_config config;
+	std::list<t_config> config;
 
 	if (argc != 2)
 	{
@@ -110,7 +111,7 @@ int main(int argc , char *argv[])
 	}
 	signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
 	parse_config(argv[1], config);
-	setup_server(s, config);
-	server(s, config);
+	setup_server(s, config.back());
+	server(s, config.back());
   return 0;
 }

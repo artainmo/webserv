@@ -158,12 +158,9 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 
 bool order_location_based_on_directory_lenght(const t_location &first, const t_location &second) { return (first.directory <= second.directory); }
 
-void  parse(t_config &conf, std::ifstream &fd)
+void  parse_server(t_config &conf, std::ifstream &fd)
 {
 	std::string line;
-
-	while (std::getline(fd, line) && !check_line(line, "server"))
-		pass;
 	//In server block
 	while (getlinecut(fd, line) && !check_line(line, "}"))
 	{
@@ -205,20 +202,29 @@ void  parse(t_config &conf, std::ifstream &fd)
 			conf.index = following_contents(line, "index");
 	}
 	conf.locations.sort(order_location_based_on_directory_lenght); //Order locations for when searching request location link
+	if(conf.port == -1)
+	{
+		P("Error: port not specified");
+		exit(1);
+	}
 }
 
-void default_init(t_config &conf)
+void default_init(std::list<t_config> &ret)
 {
+	t_config conf;
+
 	conf.host = "None";
 	conf.port = -1;
 	conf.server_name = "None";
 	conf.root = "";
 	conf.default_error_page = "None";
 	conf.body_size_limit = std::string::npos; //Default max body size
+	ret.push_back(conf);
 }
 
-void parse_config(std::string path, t_config &ret)
+void parse_config(std::string path, std::list<t_config> &ret)
 {
+	std::string line;
 	std::ifstream fd(path);
 
 	if (!fd.is_open())
@@ -229,14 +235,19 @@ void parse_config(std::string path, t_config &ret)
 			P("Error: permission denied");
 		exit(1);
 	}
-	default_init(ret);
-	parse(ret, fd);
-	fd.close();
-	if(ret.port == -1)
+	while (std::getline(fd, line))
 	{
-		P("Error: port not specified");
+		if (check_line(line, "server"))
+		{
+			default_init(ret);
+			parse_server(ret.back(), fd);
+		}
+	}
+	fd.close();
+	if (ret.size() == 0)
+	{
+		P("Error: server block missing");
 		exit(1);
 	}
 	// show_conf(ret);
-//	return (ret);
 }

@@ -147,7 +147,6 @@ void get_client_request(t_server &s)
           {
             P("Error: recv failed");
             P(strerror(errno)); //If recv fails due to client disconnection, disconnect client
-            // if (errno == 54) //Functions properly!!
             client_restart(s, i);
           }
           else if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
