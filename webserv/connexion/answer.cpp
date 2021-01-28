@@ -159,7 +159,7 @@ std::string construct_error_response(t_header_fields const& info, std::string me
 	return response;
 }
 
-void init_head_get(std::string const& path, std::ifstream & fd, t_header_fields & response, int const& response_number)
+void init_head_get(std::string const &path, std::ifstream &fd, t_header_fields &response, int const &response_number)
 {
 	std::string			file;
 	std::string			line;
@@ -193,7 +193,7 @@ std::string error_page(int error_nbr, std::string methode)
 	return construct_error_response(info, methode);
 }
 
-std::string GET(t_http_req &req, t_config &conf, t_server &s)
+std::string GET(t_http_req &req, t_config &conf)
 {
 	std::ifstream		fd;
 	t_header_fields	response;
@@ -202,7 +202,7 @@ std::string GET(t_http_req &req, t_config &conf, t_server &s)
   if (!fd.is_open())
     return error_page(404, req.method);
   if (req.loc.active && req.loc.CGI.active)
-  	 req.URL = get_cgi(req, conf, s);
+  	 req.URL = get_cgi(req, conf);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
 	return construct_get_response(response);
@@ -219,12 +219,12 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 	return construct_head_response(response);
 }
 
-std::string POST(t_http_req &req, t_config &conf, t_server &s)
+std::string POST(t_http_req &req, t_config &conf)
 {
 	std::ifstream		fd;
 
   P("POST");
-	return GET(req, conf, s);
+	return GET(req, conf);
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
   // return header_line("HTTP/1.1", "304", "Not Modified");
@@ -260,14 +260,14 @@ std::string PUT(t_http_req &req)
 	return construct_put_response(response);
 }
 
-std::string parse_method(t_http_req &req, t_config &conf, t_server &s)
+std::string parse_method(t_http_req &req, t_config &conf)
 {
 	if (req.method == std::string("GET"))
-		return GET(req, conf, s);
+		return GET(req, conf);
 	else if (req.method == std::string("HEAD"))
 		return HEAD(req.URL);
 	else if (req.method == std::string("POST"))
-		return POST(req, conf, s);
+		return POST(req, conf);
 	else if (req.method == std::string("PUT"))
 		return PUT(req);
 	else if (req.method == std::string("DELETE"))
@@ -285,7 +285,7 @@ void socket_erase(std::map<int, t_http_req>::iterator &socket, t_server &s)
 	s.requests.erase(rem);
 }
 
-void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_config &conf, t_server &s)
+void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_config &conf)
 {
 	std::string	answer;
 
@@ -299,7 +299,7 @@ void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_
   else if (req.URL == std::string("method not found"))
     answer = error_page(405, req.method);
 	else
-    answer = parse_method(req, conf, s);
-	s.answer[socket->first] = answer;
-  socket_erase(socket, s);
+    answer = parse_method(req, conf);
+	conf.s.answer[socket->first] = answer;
+  socket_erase(socket, conf.s);
 }

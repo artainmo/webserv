@@ -3,8 +3,21 @@
 
 #include "../utils/utils.hpp"
 
+#include <map>
+#include <vector>
+#include <stdio.h>
 #include <iostream>
-#include <string>
+#include <string.h>//strlen
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>//close
+#include <arpa/inet.h> //close
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <fstream>
 #include <list>
 
@@ -55,17 +68,6 @@ typedef struct s_location //Config routes
 	std::string FOUND_URL;
 } t_location;
 
-typedef struct s_config
-{
-	std::string host;
-	int port;
-	std::string server_name;
-	std::string root;
-	std::string default_error_page;
-	size_t body_size_limit;
-	std::list<t_location> locations;
-	std::list<std::string> index;
-} t_config;
 
 typedef struct s_header_fields
 {
@@ -105,6 +107,33 @@ typedef struct s_http_req
 	bool non_body_parsed;
 	int body_index;
 } t_http_req;
+
+typedef struct	s_server
+{
+	int server_socket; //Our server socket, whereby clients can connect to
+	struct sockaddr_in address; //Socket address struct for socket functions
+	int addrlen; //Size in int that can be casted for socket functions
+	int client_socket[SOMAXCONN]; //Remember already connected clients
+	fd_set active_socket_read; //fd_set struct for select function, takes active sockets for reading
+	fd_set active_socket_write;
+	int connected_socket; //New socket connected between server and client
+	std::map<int, t_http_req> requests; //To handle multiple incoming requests and requests that are received in packages
+	std::map<int, std::string>	answer; //To handle answers sent in packages
+	unsigned int		fd_max;
+}				t_server;
+
+typedef struct s_config
+{
+	std::string host;
+	int port;
+	std::string server_name;
+	std::string root;
+	std::string default_error_page;
+	size_t body_size_limit;
+	std::list<t_location> locations;
+	std::list<std::string> index;
+	t_server s;
+} t_config;
 
 void parse_config(std::string path, std::list<t_config> &ret);
 void parse_http_request(t_http_req &ret, std::string &req, t_config &conf);

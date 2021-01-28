@@ -23,7 +23,7 @@ run: re
 	./webserv.a conf/webserv1.conf
 
 test:
-	yes | ./tests/tester http://localhost:443
+	yes | ./tests/tester http://localhost:80
 
 clean:
 	rm -rf $(OBJ)

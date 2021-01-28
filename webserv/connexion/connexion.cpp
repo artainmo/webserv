@@ -1,39 +1,39 @@
 #include "connexion.hpp"
 
-void setup_server(t_server &s, t_config &config)
+void setup_server(t_config &c)
 {
-    s.addrlen = sizeof(s.address);
+    c.s.addrlen = sizeof(c.s.address);
 
     //initialise client sockets to null or inactive
     for (unsigned int i = 0; i < SOMAXCONN; i++)
     {
-        s.client_socket[i] = 0;
+        c.s.client_socket[i] = 0;
     }
 
     //Creating server socket file descriptor
     //AF_INET = IPv4 | AF_INET6 = IPv6
     //SOCK_STREAM = TCP | STOCK_DGRAM = UDP
     //0 is protocol value for IP
-    if ((s.server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    if ((c.s.server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         std::cout << "Error: socket failed" << std::endl;
         exit(1);
     }
-	   s.fd_max = s.server_socket;
+	   c.s.fd_max = c.s.server_socket;
 
     //set server socket to allow multiple connections
     int opt = 1;
-    if(setsockopt(s.server_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) == -1)
+    if(setsockopt(c.s.server_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) == -1)
     {
       std::cout << "Error: sotsockopt failed" << std::endl;
       exit(1);
     }
     //type of socket created
-    s.address.sin_family = AF_INET; //= IPv4
-    s.address.sin_addr.s_addr = INADDR_ANY; //Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks
-    s.address.sin_port = htons(config.port); //decode port adress with htons
+    c.s.address.sin_family = AF_INET; //= IPv4
+    c.s.address.sin_addr.s_addr = INADDR_ANY; //Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks
+    c.s.address.sin_port = htons(c.port); //decode port adress with htons
 
-    if (bind(s.server_socket, (struct sockaddr *)&s.address, s.addrlen) == -1)
+    if (bind(c.s.server_socket, (struct sockaddr *)&c.s.address, c.s.addrlen) == -1)
     {
         std::cout << "Error: bind failed" << std::endl;
         P(strerror(errno));
@@ -41,10 +41,10 @@ void setup_server(t_server &s, t_config &config)
     }
 
     std::cout << "Listening on port: ";
-    std:: cout << config.port << std::endl;
+    std:: cout << c.port << std::endl;
     //Server socket waits for a client socket to connect
     //SOMAXCONN is constant of max number of client requests we could wait for
-    if (listen(s.server_socket, SOMAXCONN) == -1)
+    if (listen(c.s.server_socket, SOMAXCONN) == -1)
     {
         std::cout << "Error: listen failed" << std::endl;
         exit(1);

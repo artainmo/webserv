@@ -29,7 +29,7 @@ void env_meta_variables(t_CGI &c, std::vector<std::string> &vec_env) //env varia
 //	show_cgi(vec_env);
 }
 
-void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s, std::vector<std::string> &vec_env)
+void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<std::string> &vec_env)
 {
 
 	c.CONTENT_LENGTH = std::to_string(req.message_body.size()); //size of the body
@@ -38,7 +38,7 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s, 
 	c.PATH_INFO = req.URL; //Should be init URL
 	c.PATH_TRANSLATED = req.URL; //Should be local URL
 	// c->QUERY_STRING = std::string(""); //Default empty
-	c.REMOTE_ADDR = std::to_string(s.address.sin_addr.s_addr);
+	c.REMOTE_ADDR = std::to_string(conf.s.address.sin_addr.s_addr);
 	// c->REMOTE_INDENT = std::string("None");
 	c.REMOTE_USER = req.header_fields.Host.front();
 	c.REQUEST_METHOD = req.method;
@@ -46,7 +46,7 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s, 
 	// c.SCRIPT_NAME = std::string("None"); //Already init
 	c.SERVER_NAME = conf.server_name;
 	c.SERVER_PROTOCOL = req.protocol_version;
-	c.SERVER_SOFTWARE = std::string("None");
+	// c.SERVER_SOFTWARE = std::string("None");
 	// P("~~~~~~Body size:" << c.CONTENT_LENGTH );
 	env_meta_variables(c, vec_env);
 }
@@ -125,13 +125,13 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 
 // }
 
-std::string get_cgi(t_http_req &req, t_config &conf, t_server &s)
+std::string get_cgi(t_http_req &req, t_config &c)
 {
 	int fd_upload_location;
 	std::vector<std::string> vec_env;
 	std::string generated_file_path;
 
-	set_meta_variables(req.loc.CGI, req, conf, s, vec_env);
+	set_meta_variables(req.loc.CGI, req, c, vec_env);
 	generated_file_path = req.loc.root + req.loc.file_upload_location;
 	//P("UPLOAD:" << generated_file_path);
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
