@@ -286,7 +286,7 @@ void default_init(t_http_req &req)
   req.header_fields.WWW_Authenticate.push_back("None");
 	req.method = std::string("None");
 	req.URL = std::string("None");
-	req.loc = 0;
+	req.loc.active = false;
 	req.protocol_version = std::string("None");
 	req.message_body = std::string("None");
 	req.error = false;

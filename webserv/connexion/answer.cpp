@@ -201,7 +201,7 @@ std::string GET(t_http_req &req, t_config &conf, t_server &s)
   fd.open(req.URL);
   if (!fd.is_open())
     return error_page(404, req.method);
-  if (req.loc != 0 && req.loc->CGI.active)
+  if (req.loc.active && req.loc.CGI.active)
   	 req.URL = get_cgi(req, conf, s);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
@@ -240,7 +240,7 @@ std::string PUT(t_http_req &req)
 	t_header_fields		response;
 	int						status_code;
 
-	req.URL = req.loc->file_upload_location + std::string("/") + final_file_in_path(req.URL);
+	req.URL = req.loc.file_upload_location + std::string("/") + final_file_in_path(req.URL);
 	if (file_exists(req.URL))
 		status_code = 200; //OK (file already existed)
 	else

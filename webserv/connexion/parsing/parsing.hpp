@@ -41,6 +41,7 @@ typedef struct s_CGI
 
 typedef struct s_location //Config routes
 {
+	bool active;
 	std::list<std::string> file_extensions; //if  no extensions specified means ALL, besides if extension specified in other location
 	std::string directory;
 	std::list<std::string> http_methods;
@@ -95,7 +96,7 @@ typedef struct s_http_req
 	std::string complete_request;
 	std::string method;
 	std::string URL;
-	t_location *loc;
+	t_location loc;
 	std::string protocol_version;
 	t_header_fields header_fields;
 	std::string message_body;

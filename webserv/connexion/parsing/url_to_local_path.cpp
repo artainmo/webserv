@@ -1,42 +1,40 @@
 #include "parsing.hpp"
 
-t_location *add_location(t_location *my_loc, t_location &new_loc, t_config &conf)
+void add_location(t_location &my_loc, t_location &new_loc)
 {
-	if (my_loc == 0)
-		my_loc = new t_location;
-	my_loc->file_extensions = new_loc.file_extensions;
-	my_loc->directory = new_loc.directory;
-	// my_loc->http_methods.merge(new_loc.http_methods); //Add accepted methods
-	my_loc->http_methods = new_loc.http_methods;
-	my_loc->max_body = new_loc.max_body;
+	my_loc.active = true;
+	my_loc.file_extensions = new_loc.file_extensions;
+	my_loc.directory = new_loc.directory;
+	// my_loc.http_methods.merge(new_loc.http_methods); //Add accepted methods
+	my_loc.http_methods = new_loc.http_methods;
+	my_loc.max_body = new_loc.max_body;
 	// if (new_loc.root.size() != 0) //If next root is non-existant keep ancient root
-	my_loc->root = new_loc.root;
-	my_loc->index = new_loc.index;
-	my_loc->directory_listing = new_loc.directory_listing;
-	my_loc->default_file_if_request_directory = new_loc.default_file_if_request_directory;
-	my_loc->CGI = new_loc.CGI;
+	my_loc.root = new_loc.root;
+	my_loc.index = new_loc.index;
+	my_loc.directory_listing = new_loc.directory_listing;
+	my_loc.default_file_if_request_directory = new_loc.default_file_if_request_directory;
+	my_loc.CGI = new_loc.CGI;
 
-	my_loc->CGI.active = new_loc.CGI.active;
-	my_loc->CGI.AUTH_TYPE = new_loc.CGI.AUTH_TYPE;
-	my_loc->CGI.CONTENT_LENGTH = new_loc.CGI.CONTENT_LENGTH;
-	my_loc->CGI.CONTENT_TYPE = new_loc.CGI.CONTENT_TYPE;
-	my_loc->CGI.GATEWAY_INTERFACE = new_loc.CGI.GATEWAY_INTERFACE;
-	my_loc->CGI.PATH_INFO = new_loc.CGI.PATH_INFO;
-	my_loc->CGI.PATH_TRANSLATED = new_loc.CGI.PATH_TRANSLATED;
-	my_loc->CGI.QUERY_STRING = new_loc.CGI.QUERY_STRING;
-	my_loc->CGI.REMOTE_ADDR = new_loc.CGI.REMOTE_ADDR;
-	my_loc->CGI.REMOTE_INDENT = new_loc.CGI.REMOTE_INDENT;
-	my_loc->CGI.REMOTE_USER = new_loc.CGI.REMOTE_USER;
-	my_loc->CGI.REQUEST_METHOD = new_loc.CGI.REQUEST_METHOD;
-	my_loc->CGI.REQUEST_URI = new_loc.CGI.REQUEST_URI;
-	my_loc->CGI.SCRIPT_NAME = new_loc.CGI.SCRIPT_NAME;
-	my_loc->CGI.SERVER_NAME = new_loc.CGI.SERVER_NAME;
-	my_loc->CGI.SERVER_PORT = new_loc.CGI.SERVER_PORT;
-	my_loc->CGI.SERVER_PROTOCOL = new_loc.CGI.SERVER_PROTOCOL;
-	my_loc->CGI.SERVER_SOFTWARE = new_loc.CGI.SERVER_SOFTWARE;
+	my_loc.CGI.active = new_loc.CGI.active;
+	my_loc.CGI.AUTH_TYPE = new_loc.CGI.AUTH_TYPE;
+	my_loc.CGI.CONTENT_LENGTH = new_loc.CGI.CONTENT_LENGTH;
+	my_loc.CGI.CONTENT_TYPE = new_loc.CGI.CONTENT_TYPE;
+	my_loc.CGI.GATEWAY_INTERFACE = new_loc.CGI.GATEWAY_INTERFACE;
+	my_loc.CGI.PATH_INFO = new_loc.CGI.PATH_INFO;
+	my_loc.CGI.PATH_TRANSLATED = new_loc.CGI.PATH_TRANSLATED;
+	my_loc.CGI.QUERY_STRING = new_loc.CGI.QUERY_STRING;
+	my_loc.CGI.REMOTE_ADDR = new_loc.CGI.REMOTE_ADDR;
+	my_loc.CGI.REMOTE_INDENT = new_loc.CGI.REMOTE_INDENT;
+	my_loc.CGI.REMOTE_USER = new_loc.CGI.REMOTE_USER;
+	my_loc.CGI.REQUEST_METHOD = new_loc.CGI.REQUEST_METHOD;
+	my_loc.CGI.REQUEST_URI = new_loc.CGI.REQUEST_URI;
+	my_loc.CGI.SCRIPT_NAME = new_loc.CGI.SCRIPT_NAME;
+	my_loc.CGI.SERVER_NAME = new_loc.CGI.SERVER_NAME;
+	my_loc.CGI.SERVER_PORT = new_loc.CGI.SERVER_PORT;
+	my_loc.CGI.SERVER_PROTOCOL = new_loc.CGI.SERVER_PROTOCOL;
+	my_loc.CGI.SERVER_SOFTWARE = new_loc.CGI.SERVER_SOFTWARE;
 
-	my_loc->file_upload_location = new_loc.file_upload_location;
-	return my_loc;
+	my_loc.file_upload_location = new_loc.file_upload_location;
 }
 
 
@@ -203,8 +201,8 @@ void prefix_location(std::list<t_location> &my_locations, t_http_req &req, t_con
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
 		// P("URL: " << req.URL);
-		// P("DIR: " << loc->directory);
-		// P("COMP: " << (req.URL >= loc->directory && loc->directory != std::string("None")));
+		// P("DIR: " << loc.directory);
+		// P("COMP: " << (req.URL >= loc.directory && loc.directory != std::string("None")));
 		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
 			find_in_directory_location(my_locations, *loc, req, conf);
 	}
@@ -240,7 +238,7 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		req.URL = "method not found";
 	else //Add the found location and change URL only to a valid URL
 	{
-		req.loc = add_location(req.loc, my_locations.back(), conf);
+		add_location(req.loc, my_locations.back());
 		req.URL = my_locations.back().FOUND_URL;
 	}
 }

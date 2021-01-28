@@ -55,8 +55,8 @@ void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_par
 {
 	std::string executable = "/usr/bin/php";
 
-	if (req.loc->CGI.PATH_INFO != std::string("None"))
-		executable = req.loc->CGI.SCRIPT_NAME;
+	if (req.loc.CGI.PATH_INFO != std::string("None"))
+		executable = req.loc.CGI.SCRIPT_NAME;
 	execve_param.push_back(executable);
 	execve_param.push_back(req.URL);
 }
@@ -132,8 +132,8 @@ std::string get_cgi(t_http_req &req, t_config &conf, t_server &s)
 	std::vector<std::string> vec_env;
 	std::string generated_file_path;
 
-	set_meta_variables(req.loc->CGI, req, conf, s, vec_env);
-	generated_file_path = req.loc->root + req.loc->file_upload_location;
+	set_meta_variables(req.loc.CGI, req, conf, s, vec_env);
+	generated_file_path = req.loc.root + req.loc.file_upload_location;
 	//P("UPLOAD:" << generated_file_path);
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
