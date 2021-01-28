@@ -1,19 +1,27 @@
-- Understand the RFCs
-- Create http answers for each method
-- Adapt http answers based on config file
-- Adapt server setup based on config file
+PDF
 
-----------------------------------------------
+Create own basic test to show what happens when file not found, method not found, search a directory with potential index.html…
 
-GET REQUEST:
-- Get the good request and retrieve the file
-- Parse the file and put it in the body if successful
-- Fill the response headers
-- Send the response
+0) CODE
 
-----------------------------------------------
+ Search for all read/recv/write/send on a socket and check that if an error returned the client is removed 
 
-- Check HEAD request
-- PUT request
+Search for all read/recv/write/send and check if the returned value is well checked. (checking only -1 or 0 is not good you should check both)
 
-- htt_request.cpp ligne 125
+1)CONF
+setup multiple servers with different port
+setup multiple servers with different host name
+setup default error page
+
+3)Headers
+Open the RFC 7231 and check the list of header of the subject, ask questions about it.
+
+4)PORT
+Multiple ports for one server?
+Multiple ports for one server same port error
+Multiple server with same port, if one server does not work use next one
+
+5)SIEGE
+launch the installation of siege with homebrew
+
+SIEGE is used to stress test -> memory leak, never hanging connection, server never dies….
