@@ -6,6 +6,7 @@ void wait_connexion(t_config &c)
   struct timeval timeout = {1, 0};
 
   reset_sockets(c.s);
+  c.timeout = false;
   if ((ret = select(FD_SETSIZE , &c.s.active_socket_read, &c.s.active_socket_write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
   {
       std::cout << "Error: select failed" << std::endl;
@@ -14,9 +15,9 @@ void wait_connexion(t_config &c)
   else if (ret == 0) //If return is zero timeout happened
 	{
   		disconnect_all(c.s);
-		  wait_connexion(c);
+      c.timeout = true;
 	}
-  else if (FD_ISSET(c.s.server_socket, &c.s.active_socket_read)) //If returns true, something happened on server socket, meaning a new connexion occured
+  else if (FD_ISSET(c.s.server_socket, &c.s.active_socket_read))
     new_incoming_connection(c.s);
 }
 
@@ -65,37 +66,42 @@ void handle_read(t_config &c)
 	}
 }
 
-void server(t_config &c)
+void launch_server(std::list<t_config> &c)
 {
+  std::list<t_config>::iterator server = c.begin();
+
   try //catch exceptions if an exception occurs in catch block
   {
-    change_directory("/webserv/frontend");
 	   while(true)
      {
        try //catch exceptions during server working
        {
-         wait_connexion(c);
-	       handle_write(c.s);
-	       handle_read(c);
+         if (server == c.end())
+          server = c.begin();
+         wait_connexion(*server);
+         if ((*server).timeout == false)
+         {
+	        handle_write((*server).s);
+	        handle_read(*server);
+         }
+         server++;
        }
        catch (const std::out_of_range &e) //If out of range error, parsing error, meaning parsing received wrong request thus restart client request
        {
          P(e.what());
-         client_restart_all(c.s);
+         client_restart_all((*server).s);
        }
        catch (const std::exception &e) //All other exceptions catch them to keep server running, return internal server error to clients
        {
          P(e.what());
-         internal_server_error(c.s);
+         internal_server_error((*server).s);
        }
      }
-     change_directory("/../..");
   }
   catch (std::exception &e)
   {
     P("Exception occured in catch block: relaunch server");
-    change_directory("/../..");
-    server(c);
+    launch_server(c);
   }
 }
 
@@ -110,7 +116,9 @@ int main(int argc , char *argv[])
 	}
 	signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
 	parse_config(argv[1], config);
-	setup_server(config.back());
-	server(config.back());
+  for (std::list<t_config>::iterator i = config.begin(); i != config.end(); i++)
+	 setup_server(*i);
+  change_directory("/webserv/frontend");
+	launch_server(config);
   return 0;
 }

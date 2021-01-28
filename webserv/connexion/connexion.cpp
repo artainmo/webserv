@@ -128,9 +128,9 @@ void new_incoming_connection(t_server &s)
     }
 	if ((unsigned int)s.connected_socket > s.fd_max)
 		s.fd_max = s.connected_socket;
-    fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
-    add_new_socket_to_active_sockets(s);
-    printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
+  fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
+  add_new_socket_to_active_sockets(s);
+  printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
 }
 
 void get_client_request(t_server &s)

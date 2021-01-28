@@ -10,9 +10,9 @@ Search for all read/recv/write/send and check if the returned value is well chec
 
 1)CONF
 Parse the multiple servers /
-setup multiple servers with different port
+setup multiple servers with different ports
 setup multiple servers with different host name
-setup default error page
+setup default error page (try to change the error 404)
 
 3)Headers
 Open the RFC 7231 and check the list of header of the subject, ask questions about it.
