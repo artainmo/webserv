@@ -1,18 +1,5 @@
 #include "parsing.hpp"
 
-// t_location *init_location(t_location *loc, t_config &conf)
-// {
-// 	loc = new t_location;
-// 	loc->file_extensions.push_back("None");
-// 	loc->directory = "None";
-// 	loc->http_methods.push_back("ALL");
-// 	loc->directory_listing = std::string("false");
-// 	loc->default_file_if_request_directory = "None";
-// 	loc->CGI = 0;
-// 	loc->file_upload_location = "upload/default";
-// 	return loc;
-// }
-
 t_location *add_location(t_location *my_loc, t_location &new_loc, t_config &conf)
 {
 	if (my_loc == 0)

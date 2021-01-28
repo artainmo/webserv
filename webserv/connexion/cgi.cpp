@@ -5,12 +5,6 @@ void set_env(std::string var, std::string equal_to, std::vector<std::string> &ve
 	vec.push_back(var + "=" + equal_to);
 }
 
-void show_cgi(std::vector<std::string> &vec_env)
-{
-	for (size_t i = 0; i < vec_env.size(); i++)
-		P(vec_env[i]);
-}
-
 
 void env_meta_variables(t_CGI &c, std::vector<std::string> &vec_env) //env variables is correct
 {
@@ -58,14 +52,12 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, t_server &s, 
 	env_meta_variables(c, vec_env);
 }
 
-// void unset_metavariables ?? Unset automatically when process dies?
-
 void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_param)
 {
 	std::string executable = "/usr/bin/php";
 
 	if (req.loc->CGI->PATH_INFO != std::string("None"))
-	executable = req.loc->CGI->SCRIPT_NAME;
+		executable = req.loc->CGI->SCRIPT_NAME;
 	execve_param.push_back(executable);
 	execve_param.push_back(req.URL);
 }
@@ -79,7 +71,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	if (pipe(pp) == -1)
 	{
 		P("Error: pipe failed");
-		exit(1);
+		throw internal_server_error_exc();
 	}
 	if ((pid = fork()) == -1)
 	{
@@ -108,7 +100,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 			P(strerror(errno));
 			throw internal_server_error_exc();
 		}
-		throw internal_server_error_exc();
+		close(pp[0]);
 	}
 	else
 	{
@@ -141,8 +133,6 @@ std::string get_cgi(t_http_req &req, t_config &conf, t_server &s) //returns fals
 	std::vector<std::string> vec_env;
 	std::string generated_file_path;
 
-	// if ((loc = get_location(get_file_extension(path), method, conf)) == 0) //cgi must not be used for this file extension
-	// 	return std::string("None");
 	set_meta_variables(*req.loc->CGI, req, conf, s, vec_env);
 	generated_file_path = req.loc->root + req.loc->file_upload_location;
 	//P("UPLOAD:" << generated_file_path);

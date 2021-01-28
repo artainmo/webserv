@@ -67,9 +67,9 @@ void handle_read(t_server &s, t_config &conf)
 
 void server(t_server &s, t_config &conf)
 {
-  change_directory("/frontend");
   try //catch exceptions if an exception occurs in catch block
   {
+    change_directory("/webserv/frontend");
 	   while(true)
      {
        try //catch exceptions during server working
@@ -89,14 +89,14 @@ void server(t_server &s, t_config &conf)
          internal_server_error(s);
        }
      }
+     change_directory("/../..");
   }
   catch (std::exception &e)
   {
     P("Exception occured in catch block: relaunch server");
-    change_directory("/..");
+    change_directory("/../..");
     server(s, conf);
   }
-  change_directory("/..");
 }
 
 int main(int argc , char *argv[])

@@ -111,7 +111,7 @@ void init_location(t_location &loc, t_config &conf)
 	loc.directory_listing = std::string("false");
 	loc.default_file_if_request_directory = "None";
 	loc.CGI = 0;
-	loc.file_upload_location = "upload/default";
+	loc.file_upload_location = "default/upload/default";
 }
 
 void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In location block

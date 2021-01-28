@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <list>
+#include <vector>
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
@@ -23,5 +24,6 @@ bool equal_to(char c, std::string chars);
 void print_sockets(std::map<int, std::string> &requests);
 bool file_exists(std::string name);
 void change_directory(std::string relative_path);
+void show_cgi(std::vector<std::string> &vec_env);
 
 #endif

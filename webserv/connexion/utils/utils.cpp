@@ -88,10 +88,16 @@ void change_directory(std::string relative_path)
 	}
 	if (chdir((std::string(path_name) + relative_path).c_str()) == -1)
 	{
-		std::cout << "ERROR: chdir failed" << std::endl;
+		std::cout << "ERROR: chdir failed: " << path_name + relative_path << std::endl;
 		throw internal_server_error_exc();
 	}
 	// getcwd(path_name, 100);
 	// std::cout << path_name << std::endl;
 	delete [] path_name;
+}
+
+void show_cgi(std::vector<std::string> &vec_env)
+{
+	for (size_t i = 0; i < vec_env.size(); i++)
+		P(vec_env[i]);
 }

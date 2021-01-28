@@ -180,7 +180,7 @@ void init_put(std::string const& path, std::ofstream & fd, t_header_fields & res
 
 std::string error_page(int error_nbr, std::string methode)
 {
-	std::string			path("../default/" + std::to_string(error_nbr) + ".html");
+	std::string			path("default/error/" + std::to_string(error_nbr) + ".html");
 	std::ifstream 		fd(path);  // charger l'erreur
 	t_header_fields	info;
 
