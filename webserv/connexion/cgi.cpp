@@ -132,7 +132,6 @@ std::string get_cgi(t_http_req &req, t_config &conf, t_server &s)
 	std::vector<std::string> vec_env;
 	std::string generated_file_path;
 
-	P("HERE!");
 	set_meta_variables(req.loc->CGI, req, conf, s, vec_env);
 	generated_file_path = req.loc->root + req.loc->file_upload_location;
 	//P("UPLOAD:" << generated_file_path);

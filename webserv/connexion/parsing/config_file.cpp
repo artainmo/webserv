@@ -116,20 +116,20 @@ void init_location(t_location &loc, t_config &conf)
 
 void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In location block
 {
-	t_location *loc = new t_location;
+	t_location loc;
 
-	init_location(*loc, conf);
-	parse_location_line_directory(line, *loc);
-	parse_location_line_file_extensions(line, *loc);
+	init_location(loc, conf);
+	parse_location_line_directory(line, loc);
+	parse_location_line_file_extensions(line, loc);
 	while (getlinecut(fd, line) && !check_line(line, "}"))
 	{
 		if (check_line(line, "http_methods"))
-			loc->http_methods = following_contents(line, "http_methods");
+			loc.http_methods = following_contents(line, "http_methods");
 		else if (check_line(line, "body_size_limit"))
 		{
 			try
 			{
-				loc->max_body = std::stoi(following_content(line, "body_size_limit"));
+				loc.max_body = std::stoi(following_content(line, "body_size_limit"));
 			}
 			catch(std::exception &e)
 			{
@@ -138,22 +138,22 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 		}
 		else if (check_line(line, "root"))
 		{
-			loc->root = following_content(line, "root");
-			if (loc->root[0] == '/')
-				loc->root =loc->root.substr(1, loc->root.size());
+			loc.root = following_content(line, "root");
+			if (loc.root[0] == '/')
+				loc.root =loc.root.substr(1, loc.root.size());
 		}
 		else if (check_line(line, "index"))
-			loc->index = following_contents(line, "index");
+			loc.index = following_contents(line, "index");
 		else if (check_line(line, "directory_listing"))
-			loc->directory_listing = following_content(line, "directory_listing");
+			loc.directory_listing = following_content(line, "directory_listing");
 		else if (check_line(line, "default_file_if_request_directory"))
-			loc->default_file_if_request_directory = following_content(line, "default_file_if_request_directory");
+			loc.default_file_if_request_directory = following_content(line, "default_file_if_request_directory");
 		else if (check_line(line, "fastcgi_param"))
-			parse_cgi(line, *loc, conf);
+			parse_cgi(line, loc, conf);
 		else if (check_line(line, "file_upload_location"))
-			loc->file_upload_location = following_content(line, "file_upload_location");
+			loc.file_upload_location = following_content(line, "file_upload_location");
 	}
-	conf.locations.push_back(*loc);
+	conf.locations.push_back(loc);
 }
 
 bool order_location_based_on_directory_lenght(const t_location &first, const t_location &second) { return (first.directory <= second.directory); }
