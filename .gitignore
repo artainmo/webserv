@@ -1,5 +1,6 @@
 *.swp
 *.o
 *.a
+a.out
 *.DS_Store
 *.vscode
