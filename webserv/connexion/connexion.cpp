@@ -160,7 +160,8 @@ void get_client_request(t_server &s)
               s.requests[s.client_socket[i]].complete_request += message; //Create key in map with its value
               // if (s.requests[s.client_socket[i]].size() > 100000000)
               //   s.requests[s.client_socket[i]] += "0"; //0 to tell parser end of chunked message
-              // P("Size message char:" << message_len);
+            //   P("Size message char:" << message_len);
+			//   P("Message: " << message);
               // P("Size message std::string:" << s.requests[s.client_socket[i]].size());
           }
       }
