@@ -19,6 +19,7 @@ public:
 
 typedef struct s_CGI
 {
+	bool active;
 	std::string AUTH_TYPE;
 	std::string CONTENT_LENGTH;
 	std::string CONTENT_TYPE;
@@ -48,7 +49,7 @@ typedef struct s_location //Config routes
 	std::list<std::string> index;
 	std::string  directory_listing;
 	std::string default_file_if_request_directory;
-	t_CGI *CGI; //If equal to NULL no CGI server, but http static content server
+	t_CGI CGI; //If equal to NULL no CGI server, but http static content server
 	std::string file_upload_location;
 	std::string FOUND_URL;
 } t_location;

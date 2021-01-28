@@ -201,7 +201,7 @@ std::string GET(t_http_req &req, t_config &conf, t_server &s)
   fd.open(req.URL);
   if (!fd.is_open())
     return error_page(404, req.method);
-  if (req.loc != 0 && req.loc->CGI != 0)
+  if (req.loc != 0 && req.loc->CGI.active)
   	 req.URL = get_cgi(req, conf, s);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();

@@ -2,65 +2,65 @@
 
 void init_cgi(t_location &loc, t_config &conf)
 {
-	loc.CGI = new t_CGI;
-	loc.CGI->AUTH_TYPE = std::string("None");
-	loc.CGI->CONTENT_LENGTH = std::string("0"); //If no body default is 0
-	loc.CGI->CONTENT_TYPE = std::string("None");
-	loc.CGI->GATEWAY_INTERFACE = std::string("None");
-	loc.CGI->PATH_INFO = std::string("None");
-	loc.CGI->PATH_TRANSLATED = std::string("None");
-	loc.CGI->QUERY_STRING = std::string(""); //Empty by default
-	loc.CGI->REMOTE_ADDR = std::string("None");
-	loc.CGI->REMOTE_INDENT = std::string("None");
-	loc.CGI->REMOTE_USER = std::string("None");
-	loc.CGI->REQUEST_METHOD = std::string("None");
-	loc.CGI->REQUEST_URI = std::string("None");
-	loc.CGI->SCRIPT_NAME = std::string("0");
-	loc.CGI->SERVER_NAME = conf.server_name;
-	loc.CGI->SERVER_PORT = std::to_string(conf.port);
-	loc.CGI->SERVER_PROTOCOL = std::string("HTTP/1.1");
-	loc.CGI->SERVER_SOFTWARE = std::string("None");
+	loc.CGI.active = true;
+	loc.CGI.AUTH_TYPE = std::string("None");
+	loc.CGI.CONTENT_LENGTH = std::string("0"); //If no body default is 0
+	loc.CGI.CONTENT_TYPE = std::string("None");
+	loc.CGI.GATEWAY_INTERFACE = std::string("None");
+	loc.CGI.PATH_INFO = std::string("None");
+	loc.CGI.PATH_TRANSLATED = std::string("None");
+	loc.CGI.QUERY_STRING = std::string(""); //Empty by default
+	loc.CGI.REMOTE_ADDR = std::string("None");
+	loc.CGI.REMOTE_INDENT = std::string("None");
+	loc.CGI.REMOTE_USER = std::string("None");
+	loc.CGI.REQUEST_METHOD = std::string("None");
+	loc.CGI.REQUEST_URI = std::string("None");
+	loc.CGI.SCRIPT_NAME = std::string("0");
+	loc.CGI.SERVER_NAME = conf.server_name;
+	loc.CGI.SERVER_PORT = std::to_string(conf.port);
+	loc.CGI.SERVER_PROTOCOL = std::string("HTTP/1.1");
+	loc.CGI.SERVER_SOFTWARE = std::string("None");
 }
 
 void parse_cgi(std::string &line, t_location &loc, t_config &conf)
 {
-	if (loc.CGI == 0)
+	if (!loc.CGI.active)
 		init_cgi(loc, conf);
 	line = following_content(line, "fastcgi_param");
 	if (check_line(line, "AUTH_TYPE"))
-		loc.CGI->AUTH_TYPE = following_content(line, "AUTH_TYPE");
+		loc.CGI.AUTH_TYPE = following_content(line, "AUTH_TYPE");
 	if (check_line(line, "CONTENT_LENGTH"))
-		loc.CGI->CONTENT_LENGTH = following_content(line, "CONTENT_LENGTH");
+		loc.CGI.CONTENT_LENGTH = following_content(line, "CONTENT_LENGTH");
 	if (check_line(line, "CONTENT_TYPE"))
-		loc.CGI->CONTENT_TYPE = following_content(line, "CONTENT_TYPE");
+		loc.CGI.CONTENT_TYPE = following_content(line, "CONTENT_TYPE");
 	if (check_line(line, "GATEWAY_INTERFACE"))
-		loc.CGI->GATEWAY_INTERFACE = following_content(line, "GATEWAY_INTERFACE");
+		loc.CGI.GATEWAY_INTERFACE = following_content(line, "GATEWAY_INTERFACE");
 	if (check_line(line, "PATH_INFO"))
-		loc.CGI->PATH_INFO = following_content(line, "PATH_INFO");
+		loc.CGI.PATH_INFO = following_content(line, "PATH_INFO");
 	if (check_line(line, "PATH_TRANSLATED"))
-		loc.CGI->PATH_TRANSLATED = following_content(line, "PATH_TRANSLATED");
+		loc.CGI.PATH_TRANSLATED = following_content(line, "PATH_TRANSLATED");
 	if (check_line(line, "QUERY_STRING"))
-		loc.CGI->QUERY_STRING = following_content(line, "QUERY_STRING");
+		loc.CGI.QUERY_STRING = following_content(line, "QUERY_STRING");
 	if (check_line(line, "REMOTE_ADDR"))
-		loc.CGI->REMOTE_ADDR = following_content(line, "REMOTE_ADDR");
+		loc.CGI.REMOTE_ADDR = following_content(line, "REMOTE_ADDR");
 	if (check_line(line, "REMOTE_INDENT"))
-		loc.CGI->REMOTE_INDENT = following_content(line, "REMOTE_INDENT");
+		loc.CGI.REMOTE_INDENT = following_content(line, "REMOTE_INDENT");
 	if (check_line(line, "REMOTE_USER"))
-		loc.CGI->REMOTE_USER = following_content(line, "REMOTE_USER");
+		loc.CGI.REMOTE_USER = following_content(line, "REMOTE_USER");
 	if (check_line(line, "REQUEST_METHOD"))
-		loc.CGI->REQUEST_METHOD = following_content(line, "REQUEST_METHOD");
+		loc.CGI.REQUEST_METHOD = following_content(line, "REQUEST_METHOD");
 	if (check_line(line, "REQUEST_URI"))
-		loc.CGI->REQUEST_URI = following_content(line, "REQUEST_URI");
+		loc.CGI.REQUEST_URI = following_content(line, "REQUEST_URI");
 	if (check_line(line, "SCRIPT_NAME"))
-		loc.CGI->SCRIPT_NAME = following_content(line, "SCRIPT_NAME");
+		loc.CGI.SCRIPT_NAME = following_content(line, "SCRIPT_NAME");
 	if (check_line(line, "SERVER_NAME"))
-		loc.CGI->SERVER_NAME = following_content(line, "SERVER_NAME");
+		loc.CGI.SERVER_NAME = following_content(line, "SERVER_NAME");
 	if (check_line(line, "SERVER_PORT"))
-		loc.CGI->SERVER_PORT = following_content(line, "SERVER_PORT");
+		loc.CGI.SERVER_PORT = following_content(line, "SERVER_PORT");
 	if (check_line(line, "SERVER_PROTOCOL"))
-		loc.CGI->SERVER_PROTOCOL = following_content(line, "SERVER_PROTOCOL");
+		loc.CGI.SERVER_PROTOCOL = following_content(line, "SERVER_PROTOCOL");
 	if (check_line(line, "SERVER_SOFTWARE"))
-		loc.CGI->SERVER_PROTOCOL = following_content(line, "SERVER_SOFTWARE");
+		loc.CGI.SERVER_PROTOCOL = following_content(line, "SERVER_SOFTWARE");
 }
 
 void parse_location_line_file_extensions(std::string &line, t_location &loc)
@@ -110,7 +110,7 @@ void init_location(t_location &loc, t_config &conf)
 	loc.index = conf.index;
 	loc.directory_listing = std::string("false");
 	loc.default_file_if_request_directory = "None";
-	loc.CGI = 0;
+	loc.CGI.active = false;
 	loc.file_upload_location = "default/upload/default";
 }
 
@@ -219,7 +219,6 @@ void default_init(t_config &conf)
 
 void parse_config(std::string path, t_config &ret)
 {
-	//t_config *ret = new t_config;
 	std::ifstream fd(path);
 
 	if (!fd.is_open())

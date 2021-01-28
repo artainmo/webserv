@@ -15,6 +15,26 @@ t_location *add_location(t_location *my_loc, t_location &new_loc, t_config &conf
 	my_loc->directory_listing = new_loc.directory_listing;
 	my_loc->default_file_if_request_directory = new_loc.default_file_if_request_directory;
 	my_loc->CGI = new_loc.CGI;
+
+	my_loc->CGI.active = new_loc.CGI.active;
+	my_loc->CGI.AUTH_TYPE = new_loc.CGI.AUTH_TYPE;
+	my_loc->CGI.CONTENT_LENGTH = new_loc.CGI.CONTENT_LENGTH;
+	my_loc->CGI.CONTENT_TYPE = new_loc.CGI.CONTENT_TYPE;
+	my_loc->CGI.GATEWAY_INTERFACE = new_loc.CGI.GATEWAY_INTERFACE;
+	my_loc->CGI.PATH_INFO = new_loc.CGI.PATH_INFO;
+	my_loc->CGI.PATH_TRANSLATED = new_loc.CGI.PATH_TRANSLATED;
+	my_loc->CGI.QUERY_STRING = new_loc.CGI.QUERY_STRING;
+	my_loc->CGI.REMOTE_ADDR = new_loc.CGI.REMOTE_ADDR;
+	my_loc->CGI.REMOTE_INDENT = new_loc.CGI.REMOTE_INDENT;
+	my_loc->CGI.REMOTE_USER = new_loc.CGI.REMOTE_USER;
+	my_loc->CGI.REQUEST_METHOD = new_loc.CGI.REQUEST_METHOD;
+	my_loc->CGI.REQUEST_URI = new_loc.CGI.REQUEST_URI;
+	my_loc->CGI.SCRIPT_NAME = new_loc.CGI.SCRIPT_NAME;
+	my_loc->CGI.SERVER_NAME = new_loc.CGI.SERVER_NAME;
+	my_loc->CGI.SERVER_PORT = new_loc.CGI.SERVER_PORT;
+	my_loc->CGI.SERVER_PROTOCOL = new_loc.CGI.SERVER_PROTOCOL;
+	my_loc->CGI.SERVER_SOFTWARE = new_loc.CGI.SERVER_SOFTWARE;
+
 	my_loc->file_upload_location = new_loc.file_upload_location;
 	return my_loc;
 }
