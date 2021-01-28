@@ -84,11 +84,13 @@ void change_directory(std::string relative_path)
 	if (!(getcwd(path_name, 100)))
 	{
 		std::cout << "ERROR: getcwd failed" << std::endl;
+    delete [] path_name;
 		throw internal_server_error_exc();
 	}
 	if (chdir((std::string(path_name) + relative_path).c_str()) == -1)
 	{
 		std::cout << "ERROR: chdir failed: " << path_name + relative_path << std::endl;
+    delete [] path_name;
 		throw internal_server_error_exc();
 	}
 	// getcwd(path_name, 100);
