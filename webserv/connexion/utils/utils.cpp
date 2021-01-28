@@ -59,7 +59,7 @@ void print_sockets(std::map<int, std::string> &requests)
 
 bool equal_to(char c, std::string chars)
 {
-  for (int i = 0; i < chars.size() ; i++)
+  for (size_t i = 0; i < chars.size() ; i++)
     if (chars[i] == c)
       return true;
   return false;

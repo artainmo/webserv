@@ -31,7 +31,7 @@ typedef struct	s_server
 	int connected_socket; //New socket connected between server and client
 	std::map<int, t_http_req> requests; //To handle multiple incoming requests and requests that are received in packages
 	std::map<int, std::string>	answer; //To handle answers sent in packages
-	int		fd_max;
+	unsigned int		fd_max;
 }				t_server;
 
 void		setup_server(t_server &s, t_config &config);

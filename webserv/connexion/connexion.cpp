@@ -2,7 +2,6 @@
 
 void setup_server(t_server &s, t_config &config)
 {
-    (void)config;
     s.addrlen = sizeof(s.address);
 
     //initialise client sockets to null or inactive
@@ -127,7 +126,7 @@ void new_incoming_connection(t_server &s)
       std::cout << "Error: listen failed" << std::endl;
       throw internal_server_error_exc();
     }
-	if (s.connected_socket > s.fd_max)
+	if ((unsigned int)s.connected_socket > s.fd_max)
 		s.fd_max = s.connected_socket;
     fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
     add_new_socket_to_active_sockets(s);

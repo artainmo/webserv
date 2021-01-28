@@ -110,7 +110,7 @@ void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_c
 
 void find_start(std::string &message)
 {
-	int ret;
+	size_t ret;
 	std::string begin;
 
 	if ((ret = message.find("HTTP/1.1")) == std::string::npos)
@@ -295,7 +295,7 @@ void default_init(t_http_req &req)
 
 bool is_valid(std::string const &message)
 {
-	int ret;
+	size_t ret;
 	std::string begin;
 
 	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)

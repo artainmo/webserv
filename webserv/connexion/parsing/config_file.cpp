@@ -88,8 +88,8 @@ void parse_location_line_file_extensions(std::string &line, t_location &loc)
 
 void parse_location_line_directory(std::string &line, t_location &loc)
 {
-	int start;
-	int end;
+	size_t start;
+	size_t end;
 
 	if ((start = line.find_first_of("/")) == std::string::npos)
 		return ;

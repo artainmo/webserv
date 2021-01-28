@@ -93,7 +93,7 @@ void show_locations(std::list<t_location> &locations)
 {
 	if (locations.size() == 0)
 		return ;
-	int i = 0;
+	size_t i = 0;
 	P("SIZE: " << locations.size());
 	for (std::list<t_location>::iterator locs = locations.begin(); i < locations.size(); locs++)
 	{

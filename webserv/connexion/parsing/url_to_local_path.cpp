@@ -170,7 +170,7 @@ std::string find_file_directory(std::string local_root, std::string const &direc
 	return ret;
 }
 
-void find_in_file_extension_location(std::list<t_location> &my_locations, t_location &loc, t_http_req &req, t_config &conf)
+void find_in_file_extension_location(std::list<t_location> &my_locations, t_location &loc, t_http_req &req)
 {
 	// if ((file = find_file_directory(loc.root, req.URL, loc.index, req.method)) != std::string("file not found"))
 	// {
@@ -185,7 +185,7 @@ void find_in_file_extension_location(std::list<t_location> &my_locations, t_loca
 	// }
 }
 
-void find_in_directory_location(std::list<t_location> &my_locations, t_location &loc, t_http_req &req, t_config &conf)
+void find_in_directory_location(std::list<t_location> &my_locations, t_location &loc, t_http_req &req)
 {
 	std::string file;
 	if ((file = find_file_directory(loc.root, req.URL, loc.index, req.method)) != std::string("file not found"))
@@ -204,7 +204,7 @@ void prefix_location(std::list<t_location> &my_locations, t_http_req &req, t_con
 		// P("DIR: " << loc.directory);
 		// P("COMP: " << (req.URL >= loc.directory && loc.directory != std::string("None")));
 		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
-			find_in_directory_location(my_locations, *loc, req, conf);
+			find_in_directory_location(my_locations, *loc, req);
 	}
 }
 
@@ -212,7 +212,7 @@ void regular_expression_location(std::list<t_location> &my_locations, t_http_req
 {
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on file extensions
 		if (loc->file_extensions.front() != std::string("None"))
-			find_in_file_extension_location(my_locations, *loc, req, conf);
+			find_in_file_extension_location(my_locations, *loc, req);
 }
 
 void set_new_url(std::list<t_location> &my_locations, t_http_req &req)

@@ -20,9 +20,8 @@ void wait_connexion(t_server &s, t_config &config)
     new_incoming_connection(s);
 }
 
-void handle_write(t_server &s, t_config &config)
+void handle_write(t_server &s)
 {
-  (void)config;
   int message_ret; //Receive message lenght to add a /0 at end str
 
   for (unsigned int i = 0; i < s.fd_max; i++)
@@ -37,7 +36,7 @@ void handle_write(t_server &s, t_config &config)
         // if (errno == 54) //Functions properly
         client_restart(s, i);
       }
-			else if (message_ret < s.answer[s.client_socket[i]].size())
+			else if ((size_t)message_ret < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_ret + 1, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
@@ -75,7 +74,7 @@ void server(t_server &s, t_config &conf)
        try //catch exceptions during server working
        {
          wait_connexion(s, conf);
-	       handle_write(s, conf);
+	       handle_write(s);
 	       handle_read(s, conf);
        }
        catch (const std::out_of_range &e) //If out of range error, parsing error, meaning parsing received wrong request thus restart client request

@@ -64,7 +64,6 @@ void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_par
 void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<std::string> vec_env)
 {
 	int pp[2];
-	int fd;
 	pid_t pid;
 
 	if (pipe(pp) == -1)
@@ -87,9 +86,9 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 		init_execve_cgi(req, execve_param);
 		char *tab_env[vec_env.size() + 1];
 		char *tab_execve[execve_param.size() + 1];
-		for (int i = 0; i < vec_env.size(); i++)
+		for (size_t i = 0; i < vec_env.size(); i++)
 			tab_env[i] = (char*)vec_env[i].c_str();
-		for (int i = 0; i < execve_param.size() + 1; i++)
+		for (size_t i = 0; i < execve_param.size() + 1; i++)
 			tab_execve[i] = (char*)execve_param[i].c_str();
 		tab_env[vec_env.size()] = nullptr;
 		tab_execve[execve_param.size()] = nullptr;

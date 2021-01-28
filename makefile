@@ -10,7 +10,7 @@ SRCS = ./webserv/webserv.cpp \
 				./webserv/connexion/utils/utils.cpp
 
 CXX = clang++
-CXXFLAGS = #-Wall -Wextra -Werror
+CXXFLAGS = -Wall -Wextra -Werror
 
 OBJ = $(SRCS:.cpp=.o)
 

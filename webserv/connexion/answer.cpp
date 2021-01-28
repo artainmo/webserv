@@ -37,7 +37,7 @@ std::string get_header_line(int const& number)
 	return (protocol + std::string("404 Not Found"));
 }
 
-std::string get_date(void)
+std::string get_date()
 {
 	char			buf[255];
 	struct tm		timeinfo;
@@ -170,7 +170,7 @@ void init_head_get(std::string const& path, std::ifstream & fd, t_header_fields 
 	fill_response_struct(response, file, path, response_number);
 }
 
-void init_put(std::string const& path, std::ofstream & fd, t_header_fields & response, int const& response_number)
+void init_put(std::string const& path, t_header_fields & response, int const& response_number)
 {
 	std::string			file;
 
@@ -255,7 +255,7 @@ std::string PUT(t_http_req &req)
   }
   //write_put_file(fd,req.message_body);
   fd << req.message_body;
-	init_put(req.URL, fd, response, status_code);
+	init_put(req.URL, response, status_code);
 	fd.close();
 	return construct_put_response(response);
 }
