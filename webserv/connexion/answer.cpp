@@ -272,7 +272,7 @@ std::string parse_method(t_http_req &req, t_config &conf)
 		return PUT(req);
 	else if (req.method == std::string("DELETE"))
 		return error_page(405, req.method);
-	return error_page(404, req.method);
+	return error_page(405, req.method);
 }
 
 void socket_erase(std::map<int, t_http_req>::iterator &socket, t_server &s)

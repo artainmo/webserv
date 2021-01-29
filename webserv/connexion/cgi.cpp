@@ -55,7 +55,7 @@ void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_par
 {
 	std::string executable = "/usr/bin/php";
 
-	if (req.loc.CGI.PATH_INFO != std::string("None"))
+	if (req.loc.CGI.SCRIPT_NAME != std::string("None") && file_exists(req.loc.CGI.SCRIPT_NAME))
 		executable = req.loc.CGI.SCRIPT_NAME;
 	execve_param.push_back(executable);
 	execve_param.push_back(req.URL);
