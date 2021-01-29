@@ -123,7 +123,7 @@ typedef struct	s_server
 typedef struct s_config
 {
 	std::string host;
-	int port;
+	std::list<std::string> port;
 	std::string server_name;
 	std::string root;
 	std::string default_error_page;

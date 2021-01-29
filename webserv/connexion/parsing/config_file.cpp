@@ -17,7 +17,7 @@ void init_cgi(t_location &loc, t_config &conf)
 	loc.CGI.REQUEST_URI = std::string("None");
 	loc.CGI.SCRIPT_NAME = std::string("0");
 	loc.CGI.SERVER_NAME = conf.server_name;
-	loc.CGI.SERVER_PORT = std::to_string(conf.port);
+	loc.CGI.SERVER_PORT = conf.port.front();
 	loc.CGI.SERVER_PROTOCOL = std::string("HTTP/1.1");
 	loc.CGI.SERVER_SOFTWARE = std::string("None");
 }
@@ -167,16 +167,7 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 		if (check_line(line, "host"))
 			conf.host = following_content(line, "host");
 		else if (check_line(line, "port"))
-		{
-			try
-			{
-				conf.port = std::stoi(following_content(line, "port"));
-			}
-			catch(std::exception &e)
-			{
-				P(e.what());
-			}
-		}
+			conf.port = following_contents(line, "port");
 		else if (check_line(line, "server_name"))
 			conf.server_name = following_content(line, "server_name");
 		else if (check_line(line, "root"))
@@ -195,6 +186,8 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 		catch(std::exception &e)
 		{
 			P(e.what());
+			P("Error: body size limit is not a number in .conf");
+			exit(1);
 		}
 		else if (check_line(line, "location"))
 			parse_location(conf, fd, line);
@@ -202,7 +195,7 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 			conf.index = following_contents(line, "index");
 	}
 	conf.locations.sort(order_location_based_on_directory_lenght); //Order locations for when searching request location link
-	if(conf.port == -1)
+	if (conf.port.size() == 0)
 	{
 		P("Error: port not specified");
 		exit(1);
@@ -214,7 +207,6 @@ void default_init(std::list<t_config> &ret)
 	t_config conf;
 
 	conf.host = "None";
-	conf.port = -1;
 	conf.server_name = "None";
 	conf.root = "";
 	conf.default_error_page = "None";
