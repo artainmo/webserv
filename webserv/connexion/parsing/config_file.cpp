@@ -214,6 +214,44 @@ void default_init(std::list<t_config> &ret)
 	ret.push_back(conf);
 }
 
+void copy_config_with_new_port(t_config &server_block, std::string port, std::list<t_config> &c)
+{
+	t_config new_server_block;
+
+	new_server_block.host = server_block.host;
+	new_server_block.server_name = server_block.server_name;
+	new_server_block.root = server_block.root;
+	new_server_block.default_error_page = server_block.default_error_page;
+	new_server_block.body_size_limit = server_block.body_size_limit;
+	new_server_block.locations = server_block.locations;
+	new_server_block.index = server_block.index;
+
+	// new_server_block.s = new_server_block.s;
+
+	new_server_block.port.push_back(port);
+
+	c.push_back(new_server_block);
+}
+
+
+void one_server_multiple_ports_to_multiple_servers(t_config &server_block, std::list<t_config> &c)
+{
+	while(server_block.port.size() > 1)
+	{
+		copy_config_with_new_port(server_block, server_block.port.back(), c);
+		server_block.port.pop_back();
+	}
+}
+
+void one_server_block_multiple_ports(std::list<t_config> &c)
+{
+	for (std::list<t_config>::iterator i = c.begin(); i != c.end(); i++)
+	{
+		if ((*i).port.size() != 1)
+			one_server_multiple_ports_to_multiple_servers(*i, c);
+	}
+}
+
 void parse_config(std::string path, std::list<t_config> &ret)
 {
 	std::string line;
@@ -241,5 +279,6 @@ void parse_config(std::string path, std::list<t_config> &ret)
 		P("Error: server block missing");
 		exit(1);
 	}
+	one_server_block_multiple_ports(ret);
 	// show_conf(ret);
 }

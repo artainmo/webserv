@@ -131,7 +131,6 @@ typedef struct s_config
 	std::list<t_location> locations;
 	std::list<std::string> index;
 	t_server s;
-	bool timeout;
 } t_config;
 
 void parse_config(std::string path, std::list<t_config> &ret);
