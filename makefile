@@ -25,6 +25,9 @@ run: re
 test:
 	yes | ./tests/tester http://127.0.0.1:1900
 
+test2:
+	yes | ./tests/tester http://10.1.10.7:4200
+
 clean:
 	rm -rf $(OBJ)
 

@@ -13,14 +13,14 @@ void wait_connexion(std::list<t_config> &c, t_active_socket &active_socket)
   }
   else if (ret == 0) //If return is zero timeout happened
 	{
-      P("timeout");
+      // P("timeout");
   		all_servers(c, active_socket, disconnect_all);
       wait_connexion(c, active_socket);
 	}
   else
     all_servers(c, active_socket, new_incoming_connection);
-  P("END");
-  P(ret);
+  // P("END");
+  // P(ret);
 }
 
 void handle_write(t_server &s, t_active_socket &active_socket)
@@ -79,17 +79,13 @@ void launch_server(std::list<t_config> &c)
      {
        try //catch exceptions during server working
        {
-         P("HE1");
          wait_connexion(c, active_socket);
-         P("*****************************");
          while (server != c.end())
          {
-           P("HE3");
 	          handle_write((*server).s, active_socket);
 	          handle_read(*server, active_socket);
             server++;
          }
-         P("HE4");
          server = c.begin();
        }
        catch (const std::out_of_range &e) //If out of range error, parsing error, meaning parsing received wrong request thus restart client request
