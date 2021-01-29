@@ -94,8 +94,11 @@ void client_disconnection(t_server &s, unsigned int i)
   s.client_socket[i] = 0;
 }
 
-void disconnect_all(t_server &s)
+void disconnect_all(t_server &s, t_active_socket &active_socket)
 {
+  FD_ZERO(&active_socket.read); //Deactivate the active sockets
+  FD_ZERO(&active_socket.write); //Deactivate the active sockets
+
 	for (unsigned int i = 0 ; i < s.fd_max ; i++)
 	{
 		if(s.client_socket[i] > 0)
@@ -115,22 +118,7 @@ void add_new_socket_to_active_sockets(t_server &s)
   }
 }
 
-void new_incoming_connection(t_server &s)
-{
-    //Extracts first connection request in queue and returns new connected socket (server - client)
-    if ((s.connected_socket = accept(s.server_socket, (struct sockaddr *)&s.address, (socklen_t*)&s.addrlen)) == -1)
-    {
-      std::cout << "Error: listen failed" << std::endl;
-      throw internal_server_error_exc();
-    }
-	if ((unsigned int)s.connected_socket > s.fd_max)
-		s.fd_max = s.connected_socket;
-  fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
-  add_new_socket_to_active_sockets(s);
-  printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
-}
-
-void get_client_request(t_server &s)
+void get_client_request(t_server &s, t_active_socket &active_socket)
 {
   int message_len = -1; //Receive message lenght to add a /0 at end str
   char message_buffer[1000001];  //Received message is taken into a char* message_buffer because we use C functions
@@ -138,7 +126,7 @@ void get_client_request(t_server &s)
 
   for (unsigned int i = 0; i < s.fd_max; i++)
   {
-      if (FD_ISSET(s.client_socket[i] , &s.active_socket_read)) //If client socket still in active sockets, a request exists from that client
+      if (FD_ISSET(s.client_socket[i] , &active_socket.read)) //If client socket still in active sockets, a request exists from that client
       {
           if ((message_len = recv(s.client_socket[i] , message_buffer, 1000000, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
           {
@@ -163,22 +151,55 @@ void get_client_request(t_server &s)
   }
 }
 
-void reset_sockets(t_server &s)
+void reset_sockets(t_server &s, t_active_socket &active_socket)
 {
-  FD_ZERO(&s.active_socket_read); //Deactivate the active sockets
-  FD_SET(s.server_socket, &s.active_socket_read); //Add the server socket to active sockets
-  FD_ZERO(&s.active_socket_write); //Deactivate the active sockets
-  FD_SET(s.server_socket, &s.active_socket_write); //Add the server socket to active sockets
+  FD_SET(s.server_socket, &active_socket.read); //Add the server socket to active sockets
+  FD_SET(s.server_socket, &active_socket.write); //Add the server socket to active sockets
 
   //Add active client sockets to the active sockets
-  //std::cout << "SOCKET REPLY: " << s.requests.size() << std::endl;
   for (unsigned int i = 0 ; i < s.fd_max; i++)
   {
       if(s.client_socket[i] > 0)
       {
-          FD_SET(s.client_socket[i] , &s.active_socket_read);
+          FD_SET(s.client_socket[i] , &active_socket.read);
 		      if (s.answer.find(s.client_socket[i]) != s.answer.end()) //Do not add the sockets that are being answered
-        	 FD_SET(s.client_socket[i] , &s.active_socket_write);
+        	 FD_SET(s.client_socket[i] , &active_socket.write);
 		   }
   }
+}
+
+void all_servers_reset_sockets(std::list<t_config> &c, t_active_socket &active_socket)
+{
+  FD_ZERO(&active_socket.read); //Deactivate the active sockets
+  FD_ZERO(&active_socket.write); //Deactivate the active sockets
+
+  for (std::list<t_config>::iterator i = c.begin(); i != c.end(); i++)
+			reset_sockets((*i).s, active_socket);
+}
+
+void set_new_incoming_connection(t_server &s)
+{
+    //Extracts first connection request in queue and returns new connected socket (server - client)
+    if ((s.connected_socket = accept(s.server_socket, (struct sockaddr *)&s.address, (socklen_t*)&s.addrlen)) == -1)
+    {
+      std::cout << "Error: listen failed" << std::endl;
+      throw internal_server_error_exc();
+    }
+	if ((unsigned int)s.connected_socket > s.fd_max)
+		s.fd_max = s.connected_socket;
+  fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
+  add_new_socket_to_active_sockets(s);
+  printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
+}
+
+void new_incoming_connection(t_server &s, t_active_socket &active_socket)
+{
+  if (FD_ISSET(s.server_socket, &active_socket.read)) // tests to see if a file descriptor is part of the set
+    set_new_incoming_connection(s);
+}
+
+void all_servers(std::list<t_config> &c, t_active_socket &active_socket, void (*f)(t_server &, t_active_socket &))
+{
+  for (std::list<t_config>::iterator i = c.begin(); i != c.end(); i++)
+			f((*i).s, active_socket);
 }

@@ -1,33 +1,35 @@
 #include "connexion/connexion.hpp"
 
-void wait_connexion(t_config &c)
+void wait_connexion(std::list<t_config> &c, t_active_socket &active_socket)
 {
   int ret;
   struct timeval timeout = {1, 0};
 
-  reset_sockets(c.s);
-  c.timeout = false;
-  if ((ret = select(FD_SETSIZE , &c.s.active_socket_read, &c.s.active_socket_write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
+  all_servers_reset_sockets(c, active_socket);
+  if ((ret = select(FD_SETSIZE , &active_socket.read, &active_socket.write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total
   {
       std::cout << "Error: select failed" << std::endl;
-      wait_connexion(c);
+      wait_connexion(c, active_socket);
   }
   else if (ret == 0) //If return is zero timeout happened
 	{
-  		disconnect_all(c.s);
-      c.timeout = true;
+      P("timeout");
+  		all_servers(c, active_socket, disconnect_all);
+      wait_connexion(c, active_socket);
 	}
-  else if (FD_ISSET(c.s.server_socket, &c.s.active_socket_read))
-    new_incoming_connection(c.s);
+  else
+    all_servers(c, active_socket, new_incoming_connection);
+  P("END");
+  P(ret);
 }
 
-void handle_write(t_server &s)
+void handle_write(t_server &s, t_active_socket &active_socket)
 {
   int message_len; //Receive message lenght to add a /0 at end str
 
   for (unsigned int i = 0; i < s.fd_max; i++)
   {
-	  if (FD_ISSET(s.client_socket[i] , &s.active_socket_write))
+	  if (FD_ISSET(s.client_socket[i] , &active_socket.write))
 	  {
       P(s.answer[s.client_socket[i]]);
 			if ((message_len = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
@@ -46,11 +48,11 @@ void handle_write(t_server &s)
   }
 }
 
-void handle_read(t_config &c)
+void handle_read(t_config &c, t_active_socket &active_socket)
 {
 	std::map<int, t_http_req>::iterator requests;
 
-  get_client_request(c.s);
+  get_client_request(c.s, active_socket);
 	if (c.s.requests.size() != 0)
 	{
 
@@ -68,6 +70,7 @@ void handle_read(t_config &c)
 
 void launch_server(std::list<t_config> &c)
 {
+  t_active_socket active_socket;
   std::list<t_config>::iterator server = c.begin();
 
   try //catch exceptions if an exception occurs in catch block
@@ -76,15 +79,18 @@ void launch_server(std::list<t_config> &c)
      {
        try //catch exceptions during server working
        {
-         if (server == c.end())
-          server = c.begin();
-         wait_connexion(*server);
-         if ((*server).timeout == false)
+         P("HE1");
+         wait_connexion(c, active_socket);
+         P("*****************************");
+         while (server != c.end())
          {
-	        handle_write((*server).s);
-	        handle_read(*server);
+           P("HE3");
+	          handle_write((*server).s, active_socket);
+	          handle_read(*server, active_socket);
+            server++;
          }
-         server++;
+         P("HE4");
+         server = c.begin();
        }
        catch (const std::out_of_range &e) //If out of range error, parsing error, meaning parsing received wrong request thus restart client request
        {
@@ -101,6 +107,7 @@ void launch_server(std::list<t_config> &c)
   catch (std::exception &e)
   {
     P("Exception occured in catch block: relaunch server");
+    all_servers(c, active_socket, disconnect_all);
     launch_server(c);
   }
 }
