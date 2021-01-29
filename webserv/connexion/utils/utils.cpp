@@ -73,6 +73,8 @@ bool file_exists(std::string name)
     f.open(name);
     ret = f.is_open();
     f.close();
+    std::cout << name << std::endl;
+    std::cout << ret << std::endl;
     return ret;
 }
 

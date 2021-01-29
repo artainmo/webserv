@@ -20,7 +20,7 @@ $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 
 run: re
-	./webserv.a conf/webserv1.conf
+	./webserv.a conf/webserv2.conf
 
 test:
 	yes | ./tests/tester http://127.0.0.1:1900

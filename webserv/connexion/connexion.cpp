@@ -63,11 +63,13 @@ const char *internal_server_error_exc::what() const _NOEXCEPT
 
 void internal_server_error(t_server &s)
 {
+  t_config conf; //Empty conf just for error page parameter will have no effect, 500 error will be returned independently of default_error_page
+
 	for (unsigned int i = 0 ; i < s.fd_max ; i++)
 	{
 		if(s.client_socket[i] > 0)
     {
-      s.answer[s.client_socket[i]] = error_page(500, "None"); //method does not matter
+      s.answer[s.client_socket[i]] = error_page(500, "None", conf); //method does not matter
       s.requests[s.client_socket[i]].ready = true;
     }
 	}

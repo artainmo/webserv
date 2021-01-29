@@ -82,8 +82,8 @@ void launch_server(std::list<t_config> &c)
          wait_connexion(c, active_socket);
          while (server != c.end())
          {
+            handle_read(*server, active_socket);
 	          handle_write((*server).s, active_socket);
-	          handle_read(*server, active_socket);
             server++;
          }
          server = c.begin();

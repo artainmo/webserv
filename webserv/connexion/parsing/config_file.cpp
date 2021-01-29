@@ -175,8 +175,8 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 		else if (check_line(line, "root"))
 		{
 			conf.root = following_content(line, "root");
-			if (conf.root[0] != '/')
-				conf.root = std::string("/") + conf.root;
+			if (conf.root[0] == '/')
+				conf.root =conf.root.substr(1, conf.root.size());
 		}
 		else if (check_line(line, "default_error_page"))
 			conf.default_error_page = following_content(line, "default_error_page");
@@ -211,7 +211,6 @@ void default_init(std::list<t_config> &ret)
 	conf.host = "None";
 	conf.server_name = "None";
 	conf.root = "";
-	conf.default_error_page = "None";
 	conf.body_size_limit = std::string::npos; //Default max body size
 	ret.push_back(conf);
 }

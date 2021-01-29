@@ -13,8 +13,8 @@ Parse the multiple servers \
 setup multiple servers with different ports \
 setup multiple servers with different host name \
 Multiple servers fast version \
-setup default error page (try to change the error 404)
-Protection default error page
+setup default error page (try to change the error 404) \
+Protection default error page \
 
 3)Headers
 Open the RFC 7231 and check the list of header of the subject, ask questions about it.
@@ -29,3 +29,8 @@ launch the installation of siege with homebrew \
 SIEGE is used to stress test -> memory leak, never hanging connection, server never dies… \
 You should be able to use siege indefinitly without restarting the server (look at siege -b) +- 
 Availability should be above 99.5% for a simple get on an empty page with a siege -b on that page +-
+
+OTHER
+htons?
+What if no location block found?
+Write at end? Passes tester too? Select?

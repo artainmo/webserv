@@ -19,7 +19,7 @@ void client_restart_all(t_server &s);
 void client_disconnection(t_server &s, unsigned int i);
 void disconnect_all(t_server &s, t_active_socket &active_socket);
 void all_servers_reset_sockets(std::list<t_config> &c, t_active_socket &active_socket);
-std::string error_page(int error_nbr, std::string methode);
+std::string error_page(int error_nbr, std::string methode, t_config &conf);
 void all_servers(std::list<t_config> &c, t_active_socket &active_socket, void (*f)(t_server &, t_active_socket &));
 
 

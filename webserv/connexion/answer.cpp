@@ -178,12 +178,16 @@ void init_put(std::string const& path, t_header_fields & response, int const& re
 	fill_response_struct(response, file, path, response_number);
 }
 
-std::string error_page(int error_nbr, std::string methode)
+std::string error_page(int error_nbr, std::string methode, t_config &conf)
 {
-	std::string			path("default/error/" + std::to_string(error_nbr) + ".html");
+	std::string			path;
 	std::ifstream 		fd(path);  // charger l'erreur
 	t_header_fields	info;
 
+  if (conf.default_error_page.size() == 0 || !file_exists(conf.root + std::string("/") + conf.default_error_page)) //If default error page does not exist continue with own error pages
+    fd.open("default/error/" + std::to_string(error_nbr) + ".html");
+  else
+    fd.open(conf.root + std::string("/") + conf.default_error_page);
 	if (!fd.is_open())
 	{
 		std::cout << "Error: file opening " << path << std::endl;
@@ -200,7 +204,7 @@ std::string GET(t_http_req &req, t_config &conf)
 
   fd.open(req.URL);
   if (!fd.is_open())
-    return error_page(404, req.method);
+    return error_page(404, req.method, conf);
   if (req.loc.active && req.loc.CGI.active)
   	 req.URL = get_cgi(req, conf);
 	init_head_get(req.URL, fd, response, 200);
@@ -223,7 +227,6 @@ std::string POST(t_http_req &req, t_config &conf)
 {
 	std::ifstream		fd;
 
-  P("POST");
 	return GET(req, conf);
 	// return header_line("HTTP/1.1", "206", "Partial Content");
 	//
@@ -234,7 +237,7 @@ std::string POST(t_http_req &req, t_config &conf)
   // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
 }
 
-std::string PUT(t_http_req &req)
+std::string PUT(t_http_req &req, t_config &conf)
 {
 	std::ofstream			fd;
 	t_header_fields		response;
@@ -251,7 +254,7 @@ std::string PUT(t_http_req &req)
     P("Error: Put file opening");
     P(strerror(errno));
     P(req.URL);
-    return error_page(404, req.method); // CHANGE THE ERROR CODE?
+    return error_page(404, req.method, conf); // CHANGE THE ERROR CODE?
   }
   //write_put_file(fd,req.message_body);
   fd << req.message_body;
@@ -269,10 +272,10 @@ std::string parse_method(t_http_req &req, t_config &conf)
 	else if (req.method == std::string("POST"))
 		return POST(req, conf);
 	else if (req.method == std::string("PUT"))
-		return PUT(req);
+		return PUT(req, conf);
 	else if (req.method == std::string("DELETE"))
-		return error_page(405, req.method);
-	return error_page(405, req.method);
+		return error_page(405, req.method, conf);
+	return error_page(405, req.method, conf);
 }
 
 void socket_erase(std::map<int, t_http_req>::iterator &socket, t_server &s)
@@ -293,11 +296,11 @@ void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_
   P("method" << req.method);
   P("ERROR" << req.error);
   if (req.error == true)
-    answer = error_page(400, req.method);
+    answer = error_page(400, req.method, conf);
   else if (req.URL == std::string("file not found"))
-    answer = error_page(404, req.method);
+    answer = error_page(404, req.method, conf);
   else if (req.URL == std::string("method not found"))
-    answer = error_page(405, req.method);
+    answer = error_page(405, req.method, conf);
 	else
     answer = parse_method(req, conf);
 	conf.s.answer[socket->first] = answer;
