@@ -3,7 +3,7 @@
 void wait_connexion(std::list<t_config> &c, t_active_socket &active_socket)
 {
   int ret;
-  struct timeval timeout = {1, 0};
+  struct timeval timeout = {1000, 0};
 
   all_servers_reset_sockets(c, active_socket);
   if ((ret = select(FD_SETSIZE , &active_socket.read, &active_socket.write, NULL , &timeout)) == -1)//Select helps manipulate multiple active clients (cleaner way of handling it than using threads)//check if ready to read and write at same time //changes read and write sets, only keeps the active ones //returns the total

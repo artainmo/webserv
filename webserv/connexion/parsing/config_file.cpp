@@ -134,6 +134,8 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 			catch(std::exception &e)
 			{
 				P(e.what());
+				P("Error: body size limit is not a number in .conf");
+				exit(1);
 			}
 		}
 		else if (check_line(line, "root"))

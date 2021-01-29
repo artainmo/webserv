@@ -31,7 +31,15 @@ void setup_server(t_config &c)
     //type of socket created
     c.s.address.sin_family = AF_INET; //= IPv4
     c.s.address.sin_addr.s_addr = inet_addr(c.host.c_str()); //INADDR_ANY Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks //server address can only bind to network interfaces  //inet_addr function is used to transform string to IPv4 decimal notation
-    c.s.address.sin_port = htons(std::stoi(c.port.front())); //decode port adress from host byte order to network byte order
+    try
+    {
+      c.s.address.sin_port = htons(std::stoi(c.port.front())); //decode port adress from host byte order to network byte order
+    }
+    catch(std::exception &e)
+    {
+      P("Error: port is not a number in .conf");
+      exit(1);
+    }
 
     if (bind(c.s.server_socket, (struct sockaddr *)&c.s.address, c.s.addrlen) == -1)
     {
