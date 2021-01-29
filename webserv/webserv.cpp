@@ -108,16 +108,16 @@ void launch_server(std::list<t_config> &c)
   }
 }
 
-void check_config(std::list<t_config> &c)
-{
-  for (std::list<t_config>::iterator first = c.begin(); first != c.end(); first++)
-    for (std::list<t_config>::iterator second = c.begin(); second != c.end(); second++)
-      if (first != second && (*first).host == (*second).host && (*first).port == (*second).port)
-      {
-        P("Error: different server blocks point on same host and port");
-        exit(1);
-      }
-}
+// void check_config(std::list<t_config> &c)
+// {
+//   for (std::list<t_config>::iterator first = c.begin(); first != c.end(); first++)
+//     for (std::list<t_config>::iterator second = c.begin(); second != c.end(); second++)
+//       if (first != second && (*first).host == (*second).host && (*first).port == (*second).port)
+//       {
+//         P("Error: different server blocks point on same host and port");
+//         exit(1);
+//       }
+// }
 
 int main(int argc , char *argv[])
 {
@@ -130,7 +130,7 @@ int main(int argc , char *argv[])
 	}
 	signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
 	parse_config(argv[1], config);
-  check_config(config);
+  // check_config(config);
   for (std::list<t_config>::iterator i = config.begin(); i != config.end(); i++)
 	 setup_server(*i);
   change_directory("/webserv/frontend");
