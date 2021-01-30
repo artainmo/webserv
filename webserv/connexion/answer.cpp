@@ -26,6 +26,8 @@ std::string get_header_line(int const& number)
 			return (protocol + std::string("405 Not Allowed"));
     	case 400:
       		return (protocol + std::string("400 Bad Request"));
+		case 413:
+			return (protocol + std::string("413 Payload Too Large"));
     	case 416:
           return (protocol + std::string("416 Range Not Satisfiable"));
 		case 500:
@@ -200,13 +202,14 @@ void init_put(std::string const& path, t_header_fields & response, int const& re
 std::string error_page(int error_nbr, std::string methode, t_config &conf)
 {
 	std::string			path;
-	std::ifstream 		fd(path);  // charger l'erreur
+	std::ifstream 		fd;  // charger l'erreur
 	t_header_fields	info;
 
   if (conf.default_error_page.size() == 0 || !file_exists(conf.root + std::string("/") + conf.default_error_page)) //If default error page does not exist continue with own error pages
-    fd.open("default/error/" + std::to_string(error_nbr) + ".html");
+    path = "default/error/" + std::to_string(error_nbr) + ".html";
   else
-    fd.open(conf.root + std::string("/") + conf.default_error_page);
+	path = conf.root + std::string("/") + conf.default_error_page;
+	fd.open(path);
 	if (!fd.is_open())
 	{
 		std::cout << "Error: file opening " << path << std::endl;
@@ -250,8 +253,8 @@ std::string POST(t_http_req &req, t_config &conf)
 	if (req.loc.active && req.loc.CGI.active)
   	 req.URL = get_cgi(req, conf);
 
-	P("~~~~~~~~BODY SIZE LIMIT:" << conf.body_size_limit);
-	if (req.message_body.size() > conf.body_size_limit)
+	P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
+	if (req.message_body.size() > (size_t)req.loc.max_body)
 		return error_page(413, req.method, conf);
 	if (!req.status_code)
 	{

@@ -5,7 +5,7 @@ void setup_server(t_config &c)
     c.s.addrlen = sizeof(c.s.address);
 
     //initialise client sockets to null or inactive
-    for (unsigned int i = 0; i < SOMAXCONN; i++)
+    for (unsigned int i = 0; i < MAX_CLIENT_SIZE; i++)
     {
         c.s.client_socket[i] = 0;
     }
@@ -50,7 +50,7 @@ void setup_server(t_config &c)
     }
     std::cout << "Host: " << c.host << " listening on port: " << c.port.front() << std::endl;
     //SOMAXCONN is constant of max number of client requests we could wait for
-    if (listen(c.s.server_socket, SOMAXCONN) == -1)
+    if (listen(c.s.server_socket, MAX_CLIENT_SIZE) == -1)
     {
         std::cout << "Error: listen failed" << std::endl;
         exit(1);

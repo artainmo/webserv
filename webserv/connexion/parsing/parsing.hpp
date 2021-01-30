@@ -24,6 +24,10 @@
 #define P(x) std::cout << x << std::endl
 #define pass (void)0
 
+# ifndef MAX_CLIENT_SIZE
+# define MAX_CLIENT_SIZE 300
+# endif
+
 class internal_server_error_exc : public std::exception
 {
 public:
@@ -116,7 +120,7 @@ typedef struct	s_server
 	int server_socket; //Our server socket, whereby clients can connect to
 	struct sockaddr_in address; //Socket address struct for socket functions
 	int addrlen; //Size in int that can be casted for socket functions
-	int client_socket[SOMAXCONN]; //Remember already connected clients
+	int client_socket[MAX_CLIENT_SIZE]; //Remember already connected clients
 	int connected_socket; //New socket connected between server and client
 	std::map<int, t_http_req> requests; //To handle multiple incoming requests and requests that are received in packages
 	std::map<int, std::string>	answer; //To handle answers sent in packages

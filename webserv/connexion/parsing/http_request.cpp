@@ -84,15 +84,15 @@ void    unchunked_body(std::string &body)
 	}
 }
 
-void parse_body(std::string &body, std::string const& transfert_encoding, size_t body_size_limit)
+void parse_body(std::string &body, std::string const& transfert_encoding)
 {
 	if (transfert_encoding == std::string("chunked"))
 		unchunked_body(body);
-	if (body.size() > body_size_limit)
+	/*if (body.size() > body_size_limit)
 	{
 		P("Error: message body has been cut");
 		body = body.substr(0, body_size_limit);
-	}
+	}*/
 }
 
 void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_config &conf)
@@ -364,7 +364,7 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 		return ;
 	}
 	ret.message_body = req.substr(ret.body_index);
-	parse_body(ret.message_body, ret.header_fields.Transfer_Encoding.front(), conf.body_size_limit);
+	parse_body(ret.message_body, ret.header_fields.Transfer_Encoding.front());
 	// P("--------------------------------------------------------------------------");
 	// P("PARSED REQUEST:");
 	// show_http_request(*ret); //test
