@@ -1,6 +1,6 @@
 # Webserv Project 42 school
 
-Coding a web server in C++ capabable of handling HTTP/1.1 requests following a specific configuration file.
+Coding a web server in C++ able to hande HTTP/1.1 requests following a specific configuration file.
 
 **Subject**: [Webserv - 42](https://cdn.intra.42.fr/pdf/pdf/13848/en.subject.pdf)
 
