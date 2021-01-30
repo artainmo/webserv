@@ -1,6 +1,6 @@
 # Webserv Project 42 school
----------------------------------
-Coding a web server in C++ capabable of handling HTTP/1.1 requests following a specific configuration file.
+
+Coding a web server in C++ able to hande HTTP/1.1 requests following a specific configuration file.
 
 **Subject**: [Webserv - 42](https://cdn.intra.42.fr/pdf/pdf/13848/en.subject.pdf)
 
@@ -8,13 +8,13 @@ Coding a web server in C++ capabable of handling HTTP/1.1 requests following a s
 
 ![myImage](https://media.giphy.com/media/XRB1uf2F9bGOA/giphy.gif)
 
-------------------------------------------
-## **Resources**
+## RESOURCES
 
 ![myImage](https://media.giphy.com/media/VcizxCUIgaKpa/giphy.gif)
 
 ### Server setup
 * [Build a simple HTTP server from scratch](https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa)
+* [Server - Client example code](https://gist.github.com/Alexey-N-Chernyshov/4634731)
 * [Simple server with C++](https://ncona.com/2019/04/building-a-simple-server-with-cpp/)
 * [C++ Web Programming](https://www.tutorialspoint.com/cplusplus/cpp_web_programming.htm)
 * [Youtube - Program your own webserv in C](https://www.youtube.com/watch?v=esXw4bdaZkc)
@@ -34,10 +34,11 @@ Coding a web server in C++ capabable of handling HTTP/1.1 requests following a s
 * [HTTP Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
 * [HTTP Header Break Style](https://stackoverflow.com/questions/5757290/http-header-line-break-style)
 
-### Select and non-blocking fd
+### Select / non-blocking fd / Signals
 * [Select](https://www.lowtek.com/sockets/select.html)
 * [Youtube - Slect](https://www.youtube.com/watch?v=Y6pFtgRdUts)
 * [Non-blocking fd](https://www.ibm.com/support/knowledgecenter/ssw_ibm_i_72/rzab6/xnonblock.htm)
+* [Handle Signal](https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-them-properly)
 
 ### CGI
 * [Env CGI variables](https://fr.wikipedia.org/wiki/Variables_d%27environnement_CGI)
@@ -45,7 +46,3 @@ Coding a web server in C++ capabable of handling HTTP/1.1 requests following a s
 * [CGI 1.1 Documentation](http://www.wijata.com/cgi/cgispec.html#4.0)
 
 ![myImage](https://media.giphy.com/media/xT5LMTff7lN1riPLXi/giphy.gif)
-
-
-
-
