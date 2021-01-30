@@ -1,14 +1,15 @@
 # Webserv Project 42 school
 ---------------------------------
 Coding a web server in C++ capabable of handling HTTP/1.1 requests following a specific configuration file.
-Subject: [Webserv - 42](https://cdn.intra.42.fr/pdf/pdf/13848/en.subject.pdf)
 
-Members: :last_quarter_moon_with_face: [Artainmo](https://github.com/artainmo) - [Ymanzi](https://github.com/ymanzi) :first_quarter_moon_with_face:
+**Subject**: [Webserv - 42](https://cdn.intra.42.fr/pdf/pdf/13848/en.subject.pdf)
+
+**Members**: :last_quarter_moon_with_face: [Artainmo](https://github.com/artainmo) - [Ymanzi](https://github.com/ymanzi) :first_quarter_moon_with_face:
 
 ![myImage](https://media.giphy.com/media/XRB1uf2F9bGOA/giphy.gif)
 
 ------------------------------------------
-## Resources
+## **Resources**
 
 ![myImage](https://media.giphy.com/media/VcizxCUIgaKpa/giphy.gif)
 
