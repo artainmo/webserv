@@ -35,3 +35,9 @@ htons? uint16_t port_le = 80; uint16_t port_be = (port_le << 8) | (port_le & 0xF
 What if no location block found?
 Write at end? Passes tester too? Select?
 Test directory?
+
+-------------------------
+1) put the answer file and adapt the project
+2) Adapt size of the body_limit
+3) Check reception side and optimize
+4) Implement MultiThread Pool 
