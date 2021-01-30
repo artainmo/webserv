@@ -26,7 +26,7 @@ void env_meta_variables(t_CGI &c, std::vector<std::string> &vec_env) //env varia
 	set_env("SERVER_PROTOCOL", c.SERVER_PROTOCOL, vec_env); //HTTP/1.1
 	set_env("SERVER_SOFTWARE", c.SERVER_SOFTWARE, vec_env);
 
-//	show_cgi(vec_env);
+	show_cgi(vec_env);
 }
 
 void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<std::string> &vec_env)
@@ -55,7 +55,7 @@ void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_par
 {
 	std::string executable = "/usr/bin/php";
 
-	if (req.loc.CGI.SCRIPT_NAME != std::string("None") && file_exists(req.loc.CGI.SCRIPT_NAME))
+	if (req.loc.CGI.SCRIPT_NAME != std::string("None")) // && file_exists(req.loc.CGI.SCRIPT_NAME))
 		executable = req.loc.CGI.SCRIPT_NAME;
 	execve_param.push_back(executable);
 	execve_param.push_back(req.URL);
@@ -109,21 +109,26 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	}
 }
 
-// void parse_cgi_post_file(t_http_req &req, std::string const& ouput_file)
-// {
-// 	std::ifstream	fd(ouput_file);
-// 	std::string		line;
-// 	std::string		new_request;
+void parse_cgi_post_file(t_http_req &req, std::string const& ouput_file)
+{
+    std::ifstream   fd(ouput_file);
+    std::string     line;
+    std::string     new_request;
 
-// 	if (!fd.is_open())
-// 	{
-// 		P("Error: parse_cgi_post_file didn't open");
-// 		exit(1);
-// 	}
-// 	while (getline(fd, line))
-// 		new_request += line;
-
-// }
+    if (!fd.is_open())
+    {
+        P("Error: parse_cgi_post_file didn't open");
+        exit(1);                                      ////////// P(
+    }
+    getline(fd, line);
+    req.message_body.clear();
+	P("~~~~~~~~~(1) status:" << line.substr(7, 11));
+    req.status_code = std::stoi(line.substr(7, 11));
+    while (getline(fd, line) && line.size() > 1);
+    while (getline(fd, line))
+        req.message_body += line;
+    fd.close();
+}
 
 std::string get_cgi(t_http_req &req, t_config &c)
 {
@@ -141,7 +146,7 @@ std::string get_cgi(t_http_req &req, t_config &c)
 		throw internal_server_error_exc();
 	}
 	write_to_upload_file(fd_upload_location, req, vec_env);
-//	parse_cgi_post_file(req, generated_file_path);
 	close(fd_upload_location);
+	parse_cgi_post_file(req, generated_file_path);
 	return generated_file_path;
 }

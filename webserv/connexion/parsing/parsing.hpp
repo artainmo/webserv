@@ -102,10 +102,11 @@ typedef struct s_http_req
 	std::string protocol_version;
 	t_header_fields header_fields;
 	std::string message_body;
-	bool error;
-	bool ready;
-	bool non_body_parsed;
-	int body_index;
+	bool		error;
+	bool		ready;
+	bool		non_body_parsed;
+	int			body_index;
+	int			status_code;
 } t_http_req;
 
 typedef struct	s_server

@@ -33,6 +33,7 @@ void setup_server(t_config &c)
     c.s.address.sin_addr.s_addr = inet_addr(c.host.c_str()); //INADDR_ANY Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks //server address can only bind to network interfaces  //inet_addr function is used to transform string to IPv4 decimal notation
     try
     {
+		P("~~~~~~~~~(2)");
       c.s.address.sin_port = htons(std::stoi(c.port.front())); //decode port adress from host byte order to network byte order
     }
     catch(std::exception &e)
@@ -132,7 +133,7 @@ void get_client_request(t_server &s, t_active_socket &active_socket)
 {
   int message_len = -1; //Receive message lenght to add a /0 at end str
   char message_buffer[1000001];  //Received message is taken into a char* message_buffer because we use C functions
-  std::string message;
+//   std::string message;
 
   for (unsigned int i = 0; i < s.fd_max; i++)
   {
@@ -149,11 +150,11 @@ void get_client_request(t_server &s, t_active_socket &active_socket)
           else
           {
               message_buffer[message_len] = '\0'; //End message buffer with terminating /0
-              message = message_buffer;
-              s.requests[s.client_socket[i]].complete_request += message; //Create key in map with its value
-              P("----------------------------------------------");
-			        P("Message:\n" << message);
-              P("----------------------------------------------");
+            //   message = message_buffer;
+              s.requests[s.client_socket[i]].complete_request += message_buffer; //Create key in map with its value
+            //   P("----------------------------------------------");
+			//         P("Message:\n" << message);
+            //   P("----------------------------------------------");
           }
       }
   }

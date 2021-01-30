@@ -1,6 +1,5 @@
 #include "connexion.hpp"
 
-
 std::string header_line(std::string protocol_version, std::string code, std::string text)
 {
   return protocol_version + std::string(" ") + code + std::string(" ") + text + std::string("\r\n");
@@ -132,6 +131,20 @@ std::string construct_head_response(t_header_fields const& info)
 	return response;
 }
 
+std::string construct_post_response(t_header_fields const& info)
+{
+    std::string response;
+
+    response = info.Header_Line.front() + "\r\n"
+        + info.Server.front() + "\r\n"
+        + info.Date.front() + "\r\n"
+        + info.Content_Type.front() + "\r\n"
+        + info.Content_Length.front() + "\r\n"
+        + "\r\n"
+        + info.Body.front();
+    return response;
+}
+
 std::string construct_put_response(t_header_fields const& info)
 {
 	std::string response;
@@ -168,6 +181,12 @@ void init_head_get(std::string const &path, std::ifstream &fd, t_header_fields &
 		file += line + "\n";
 	init_response_struct(response);
 	fill_response_struct(response, file, path, response_number);
+}
+
+void init_post(std::string const& path, std::string const& body, t_header_fields & response, int const& status_code)
+{
+    init_response_struct(response);
+    fill_response_struct(response, body, path, status_code);
 }
 
 void init_put(std::string const& path, t_header_fields & response, int const& response_number)
@@ -225,16 +244,14 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 
 std::string POST(t_http_req &req, t_config &conf)
 {
-	std::ifstream		fd;
+	t_header_fields	response;
 
-	return GET(req, conf);
-	// return header_line("HTTP/1.1", "206", "Partial Content");
-	//
-  // return header_line("HTTP/1.1", "304", "Not Modified");
-	//
-  // return header_line("HTTP/1.1", "416", "Range Not Satisfiable");
-	//
-  // return header_line("HTTP/1.1", "201", "Created") + header_field("Location: ", path);
+	if (req.loc.active && req.loc.CGI.active)
+  	 req.URL = get_cgi(req, conf);
+	  init_post(req.URL, req.message_body, response, req.status_code);
+
+    // P("POST");
+    return construct_post_response(response);
 }
 
 std::string PUT(t_http_req &req, t_config &conf)

@@ -226,6 +226,7 @@ bool completed_request_lenght(std::string const &req, std::string const &lenght)
 	len = 0;
 	try
 	{
+		P("~~~~~~~~~(2) len:" << lenght);
 		len = std::stoi(lenght);
 	}
 	catch(std::exception &e)

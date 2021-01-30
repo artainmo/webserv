@@ -31,7 +31,7 @@ void handle_write(t_server &s, t_active_socket &active_socket)
   {
 	  if (FD_ISSET(s.client_socket[i] , &active_socket.write))
 	  {
-      P(s.answer[s.client_socket[i]]);
+    //   P(s.answer[s.client_socket[i]]);
 			if ((message_len = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
       {
         P("Error: send failed");
@@ -41,7 +41,7 @@ void handle_write(t_server &s, t_active_socket &active_socket)
       // else if (message_len == 0) //If message lenght is equal to 0, the client socket closed connection, thus disconnect
       //   client_disconnection(s, i);
 			else if ((size_t)message_len < s.answer[s.client_socket[i]].size())
-				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_len + 1, s.answer[s.client_socket[i]].size());
+				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_len, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
 	  }
