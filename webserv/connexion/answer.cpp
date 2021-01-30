@@ -244,21 +244,32 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 
 std::string POST(t_http_req &req, t_config &conf)
 {
+	std::ifstream		fd;
 	t_header_fields	response;
 
 	if (req.loc.active && req.loc.CGI.active)
   	 req.URL = get_cgi(req, conf);
-	  init_post(req.URL, req.message_body, response, req.status_code);
 
-    // P("POST");
+	P("~~~~~~~~BODY SIZE LIMIT:" << conf.body_size_limit);
+	if (req.message_body.size() > conf.body_size_limit)
+		return error_page(413, req.method, conf);
+	if (!req.status_code)
+	{
+		fd.open(req.URL);
+		init_head_get(req.URL, fd, response, 200);
+	}
+	else
+		init_post(req.URL, req.message_body, response, req.status_code);
+     P("~~~~~~~~~~POST: " << req.status_code);
+	 P("~~~~~~~~BODY: " << req.URL);
     return construct_post_response(response);
 }
 
 std::string PUT(t_http_req &req, t_config &conf)
 {
-	std::ofstream			fd;
+	std::ofstream		fd;
 	t_header_fields		response;
-	int						status_code;
+	int					status_code;
 
 	req.URL = req.loc.file_upload_location + std::string("/") + final_file_in_path(req.URL);
 	if (file_exists(req.URL))

@@ -50,6 +50,7 @@ typedef struct s_CGI
 	std::string SERVER_PORT;
 	std::string SERVER_PROTOCOL;
 	std::string SERVER_SOFTWARE;
+	std::string SECRET;
 } t_CGI;
 
 typedef struct s_location //Config routes
@@ -91,6 +92,7 @@ typedef struct s_header_fields
 	std::list<std::string> Transfer_Encoding;
 	std::list<std::string> User_Agent;
    	std::list<std::string> WWW_Authenticate;
+	std::list<std::string> X_Secret;
 } t_header_fields;
 
 typedef struct s_http_req

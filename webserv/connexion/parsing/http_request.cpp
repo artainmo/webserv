@@ -57,6 +57,8 @@ void parse_header_fields(t_http_req &req, std::string const &line)
 			req.header_fields.User_Agent = following_contents(line, "User-Agent:");
 	else if (check_line(line, "WWW_Authenticate"))
 			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
+	else if (check_line(line, "X-Secret"))
+		req.header_fields.X_Secret.push_front(line);
 }
 
 void    unchunked_body(std::string &body)
@@ -284,7 +286,8 @@ void default_init(t_http_req &req)
 	req.header_fields.Server.push_back("None");
 	req.header_fields.Transfer_Encoding.push_back("None");
 	req.header_fields.User_Agent.push_back("None");
-  req.header_fields.WWW_Authenticate.push_back("None");
+  	req.header_fields.WWW_Authenticate.push_back("None");
+	req.header_fields.X_Secret.push_back("None");
 	req.method = std::string("None");
 	req.URL = std::string("None");
 	req.loc.active = false;
@@ -334,10 +337,13 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 {
 	std::list<std::string> non_body_lines;
 
-	// P("--------------------------------------------------------------------------");
-	// P("REAL REQUEST:");
-	// P(req); //test
-	// P("--------------------------------------------------------------------------");
+	P("--------------------------------------------------------------------------");
+	P("REAL REQUEST:");
+	if (req.size() < 1000)
+		P(req); //test
+	else
+		P(req.substr(0, 1000));
+	P("--------------------------------------------------------------------------");
 	if (ret.non_body_parsed == false)
 	{
 		default_init(ret);
