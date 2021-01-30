@@ -1,5 +1,5 @@
 # Webserv Project 42 school
----------------------------------
+
 Coding a web server in C++ capabable of handling HTTP/1.1 requests following a specific configuration file.
 
 **Subject**: [Webserv - 42](https://cdn.intra.42.fr/pdf/pdf/13848/en.subject.pdf)
@@ -8,8 +8,7 @@ Coding a web server in C++ capabable of handling HTTP/1.1 requests following a s
 
 ![myImage](https://media.giphy.com/media/XRB1uf2F9bGOA/giphy.gif)
 
-------------------------------------------
-## **Resources**
+## RESOURCES
 
 ![myImage](https://media.giphy.com/media/VcizxCUIgaKpa/giphy.gif)
 
