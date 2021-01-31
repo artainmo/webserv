@@ -5,7 +5,7 @@ void setup_server(t_config &c)
     c.s.addrlen = sizeof(c.s.address);
 
     //initialise client sockets to null or inactive
-    for (unsigned int i = 0; i < MAX_CLIENT_SIZE; i++)
+    for (unsigned int i = 0; i < MAX_CLIENT_SIZE + 1; i++)
     {
         c.s.client_socket[i] = 0;
     }

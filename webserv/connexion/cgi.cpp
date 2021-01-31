@@ -52,7 +52,7 @@ void env_meta_variables(t_CGI const& c, std::vector<std::string> &vec_env) //env
 		env_secret_var(c, secret_string);
 		vec_env.push_back(secret_string);
 	}
-	show_cgi(vec_env);
+	//show_cgi(vec_env);
 }
 
 void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<std::string> &vec_env)

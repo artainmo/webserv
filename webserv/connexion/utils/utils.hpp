@@ -25,5 +25,6 @@ void print_sockets(std::map<int, std::string> &requests);
 bool file_exists(std::string name);
 void change_directory(std::string relative_path);
 void show_cgi(std::vector<std::string> &vec_env);
+void show_cgi(char **tab);
 
 #endif

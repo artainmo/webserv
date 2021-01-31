@@ -100,6 +100,13 @@ void change_directory(std::string relative_path)
 	delete [] path_name;
 }
 
+
+void show_cgi(char **tab)
+{
+	for (int i = 0; tab[i] != nullptr; i++)
+		P(tab[i]);
+}
+
 void show_cgi(std::vector<std::string> &vec_env)
 {
 	for (size_t i = 0; i < vec_env.size(); i++)

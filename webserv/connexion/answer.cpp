@@ -247,13 +247,25 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 
 std::string POST(t_http_req &req, t_config &conf)
 {
+<<<<<<< HEAD
 	std::ifstream		fd;
+=======
+	std::ifstream fd;
+>>>>>>> old-state
 	t_header_fields	response;
 
 	if (req.loc.active && req.loc.CGI.active)
   	 req.URL = get_cgi(req, conf);
+<<<<<<< HEAD
 
 	P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
+=======
+	else
+		req.status_code = 200;
+	  init_post(req.URL, req.message_body, response, req.status_code);
+
+P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
+>>>>>>> old-state
 	if (req.message_body.size() > (size_t)req.loc.max_body)
 		return error_page(413, req.method, conf);
 	if (!req.status_code)
@@ -265,6 +277,10 @@ std::string POST(t_http_req &req, t_config &conf)
 		init_post(req.URL, req.message_body, response, req.status_code);
      P("~~~~~~~~~~POST: " << req.status_code);
 	 P("~~~~~~~~BODY: " << req.URL);
+<<<<<<< HEAD
+=======
+    // P("POST");
+>>>>>>> old-state
     return construct_post_response(response);
 }
 

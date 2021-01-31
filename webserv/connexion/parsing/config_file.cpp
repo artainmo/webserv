@@ -20,6 +20,7 @@ void init_cgi(t_location &loc, t_config &conf)
 	loc.CGI.SERVER_PORT = conf.port.front();
 	loc.CGI.SERVER_PROTOCOL = std::string("HTTP/1.1");
 	loc.CGI.SERVER_SOFTWARE = std::string("None");
+	loc.CGI.SECRET = std::string("None");
 }
 
 void parse_cgi(std::string &line, t_location &loc, t_config &conf)
