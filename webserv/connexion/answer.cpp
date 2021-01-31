@@ -2,12 +2,12 @@
 
 std::string header_line(std::string protocol_version, std::string code, std::string text)
 {
-  return protocol_version + std::string(" ") + code + std::string(" ") + text + std::string("\r\n");
+	return protocol_version + std::string(" ") + code + std::string(" ") + text + std::string("\r\n");
 }
 
 std::string header_field(std::string header, std::string text)
 {
-  return header + std::string(": ") + text + std::string("\r\n");
+	return header + std::string(": ") + text + std::string("\r\n");
 }
 
 std::string get_header_line(int const& number)
@@ -24,14 +24,14 @@ std::string get_header_line(int const& number)
 			return (protocol + std::string("404 Not Found"));
 		case 405:
 			return (protocol + std::string("405 Not Allowed"));
-    	case 400:
-      		return (protocol + std::string("400 Bad Request"));
+		case 400:
+			return (protocol + std::string("400 Bad Request"));
 		case 413:
 			return (protocol + std::string("413 Payload Too Large"));
-    	case 416:
-          return (protocol + std::string("416 Range Not Satisfiable"));
+		case 416:
+			return (protocol + std::string("416 Range Not Satisfiable"));
 		case 500:
-      		return (protocol + std::string("500 Internal Server Error"));
+			return (protocol + std::string("500 Internal Server Error"));
 		default:
 			return (protocol + std::string("404 Not Found"));
 	}
@@ -135,23 +135,23 @@ std::string construct_head_response(t_header_fields const& info)
 
 std::string construct_post_response(t_header_fields const& info)
 {
-    std::string response;
+	std::string response;
 
-    response = info.Header_Line.front() + "\r\n"
-        + info.Server.front() + "\r\n"
-        + info.Date.front() + "\r\n"
-        + info.Content_Type.front() + "\r\n"
-        + info.Content_Length.front() + "\r\n"
-        + "\r\n"
-        + info.Body.front();
-    return response;
+	response = info.Header_Line.front() + "\r\n"
+		+ info.Server.front() + "\r\n"
+		+ info.Date.front() + "\r\n"
+		+ info.Content_Type.front() + "\r\n"
+		+ info.Content_Length.front() + "\r\n"
+		+ "\r\n"
+		+ info.Body.front();
+	return response;
 }
 
 std::string construct_put_response(t_header_fields const& info)
 {
 	std::string response;
 
-  response = info.Header_Line.front() + "\r\n"
+	response = info.Header_Line.front() + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Location.front() + "\r\n"
@@ -187,8 +187,8 @@ void init_head_get(std::string const &path, std::ifstream &fd, t_header_fields &
 
 void init_post(std::string const& path, std::string const& body, t_header_fields & response, int const& status_code)
 {
-    init_response_struct(response);
-    fill_response_struct(response, body, path, status_code);
+	init_response_struct(response);
+	fill_response_struct(response, body, path, status_code);
 }
 
 void init_put(std::string const& path, t_header_fields & response, int const& response_number)
@@ -205,10 +205,10 @@ std::string error_page(int error_nbr, std::string methode, t_config &conf)
 	std::ifstream 		fd;  // charger l'erreur
 	t_header_fields	info;
 
-  if (conf.default_error_page.size() == 0 || !file_exists(conf.root + std::string("/") + conf.default_error_page)) //If default error page does not exist continue with own error pages
-    path = "default/error/" + std::to_string(error_nbr) + ".html";
-  else
-	path = conf.root + std::string("/") + conf.default_error_page;
+	if (conf.default_error_page.size() == 0 || !file_exists(conf.root + std::string("/") + conf.default_error_page)) //If default error page does not exist continue with own error pages
+		path = "default/error/" + std::to_string(error_nbr) + ".html";
+	else
+		path = conf.root + std::string("/") + conf.default_error_page;
 	fd.open(path);
 	if (!fd.is_open())
 	{
@@ -224,11 +224,11 @@ std::string GET(t_http_req &req, t_config &conf)
 	std::ifstream		fd;
 	t_header_fields	response;
 
-  fd.open(req.URL);
-  if (!fd.is_open())
-    return error_page(404, req.method, conf);
-  if (req.loc.active && req.loc.CGI.active)
-  	 req.URL = get_cgi(req, conf);
+	fd.open(req.URL);
+	if (!fd.is_open())
+		return error_page(404, req.method, conf);
+	if (req.loc.active && req.loc.CGI.active)
+		req.URL = get_cgi(req, conf);
 	init_head_get(req.URL, fd, response, 200);
 	fd.close();
 	return construct_get_response(response);
@@ -251,12 +251,12 @@ std::string POST(t_http_req &req, t_config &conf)
 	t_header_fields	response;
 
 	if (req.loc.active && req.loc.CGI.active)
-  	 req.URL = get_cgi(req, conf);
+		req.URL = get_cgi(req, conf);
 	else
 		req.status_code = 200;
-	  init_post(req.URL, req.message_body, response, req.status_code);
+	init_post(req.URL, req.message_body, response, req.status_code);
 
-P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
+	P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
 	if (req.message_body.size() > (size_t)req.loc.max_body)
 		return error_page(413, req.method, conf);
 	if (!req.status_code)
@@ -266,10 +266,10 @@ P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
 	}
 	else
 		init_post(req.URL, req.message_body, response, req.status_code);
-     P("~~~~~~~~~~POST: " << req.status_code);
-	 P("~~~~~~~~BODY: " << req.URL);
-    // P("POST");
-    return construct_post_response(response);
+	P("~~~~~~~~~~POST: " << req.status_code);
+	P("~~~~~~~~BODY: " << req.URL);
+	// P("POST");
+	return construct_post_response(response);
 }
 
 std::string PUT(t_http_req &req, t_config &conf)
@@ -283,16 +283,16 @@ std::string PUT(t_http_req &req, t_config &conf)
 		status_code = 200; //OK (file already existed)
 	else
 		status_code = 201; //CREATED (new file)
-  fd.open(req.URL,  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
-  if (!fd.is_open())
-  {
-    P("Error: Put file opening");
-    P(strerror(errno));
-    P(req.URL);
-    return error_page(404, req.method, conf); // CHANGE THE ERROR CODE?
-  }
-  //write_put_file(fd,req.message_body);
-  fd << req.message_body;
+	fd.open(req.URL,  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
+	if (!fd.is_open())
+	{
+		P("Error: Put file opening");
+		P(strerror(errno));
+		P(req.URL);
+		return error_page(404, req.method, conf); // CHANGE THE ERROR CODE?
+	}
+	//write_put_file(fd,req.message_body);
+	fd << req.message_body;
 	init_put(req.URL, response, status_code);
 	fd.close();
 	return construct_put_response(response);
@@ -327,17 +327,17 @@ void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_
 {
 	std::string	answer;
 
-  P("URL" << req.URL);
-  P("method" << req.method);
-  P("ERROR" << req.error);
-  if (req.error == true)
-    answer = error_page(400, req.method, conf);
-  else if (req.URL == std::string("file not found"))
-    answer = error_page(404, req.method, conf);
-  else if (req.URL == std::string("method not found"))
-    answer = error_page(405, req.method, conf);
+	P("URL" << req.URL);
+	P("method" << req.method);
+	P("ERROR" << req.error);
+	if (req.error == true)
+		answer = error_page(400, req.method, conf);
+	else if (req.URL == std::string("file not found"))
+		answer = error_page(404, req.method, conf);
+	else if (req.URL == std::string("method not found"))
+		answer = error_page(405, req.method, conf);
 	else
-    answer = parse_method(req, conf);
+		answer = parse_method(req, conf);
 	conf.s.answer[socket->first] = answer;
-  socket_erase(socket, conf.s);
+	socket_erase(socket, conf.s);
 }

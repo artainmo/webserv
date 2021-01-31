@@ -183,11 +183,11 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 		else if (check_line(line, "default_error_page"))
 			conf.default_error_page = following_content(line, "default_error_page");
 		else if (check_line(line, "body_size_limit"))
-		try
-		{
-			P("~~~~~~~~~(4) line:" << line);
-			conf.body_size_limit = std::stoi(following_content(line, "body_size_limit"));
-		}
+			try
+			{
+				P("~~~~~~~~~(4) line:" << line);
+				conf.body_size_limit = std::stoi(following_content(line, "body_size_limit"));
+			}
 		catch(std::exception &e)
 		{
 			P(e.what());

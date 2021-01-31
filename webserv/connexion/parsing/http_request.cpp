@@ -24,46 +24,46 @@ void parse_header_fields(t_http_req &req, std::string const &line)
 	if (check_line(line, "Accept-Charsets"))
 		req.header_fields.Accept_Charsets = following_contents(line, "Accept-Charsets:");
 	else if (check_line(line, "Accept-Language"))
-			req.header_fields.Accept_Language = following_contents(line, "Accept-Language:");
+		req.header_fields.Accept_Language = following_contents(line, "Accept-Language:");
 	else if (check_line(line, "Allow"))
-			req.header_fields.Allow = following_contents(line, "Allow:");
+		req.header_fields.Allow = following_contents(line, "Allow:");
 	else if (check_line(line, "Authorization"))
-			req.header_fields.Authorization = following_contents(line, "Authorization:");
+		req.header_fields.Authorization = following_contents(line, "Authorization:");
 	else if (check_line(line, "Content-Language"))
-			req.header_fields.Content_Language = following_contents(line, "Content-Language:");
+		req.header_fields.Content_Language = following_contents(line, "Content-Language:");
 	else if (check_line(line, "Content-Length"))
-			req.header_fields.Content_Length = following_contents(line, "Content-Length:");
+		req.header_fields.Content_Length = following_contents(line, "Content-Length:");
 	else if (check_line(line, "Content-Location"))
-			req.header_fields.Content_Location = following_contents(line, "Content-Location:");
+		req.header_fields.Content_Location = following_contents(line, "Content-Location:");
 	else if (check_line(line, "Content-Type"))
-			req.header_fields.Content_Type = following_contents(line, "Content-Type:");
+		req.header_fields.Content_Type = following_contents(line, "Content-Type:");
 	else if (check_line(line, "Date"))
-			req.header_fields.Date = following_contents(line, "Date:");
+		req.header_fields.Date = following_contents(line, "Date:");
 	else if (check_line(line, "Host"))
-			req.header_fields.Host = following_contents(line, "Host:");
+		req.header_fields.Host = following_contents(line, "Host:");
 	else if (check_line(line, "Last-Modified"))
-			req.header_fields.Last_Modified = following_contents(line, "Last-Modified:");
+		req.header_fields.Last_Modified = following_contents(line, "Last-Modified:");
 	else if (check_line(line, "Location"))
-			req.header_fields.Location = following_contents(line, "Location:");
+		req.header_fields.Location = following_contents(line, "Location:");
 	else if (check_line(line, "Referer"))
-			req.header_fields.Referer = following_contents(line, "Referer:");
+		req.header_fields.Referer = following_contents(line, "Referer:");
 	else if (check_line(line, "Retry-After"))
-			req.header_fields.Retry_After = following_contents(line, "Retry-After:");
+		req.header_fields.Retry_After = following_contents(line, "Retry-After:");
 	else if (check_line(line, "Server"))
-			req.header_fields.Server = following_contents(line, "Server:");
+		req.header_fields.Server = following_contents(line, "Server:");
 	else if (check_line(line, "Transfer-Encoding"))
-			req.header_fields.Transfer_Encoding = following_contents(line, "Transfer-Encoding:");
+		req.header_fields.Transfer_Encoding = following_contents(line, "Transfer-Encoding:");
 	else if (check_line(line, "User-Agent"))
-			req.header_fields.User_Agent = following_contents(line, "User-Agent:");
+		req.header_fields.User_Agent = following_contents(line, "User-Agent:");
 	else if (check_line(line, "WWW_Authenticate"))
-			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
+		req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
 	else if (check_line(line, "X-Secret"))
 		req.header_fields.X_Secret.push_front(line);
 }
 
 void    unchunked_body(std::string &body)
 {
-    std::vector<std::string>	line_of_body;
+	std::vector<std::string>	line_of_body;
 	std::string					line;
 	const size_t				size_body = body.size();
 	size_t						size_line_of_body;
@@ -100,10 +100,10 @@ void parse_body(std::string &body, std::string const& transfert_encoding)
 	if (transfert_encoding == std::string("chunked"))
 		unchunked_body(body);
 	/*if (body.size() > body_size_limit)
-	{
-		P("Error: message body has been cut");
-		body = body.substr(0, body_size_limit);
-	}*/
+	  {
+	  P("Error: message body has been cut");
+	  body = body.substr(0, body_size_limit);
+	  }*/
 }
 
 void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_config &conf)
@@ -206,7 +206,7 @@ int find_first_two_line_returns(std::string const &req)
 	for (unsigned int i = 0; i < req.size() ; i++)
 	{
 		if (req[i] == '\n' && follow == true)
-					return i;
+			return i;
 		if (req[i] == '\n')
 		{
 			follow = true;
@@ -323,10 +323,10 @@ bool is_valid(std::string const &message)
 	else
 		begin = message.substr(0, ret);
 	return (begin.find("GET") != std::string::npos
-					|| begin.find("HEAD") != std::string::npos
-					|| begin.find("PUT") != std::string::npos
-					|| begin.find("POST") != std::string::npos
-					|| begin.find("DELETE") != std::string::npos);
+			|| begin.find("HEAD") != std::string::npos
+			|| begin.find("PUT") != std::string::npos
+			|| begin.find("POST") != std::string::npos
+			|| begin.find("DELETE") != std::string::npos);
 }
 
 // bool is_valid(std::string message)

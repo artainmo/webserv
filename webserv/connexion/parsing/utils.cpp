@@ -99,7 +99,7 @@ void show_locations(std::list<t_location> &locations)
 	{
 		i++;
 		std::cout << std::string("Location: ");
-			P(i);
+		P(i);
 		std::cout << "file_extensions: ";
 		for (std::list<std::string>::iterator ext = locs->file_extensions.begin(); ext != locs->file_extensions.end(); ext++)
 			std::cout << *ext + std::string(" ");
@@ -178,7 +178,7 @@ void show_conf(t_config &conf)
 	std::cout << conf.index.size();
 	std::cout << "Index: ";
 	for (std::list<std::string>::iterator i = conf.index.begin(); i != conf.index.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	show_locations(conf.locations);
 }
@@ -195,92 +195,92 @@ void show_http_request(t_http_req &req)
 	std::cout << req.header_fields.Accept_Charsets.size();
 	std::cout << "Accept_Charsets: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Accept_Charsets.begin(); i != req.header_fields.Accept_Charsets.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Accept_Language.size();
 	std::cout << "Accept_Language: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Accept_Language.begin(); i != req.header_fields.Accept_Language.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Allow.size();
 	std::cout << "Allow: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Allow.begin(); i != req.header_fields.Allow.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Authorization.size();
 	std::cout << "Authorization: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Authorization.begin(); i != req.header_fields.Authorization.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Content_Language.size();
 	std::cout << "Content_Language: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Content_Language.begin(); i != req.header_fields.Content_Language.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Content_Length.size();
 	std::cout << "Content_Length: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Content_Length.begin(); i != req.header_fields.Content_Length.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Content_Location.size();
 	std::cout << "Content_Location: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Content_Location.begin(); i != req.header_fields.Content_Location.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Content_Type.size();
 	std::cout << "Content_Type: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Content_Type.begin(); i != req.header_fields.Content_Type.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Date.size();
 	std::cout << "Date: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Date.begin(); i != req.header_fields.Date.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Host.size();
 	std::cout << "Host: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Host.begin(); i != req.header_fields.Host.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Last_Modified.size();
 	std::cout << "Last_Modified: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Last_Modified.begin(); i != req.header_fields.Last_Modified.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Location.size();
 	std::cout << "Location: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Location.begin(); i != req.header_fields.Location.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Referer.size();
 	std::cout << "Referer: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Referer.begin(); i != req.header_fields.Referer.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Retry_After.size();
 	std::cout << "Retry_After: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Retry_After.begin(); i != req.header_fields.Retry_After.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Server.size();
 	std::cout << "Server: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Server.begin(); i != req.header_fields.Server.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.Transfer_Encoding.size();
 	std::cout << "Transfer_Encoding: ";
 	for (std::list<std::string>::iterator i = req.header_fields.Transfer_Encoding.begin(); i != req.header_fields.Transfer_Encoding.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.User_Agent.size();
 	std::cout << "User_Agent: ";
 	for (std::list<std::string>::iterator i = req.header_fields.User_Agent.begin(); i != req.header_fields.User_Agent.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << req.header_fields.WWW_Authenticate.size();
-   	std::cout << "WWW_Authenticate: ";
+	std::cout << "WWW_Authenticate: ";
 	for (std::list<std::string>::iterator i = req.header_fields.WWW_Authenticate.begin(); i != req.header_fields.WWW_Authenticate.end(); i++)
-			std::cout << *i + std::string(" ");
+		std::cout << *i + std::string(" ");
 	std::cout << std::endl;
 	std::cout << "message_body: ";
 	P(req.message_body);

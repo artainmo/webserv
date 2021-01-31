@@ -160,8 +160,8 @@ std::string find_file_directory(std::string local_root, std::string const &direc
 	if (local_url[0] == '/')
 		local_url = local_url.substr(1);
 	// P("local_url: "<< local_url);
-  if (method == std::string("PUT"))
-    return local_url;
+	if (method == std::string("PUT"))
+		return local_url;
 	if ((ret = find_file(local_url)) == std::string("directory found"))
 	{
 		// P("Searching Dir");
@@ -174,14 +174,14 @@ void find_in_file_extension_location(std::list<t_location> &my_locations, t_loca
 {
 	// if ((file = find_file_directory(loc.root, req.URL, loc.index, req.method)) != std::string("file not found"))
 	// {
-		for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
+	for (std::list<std::string>::iterator ext = loc.file_extensions.begin(); ext != loc.file_extensions.end(); ext++)
+	{
+		if (get_file_extension(req.URL) == *ext) //If file extension is equal or all file extensions are accepted
 		{
-			if (get_file_extension(req.URL) == *ext) //If file extension is equal or all file extensions are accepted
-			{
-				loc.FOUND_URL = req.URL;
-				my_locations.push_back(loc);
-			}
+			loc.FOUND_URL = req.URL;
+			my_locations.push_back(loc);
 		}
+	}
 	// }
 }
 

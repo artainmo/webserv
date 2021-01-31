@@ -6,8 +6,8 @@
 
 typedef struct s_active_socket
 {
-  fd_set read; //fd_set struct for select function, takes active sockets for reading
-  fd_set write;
+	fd_set read; //fd_set struct for select function, takes active sockets for reading
+	fd_set write;
 } t_active_socket;
 
 void		setup_server(t_config &config);

@@ -138,22 +138,22 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 
 void parse_cgi_post_file(t_http_req &req, std::string const& ouput_file)
 {
-    std::ifstream   fd(ouput_file);
-    std::string     line;
-    std::string     new_request;
+	std::ifstream   fd(ouput_file);
+	std::string     line;
+	std::string     new_request;
 
-    if (!fd.is_open())
-    {
-        P("Error: parse_cgi_post_file didn't open");
-        exit(1);                                      ////////// P(
-    }
-    getline(fd, line);
-    req.message_body.clear();
-    req.status_code = std::stoi(line.substr(7, 11));
-    while (getline(fd, line) && line.size() > 1);
-    while (getline(fd, line))
-        req.message_body += line;
-    fd.close();
+	if (!fd.is_open())
+	{
+		P("Error: parse_cgi_post_file didn't open");
+		exit(1);                                      ////////// P(
+	}
+	getline(fd, line);
+	req.message_body.clear();
+	req.status_code = std::stoi(line.substr(7, 11));
+	while (getline(fd, line) && line.size() > 1);
+	while (getline(fd, line))
+		req.message_body += line;
+	fd.close();
 }
 
 std::string get_cgi(t_http_req &req, t_config &c)
