@@ -57,19 +57,32 @@ void parse_header_fields(t_http_req &req, std::string const &line)
 			req.header_fields.User_Agent = following_contents(line, "User-Agent:");
 	else if (check_line(line, "WWW_Authenticate"))
 			req.header_fields.WWW_Authenticate = following_contents(line, "WWW_Authenticate:");
+	else if (check_line(line, "X-Secret"))
+		req.header_fields.X_Secret.push_front(line);
 }
 
 void    unchunked_body(std::string &body)
 {
-    std::list<std::string>  line_of_body;
-	size_t					size_line_of_body;
-	size_t					i = 0;
+    std::vector<std::string>	line_of_body;
+	std::string					line;
+	const size_t				size_body = body.size();
+	size_t						size_line_of_body;
+	size_t						i = 0;
 
-    line_of_body = split(body, "\n");
-	std::list<std::string>::iterator it = line_of_body.begin();
+	for (size_t j = 0; j < size_body; j++)
+	{
+		if (j == 0 && body[j] == '\n')
+			continue ;
+		else if (body[j] == '\n')
+		{
+			line_of_body.push_back(line);
+			line.clear();
+		}
+		else
+			line += body[j];
+	}
+	std::vector<std::string>::iterator it = line_of_body.begin();
 	size_line_of_body = line_of_body.size();
-	if ((*it).size() == 0)
-		it++;
 	body.clear();
 	for ( ; it != line_of_body.end(); it++)
 	{
@@ -284,7 +297,8 @@ void default_init(t_http_req &req)
 	req.header_fields.Server.push_back("None");
 	req.header_fields.Transfer_Encoding.push_back("None");
 	req.header_fields.User_Agent.push_back("None");
-  req.header_fields.WWW_Authenticate.push_back("None");
+	req.header_fields.WWW_Authenticate.push_back("None");
+	req.header_fields.X_Secret.push_back("None");
 	req.method = std::string("None");
 	req.URL = std::string("None");
 	req.loc.active = false;

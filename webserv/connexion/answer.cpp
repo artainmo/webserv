@@ -26,6 +26,8 @@ std::string get_header_line(int const& number)
 			return (protocol + std::string("405 Not Allowed"));
     	case 400:
       		return (protocol + std::string("400 Bad Request"));
+		case 413:
+			return (protocol + std::string("413 Payload Too Large"));
     	case 416:
           return (protocol + std::string("416 Range Not Satisfiable"));
 		case 500:
@@ -244,12 +246,27 @@ std::string HEAD(std::string path) // Ne devrait pas fonctionner
 
 std::string POST(t_http_req &req, t_config &conf)
 {
+	std::ifstream fd;
 	t_header_fields	response;
 
 	if (req.loc.active && req.loc.CGI.active)
   	 req.URL = get_cgi(req, conf);
+	else
+		req.status_code = 200;
 	  init_post(req.URL, req.message_body, response, req.status_code);
 
+P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
+	if (req.message_body.size() > (size_t)req.loc.max_body)
+		return error_page(413, req.method, conf);
+	if (!req.status_code)
+	{
+		fd.open(req.URL);
+		init_head_get(req.URL, fd, response, 200);
+	}
+	else
+		init_post(req.URL, req.message_body, response, req.status_code);
+     P("~~~~~~~~~~POST: " << req.status_code);
+	 P("~~~~~~~~BODY: " << req.URL);
     // P("POST");
     return construct_post_response(response);
 }

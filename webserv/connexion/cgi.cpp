@@ -5,9 +5,30 @@ void set_env(std::string var, std::string equal_to, std::vector<std::string> &ve
 	vec.push_back(var + "=" + equal_to);
 }
 
+void env_secret_var(t_CGI const& c, std::string &secret_string)
+{
+	secret_string += "HTTP_";
+
+	P("~~~~~~~~SECRET STRING: " << c.SECRET);
+	for (size_t i = 0; i < c.SECRET.size(); i++)
+	{
+		if (c.SECRET[i] == '-')
+			secret_string += '_';
+		else if (c.SECRET[i] == ':')
+			secret_string += '=';
+		else if (isnumber(c.SECRET[i]))
+			secret_string += c.SECRET[i];
+		else if (c.SECRET[i] == ' ')
+			continue ;
+		else
+			secret_string += toupper((int)c.SECRET[i]);
+	}
+}
 
 void env_meta_variables(t_CGI &c, std::vector<std::string> &vec_env) //env variables is correct
 {
+	std::string secret_string;
+
 	set_env("AUTH_TYPE", c.AUTH_TYPE, vec_env);
 	set_env("CONTENT_LENGTH", c.CONTENT_LENGTH, vec_env);
 	set_env("CONTENT_TYPE", c.CONTENT_TYPE, vec_env);
@@ -26,7 +47,12 @@ void env_meta_variables(t_CGI &c, std::vector<std::string> &vec_env) //env varia
 	set_env("SERVER_PROTOCOL", c.SERVER_PROTOCOL, vec_env); //HTTP/1.1
 	set_env("SERVER_SOFTWARE", c.SERVER_SOFTWARE, vec_env);
 
-	show_cgi(vec_env);
+	if (c.SECRET != "None")
+	{
+		env_secret_var(c, secret_string);
+		vec_env.push_back(secret_string);
+	}
+	//show_cgi(vec_env);
 }
 
 void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<std::string> &vec_env)
@@ -46,6 +72,8 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<s
 	// c.SCRIPT_NAME = std::string("None"); //Already init
 	c.SERVER_NAME = conf.host;
 	c.SERVER_PROTOCOL = req.protocol_version;
+	if (req.header_fields.X_Secret.front() != "None")
+		c.SECRET = req.header_fields.X_Secret.front();
 	// c.SERVER_SOFTWARE = std::string("None");
 	// P("~~~~~~Body size:" << c.CONTENT_LENGTH );
 	env_meta_variables(c, vec_env);
