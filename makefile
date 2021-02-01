@@ -19,7 +19,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 
-run: all
+run: re
 	./webserv.a conf/webserv2.conf
 
 test:

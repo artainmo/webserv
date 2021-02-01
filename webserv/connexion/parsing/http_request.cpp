@@ -100,7 +100,7 @@ void parse_body(t_http_req &req)
 	// if (req.message_body.size() > req.loc.max_body)
 	// {
 	//   P("Error: message body has been cut");
-	//   req.message_body = req.message_body.substr(0, req.loc.max_body);
+	//   req.message_body = req.message_body.substr(0, req.loc.max_body + 1);
 	// }
 	if (req.header_fields.Transfer_Encoding.front() == std::string("chunked"))
 		unchunked_body(req.message_body);

@@ -25,7 +25,7 @@
 #define pass (void)0
 
 # ifndef MAX_CLIENT_SIZE
-# define MAX_CLIENT_SIZE 300
+# define MAX_CLIENT_SIZE 200
 # endif
 
 class internal_server_error_exc : public std::exception
@@ -95,7 +95,7 @@ typedef struct s_header_fields
 	std::list<std::string> Server;
 	std::list<std::string> Transfer_Encoding;
 	std::list<std::string> User_Agent;
-   	std::list<std::string> WWW_Authenticate;
+  std::list<std::string> WWW_Authenticate;
 	std::list<std::string> X_Secret;
 } t_header_fields;
 

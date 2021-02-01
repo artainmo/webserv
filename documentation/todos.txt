@@ -31,13 +31,7 @@ You should be able to use siege indefinitly without restarting the server (look 
 Availability should be above 99.5% for a simple get on an empty page with a siege -b on that page +-
 
 OTHER
-htons? uint16_t port_le = 80; uint16_t port_be = (port_le << 8) | (port_le & 0xFF);
 What if no location block found?
-Write at end? Passes tester too? Select?
-Test directory?
-Does the lack of is_ascii creates error?
+Does the lack of is_ascii creates error? Does ft_htons creates error?
 -------------------------
-1) put the answer file and adapt the project
-2) Adapt size of the body_limit
-3) Check reception side and optimize
 4) Implement MultiThread Pool 

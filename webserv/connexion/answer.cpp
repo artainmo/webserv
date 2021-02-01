@@ -159,7 +159,7 @@ std::string construct_put_response(t_header_fields const& info)
 	return response;
 }
 
-std::string construct_error_response(t_header_fields const& info, std::string methode)
+std::string construct_error_response(t_header_fields const& info, std::string &methode)
 {
 	std::string response;
 
@@ -256,7 +256,7 @@ std::string POST(t_http_req &req, t_config &conf)
 		req.status_code = 200;
 	init_post(req.URL, req.message_body, response, req.status_code);
 
-	if (req.message_body.size() > (size_t)req.loc.max_body)
+	if (req.message_body.size() > req.loc.max_body)
 		return error_page(413, req.method, conf);
 	if (!req.status_code)
 	{

@@ -26,5 +26,6 @@ bool file_exists(std::string name);
 void change_directory(std::string relative_path);
 void show_cgi(std::vector<std::string> &vec_env);
 void show_cgi(char **tab);
+uint16_t ft_htons(uint16_t x);
 
 #endif

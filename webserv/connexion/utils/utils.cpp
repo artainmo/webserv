@@ -1,5 +1,7 @@
 #include "utils.hpp"
 
+uint16_t ft_htons(uint16_t x) { return ((__uint16_t) ((((x) >> 8) & 0xff) | (((x) & 0xff) << 8))); }
+
 bool	is_ascii(std::string const &s) //Returns true if finds one non-ascii char
 {
 	int i;

@@ -80,7 +80,7 @@ void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_par
 {
 	std::string executable = "/usr/bin/php";
 
-	if (req.loc.CGI.SCRIPT_NAME != std::string("None")) // && file_exists(req.loc.CGI.SCRIPT_NAME))
+	if (req.loc.CGI.SCRIPT_NAME != std::string("None") && file_exists(req.loc.CGI.SCRIPT_NAME))
 		executable = req.loc.CGI.SCRIPT_NAME;
 	execve_param.push_back(executable);
 	execve_param.push_back(req.URL);
@@ -134,7 +134,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	}
 }
 
-void parse_cgi_post_file(t_http_req &req, std::string const& ouput_file)
+void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
 {
 	std::ifstream   fd(ouput_file);
 	std::string     line;
@@ -147,7 +147,15 @@ void parse_cgi_post_file(t_http_req &req, std::string const& ouput_file)
 	}
 	getline(fd, line);
 	req.message_body.clear();
-	req.status_code = std::stoi(line.substr(7, 11));
+	try
+	{
+		req.status_code = std::stoi(line.substr(7, 11));
+	}
+	catch(std::exception &e)
+	{
+		P("Stoi Error: " << e.what());
+		throw internal_server_error_exc();
+	}
 	while (getline(fd, line) && line.size() > 1);
 	while (getline(fd, line))
 		req.message_body += line;
@@ -170,6 +178,6 @@ std::string get_cgi(t_http_req &req, t_config &c)
 	}
 	write_to_upload_file(fd_upload_location, req, vec_env);
 	close(fd_upload_location);
-	parse_cgi_post_file(req, generated_file_path);
+	parse_cgi_file(req, generated_file_path);
 	return generated_file_path;
 }
