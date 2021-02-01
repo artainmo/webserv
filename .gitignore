@@ -3,4 +3,5 @@
 *.a
 a.out
 *.DS_Store
+default
 *.vscode
