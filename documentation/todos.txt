@@ -2,36 +2,14 @@ PDF
 
 Create own basic test in frontend with proper .conf to show what happens when file not found, method not found, search a directory with potential index.html…
 
-0) CODE
-
-Search for all read/recv/write/send on a socket and check that if an error returned the client is removed \
-
-Search for all read/recv/write/send and check if the returned value is well checked. (checking only -1 or 0 is not good you should check both) \
-
-1)CONF
-Parse the multiple servers \
-setup multiple servers with different ports \
-setup multiple servers with different host name \
-Multiple servers fast version \
-setup default error page (try to change the error 404) \
-Protection default error page \
-
 3)Headers
 Open the RFC 7231 and check the list of header of the subject, ask questions about it.
 
-4)PORT
-Multiple ports for one server \
-Same host and server protection \
-
 5)SIEGE
-launch the installation of siege with homebrew \
-
-SIEGE is used to stress test -> memory leak, never hanging connection, server never dies… \
 You should be able to use siege indefinitly without restarting the server (look at siege -b) +- 
 Availability should be above 99.5% for a simple get on an empty page with a siege -b on that page +-
 
 OTHER
-What if no location block found?
 Does the lack of is_ascii creates error? Does ft_htons creates error?
 -------------------------
 4) Implement MultiThread Pool 

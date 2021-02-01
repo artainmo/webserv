@@ -203,6 +203,11 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 		P("Error: port not specified");
 		exit(1);
 	}
+	if (conf.locations.size() == 0)
+	{
+		P("Error: no locations specified");
+		exit(1);
+	}
 }
 
 void default_init(std::list<t_config> &ret)
