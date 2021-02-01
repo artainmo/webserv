@@ -84,13 +84,14 @@ void    unchunked_body(std::string &body)
 	std::vector<std::string>::iterator it = line_of_body.begin();
 	size_line_of_body = line_of_body.size();
 	body.clear();
+	body.reserve(1000000100);
 	for ( ; it != line_of_body.end(); it++)
 	{
 		if (*it == "0")
 			break ;
 		else if (i++ % 2)
 		{
-			body += (*it).substr(0, (*it).size() - 1);
+			body += (*it).erase((*it).size() - 1);
 		}
 	}
 }

@@ -156,7 +156,7 @@ void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
 		throw internal_server_error_exc();
 	}
 	std::string			file((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
-	req.message_body = file.substr(find_first_two_line_returns(file) + 1);
+	req.message_body = file.erase(0, find_first_two_line_returns(file) + 1);
 	fd.close();
 }
 
