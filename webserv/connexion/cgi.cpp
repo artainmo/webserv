@@ -146,7 +146,6 @@ void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
 		exit(1);
 	}
 	getline(fd, line);
-	req.message_body.clear();
 	try
 	{
 		req.status_code = std::stoi(line.substr(7, 11));
@@ -156,9 +155,8 @@ void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
 		P("Stoi Error: " << e.what());
 		throw internal_server_error_exc();
 	}
-	while (getline(fd, line) && line.size() > 1);
-	while (getline(fd, line))
-		req.message_body += line;
+	std::string			file((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
+	req.message_body = file.substr(find_first_two_line_returns(file) + 1);
 	fd.close();
 }
 

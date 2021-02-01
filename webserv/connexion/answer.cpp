@@ -259,6 +259,11 @@ std::string POST(t_http_req &req, t_config &conf)
 	if (!req.status_code)
 	{
 		fd.open(req.URL);
+		if (!fd.is_open())
+		{
+			std::cout << "Error: file opening " << req.URL << std::endl;
+			throw internal_server_error_exc();
+		}
 		init_head_get(req.URL, fd, response, 200);
 	}
 	else

@@ -142,6 +142,7 @@ typedef struct s_config
 
 void parse_config(std::string path, std::list<t_config> &ret);
 void parse_http_request(t_http_req &ret, std::string &req, t_config &conf);
+int find_first_two_line_returns(std::string const &req);
 bool getlinecut(std::ifstream &fd, std::string &line);
 bool check_line(std::string const &line, const std::string &comp);
 std::string following_content(std::string &line, const std::string &after);
