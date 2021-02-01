@@ -140,7 +140,6 @@ void get_client_request(t_server &s, t_active_socket &active_socket)
 			if ((message_len = recv(s.client_socket[i] , message_buffer, 1000000, 0)) == -1) //Read the incoming message //MSG_PEEK //read whole message
 			{
 				P("Error: recv failed");
-				P(strerror(errno)); //If recv fails due to client disconnection, disconnect client
 				client_restart(s, i);
 			}
 			else if (message_len == 0) //If incoming message lenght is equal to 0, the client socket closed connection
