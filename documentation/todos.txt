@@ -10,6 +10,9 @@ You should be able to use siege indefinitly without restarting the server (look 
 Availability should be above 99.5% for a simple get on an empty page with a siege -b on that page +-
 
 OTHER
+remove basic_string print
 Does the lack of is_ascii creates error? Does ft_htons creates error?
 -------------------------
-4) Implement MultiThread Pool 
+Implement MultiThread Pool
+Multithread in conf
+ 
