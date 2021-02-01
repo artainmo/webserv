@@ -252,22 +252,21 @@ std::string POST(t_http_req &req, t_config &conf)
 		return error_page(413, req.method, conf);
 	if (req.loc.active && req.loc.CGI.active)
 		req.URL = get_cgi(req, conf);
-	else
-		req.status_code = 200;
+	req.status_code = 200;
 	// init_post(req.URL, req.message_body, response, req.status_code);
 
-	if (!req.status_code)
-	{
-		fd.open(req.URL);
-		if (!fd.is_open())
-		{
-			std::cout << "Error: file opening " << req.URL << std::endl;
-			throw internal_server_error_exc();
-		}
-		init_head_get(req.URL, fd, response, 200);
-	}
-	else
-		init_post(req.URL, req.message_body, response, req.status_code);
+	// if (!req.status_code)
+	// {
+	// 	fd.open(req.URL);
+	// 	if (!fd.is_open())
+	// 	{
+	// 		std::cout << "Error: file opening " << req.URL << std::endl;
+	// 		throw internal_server_error_exc();
+	// 	}
+	// 	init_head_get(req.URL, fd, response, 200);
+	// }
+	// else
+	init_post(req.URL, req.message_body, response, req.status_code);
 	return construct_post_response(response);
 }
 
