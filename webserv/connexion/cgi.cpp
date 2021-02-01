@@ -9,7 +9,6 @@ void env_secret_var(t_CGI const& c, std::string &secret_string)
 {
 	secret_string += "HTTP_";
 
-	P("~~~~~~~~SECRET STRING: " << c.SECRET);
 	for (size_t i = 0; i < c.SECRET.size(); i++)
 	{
 		if (c.SECRET[i] == '-')
@@ -74,7 +73,6 @@ void set_meta_variables(t_CGI &c, t_http_req &req, t_config &conf, std::vector<s
 	if (req.header_fields.X_Secret.front() != "None")
 		c.SECRET = req.header_fields.X_Secret.front();
 	// c.SERVER_SOFTWARE = std::string("None");
-	// P("~~~~~~Body size:" << c.CONTENT_LENGTH );
 	env_meta_variables(c, vec_env);
 }
 
@@ -145,7 +143,7 @@ void parse_cgi_post_file(t_http_req &req, std::string const& ouput_file)
 	if (!fd.is_open())
 	{
 		P("Error: parse_cgi_post_file didn't open");
-		exit(1);                                      ////////// P(
+		exit(1);
 	}
 	getline(fd, line);
 	req.message_body.clear();
@@ -164,8 +162,6 @@ std::string get_cgi(t_http_req &req, t_config &c)
 
 	set_meta_variables(req.loc.CGI, req, c, vec_env);
 	generated_file_path = req.loc.root + req.loc.file_upload_location;
-	//P("UPLOAD:" << generated_file_path);
-	P("\n\n\n\n~~~~~~~~~CGI~~~~\n\n\n\n\n");
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
 		P("Error: file upload location error");

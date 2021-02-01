@@ -63,7 +63,7 @@ typedef struct s_location //Config routes
 	std::list<std::string> file_extensions; //if  no extensions specified means ALL, besides if extension specified in other location
 	std::string directory;
 	std::list<std::string> http_methods;
-	int max_body;
+	size_t max_body;
 	std::string root;
 	std::list<std::string> index;
 	std::string  directory_listing;

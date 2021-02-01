@@ -33,7 +33,6 @@ void setup_server(t_config &c)
 	c.s.address.sin_addr.s_addr = inet_addr(c.host.c_str()); //INADDR_ANY Makes the socket bound to all network interfaces on the host, important when server offers services to multiple networks //server address can only bind to network interfaces  //inet_addr function is used to transform string to IPv4 decimal notation
 	try
 	{
-		P("~~~~~~~~~(2)");
 		c.s.address.sin_port = htons(std::stoi(c.port.front())); //decode port adress from host byte order to network byte order
 	}
 	catch(std::exception &e)
@@ -96,7 +95,7 @@ void client_disconnection(t_server &s, unsigned int i)
 {
 	//Show to debug
 	getpeername(s.client_socket[i] , (struct sockaddr*)&s.address , (socklen_t*)&s.addrlen);
-	printf("Host disconnected\n-ip: %s\n-port: %d \n" , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port));
+	// printf("Host disconnected\n-ip: %s\n-port: %d \n" , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port));
 
 	//Close the socket and reset to zero for re-use
 	s.answer.erase(s.client_socket[i]); //does not need to be protected erase key_type
@@ -133,7 +132,6 @@ void get_client_request(t_server &s, t_active_socket &active_socket)
 {
 	int message_len = -1; //Receive message lenght to add a /0 at end str
 	char message_buffer[1000001];  //Received message is taken into a char* message_buffer because we use C functions
-	//   std::string message;
 
 	for (unsigned int i = 0; i < s.fd_max; i++)
 	{
@@ -150,11 +148,7 @@ void get_client_request(t_server &s, t_active_socket &active_socket)
 			else
 			{
 				message_buffer[message_len] = '\0'; //End message buffer with terminating /0
-				//   message = message_buffer;
 				s.requests[s.client_socket[i]].complete_request += message_buffer; //Create key in map with its value
-				//   P("----------------------------------------------");
-				//         P("Message:\n" << message);
-				//   P("----------------------------------------------");
 			}
 		}
 	}
@@ -198,7 +192,7 @@ void set_new_incoming_connection(t_server &s)
 		s.fd_max = s.connected_socket;
 	fcntl(s.connected_socket, F_SETFL, O_NONBLOCK);
 	add_new_socket_to_active_sockets(s);
-	printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
+	// printf("New connection\n-socket fd: %d\n-ip: %s\n-port: %d\n" , s.connected_socket , inet_ntoa(s.address.sin_addr) , ntohs(s.address.sin_port)); //Show to debug
 }
 
 void new_incoming_connection(t_server &s, t_active_socket &active_socket)

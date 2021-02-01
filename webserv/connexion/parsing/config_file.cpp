@@ -130,7 +130,6 @@ void parse_location(t_config &conf, std::ifstream &fd, std::string &line) //In l
 		{
 			try
 			{
-				P("~~~~~~~~~(3) line: " << line);
 				loc.max_body = std::stoi(following_content(line, "body_size_limit"));
 			}
 			catch(std::exception &e)
@@ -185,7 +184,6 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 		else if (check_line(line, "body_size_limit"))
 			try
 			{
-				P("~~~~~~~~~(4) line:" << line);
 				conf.body_size_limit = std::stoi(following_content(line, "body_size_limit"));
 			}
 		catch(std::exception &e)

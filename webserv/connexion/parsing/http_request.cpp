@@ -95,15 +95,15 @@ void    unchunked_body(std::string &body)
 	}
 }
 
-void parse_body(std::string &body, std::string const& transfert_encoding)
+void parse_body(t_http_req &req)
 {
-	if (transfert_encoding == std::string("chunked"))
-		unchunked_body(body);
-	/*if (body.size() > body_size_limit)
-	  {
-	  P("Error: message body has been cut");
-	  body = body.substr(0, body_size_limit);
-	  }*/
+	// if (req.message_body.size() > req.loc.max_body)
+	// {
+	//   P("Error: message body has been cut");
+	//   req.message_body = req.message_body.substr(0, req.loc.max_body);
+	// }
+	if (req.header_fields.Transfer_Encoding.front() == std::string("chunked"))
+		unchunked_body(req.message_body);
 }
 
 void parse_non_body(t_http_req &req, std::list<std::string> &non_body_lines, t_config &conf)
@@ -239,7 +239,6 @@ bool completed_request_lenght(std::string const &req, std::string const &lenght)
 	len = 0;
 	try
 	{
-		P("~~~~~~~~~(2) len:" << lenght);
 		len = std::stoi(lenght);
 	}
 	catch(std::exception &e)
@@ -316,8 +315,8 @@ bool is_valid(std::string const &message)
 	if (message.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
 		return false;
 	// new_mes = message.substr(message.find_first_not_of(" \t\n\v\f\r"), message.size());
-	if (is_ascii(message) == true)
-		return false;
+	// if (is_ascii(message) == true)
+	// 	return false;
 	if ((ret = message.find("HTTP/1.1")) == std::string::npos)
 		return false;
 	else
@@ -348,13 +347,6 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 {
 	std::list<std::string> non_body_lines;
 
-	P("--------------------------------------------------------------------------");
-	P("REAL REQUEST:");
-	if (req.size() < 1000)
-		P(req); //test
-	else
-		P(req.substr(0, 1000));
-	P("--------------------------------------------------------------------------");
 	if (ret.non_body_parsed == false)
 	{
 		default_init(ret);
@@ -375,9 +367,5 @@ void parse_http_request(t_http_req &ret, std::string &req, t_config &conf)
 		return ;
 	}
 	ret.message_body = req.substr(ret.body_index);
-	parse_body(ret.message_body, ret.header_fields.Transfer_Encoding.front());
-	// P("--------------------------------------------------------------------------");
-	// P("PARSED REQUEST:");
-	// show_http_request(*ret); //test
-	// P("--------------------------------------------------------------------------");
+	parse_body(ret);
 }

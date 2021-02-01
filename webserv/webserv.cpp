@@ -13,14 +13,11 @@ void wait_connexion(std::list<t_config> &c, t_active_socket &active_socket)
 	}
 	else if (ret == 0) //If return is zero timeout happened
 	{
-		// P("timeout");
 		all_servers(c, active_socket, disconnect_all);
 		wait_connexion(c, active_socket);
 	}
 	else
 		all_servers(c, active_socket, new_incoming_connection);
-	// P("END");
-	// P(ret);
 }
 
 void handle_write(t_server &s, t_active_socket &active_socket)
@@ -31,15 +28,11 @@ void handle_write(t_server &s, t_active_socket &active_socket)
 	{
 		if (FD_ISSET(s.client_socket[i] , &active_socket.write))
 		{
-			//   P(s.answer[s.client_socket[i]]);
 			if ((message_len = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
 			{
 				P("Error: send failed");
-				P(strerror(errno)); //If send fails due to client disconnection, disconnect client
 				client_restart(s, i);
 			}
-			// else if (message_len == 0) //If message lenght is equal to 0, the client socket closed connection, thus disconnect
-			//   client_disconnection(s, i);
 			else if ((size_t)message_len < s.answer[s.client_socket[i]].size())
 				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_len, s.answer[s.client_socket[i]].size());
 			else

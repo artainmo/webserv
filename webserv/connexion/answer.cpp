@@ -256,7 +256,6 @@ std::string POST(t_http_req &req, t_config &conf)
 		req.status_code = 200;
 	init_post(req.URL, req.message_body, response, req.status_code);
 
-	P("~~~~~~~~BODY SIZE LIMIT:" << req.loc.max_body);
 	if (req.message_body.size() > (size_t)req.loc.max_body)
 		return error_page(413, req.method, conf);
 	if (!req.status_code)
@@ -266,9 +265,6 @@ std::string POST(t_http_req &req, t_config &conf)
 	}
 	else
 		init_post(req.URL, req.message_body, response, req.status_code);
-	P("~~~~~~~~~~POST: " << req.status_code);
-	P("~~~~~~~~BODY: " << req.URL);
-	// P("POST");
 	return construct_post_response(response);
 }
 
@@ -317,7 +313,6 @@ void socket_erase(std::map<int, t_http_req>::iterator &socket, t_server &s)
 {
 	int rem;
 
-	std::cout << "Erasing socket: "<< socket->first << std::endl;
 	rem = socket->first;
 	socket++;
 	s.requests.erase(rem);
@@ -327,9 +322,6 @@ void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_
 {
 	std::string	answer;
 
-	P("URL" << req.URL);
-	P("method" << req.method);
-	P("ERROR" << req.error);
 	if (req.error == true)
 		answer = error_page(400, req.method, conf);
 	else if (req.URL == std::string("file not found"))

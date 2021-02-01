@@ -60,17 +60,11 @@ int main(int argc, char **argv)
 	struct stat file;
 	if (stat("index.html", &file) == -1)
 	{
-		printf("stat error\n");
+		P("stat error\n");
 		throw internal_server_error_exc();
 	}
-	//timeinfo = time(file.st_mtime);
-	//std::cout << strftime(buf, 200, "Now it's %I:%M%p.", timeinfo) << std::endl;
-	printf("Last file access:         %s\n", ctime(&file.st_mtime));
+	// printf("Last file access:         %s\n", ctime(&file.st_mtime));
 	strptime(ctime(&file.st_mtime), "%a %b %d %T %Y", &timeinfo);
 	strftime(buf, 255, "%a, %d %b %Y %T GMT+1", &timeinfo);
-	printf("NEW Last file access:         %s\n", buf);
-	//file.st_mtime
-
-	//strftime(buf, sizeof(buf), "%d %b %Y %H:%M", &tm);
-//	Last-Modified: Tue, 15 Dec 2020 13:59:38 GMT
+	// printf("NEW Last file access:         %s\n", buf);
 }
