@@ -146,6 +146,8 @@ void get_client_request(t_server &s, t_active_socket &active_socket)
 			else
 			{
 				message_buffer[message_len] = '\0'; //End message buffer with terminating /0
+				if (s.requests[s.client_socket[i]].complete_request.size() == 0)
+					s.requests[s.client_socket[i]].complete_request.reserve(1000000100);
 				s.requests[s.client_socket[i]].complete_request += message_buffer; //Create key in map with its value
 			}
 		}

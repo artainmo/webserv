@@ -80,7 +80,7 @@ typedef struct s_header_fields
 	std::list<std::string> Accept_Language;
 	std::list<std::string> Allow;
 	std::list<std::string> Authorization;
-	std::list<std::string> Body;
+	std::string Body;
 	std::list<std::string> Content_Language;
 	std::list<std::string> Content_Length;
 	std::list<std::string> Content_Location;

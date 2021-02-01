@@ -99,7 +99,7 @@ void	fill_response_struct(t_header_fields & response, std::string const& file, s
 	response.Last_Modified.front() += get_last_modified(path);
 	response.Content_Length.front() += std::to_string(file.size());
 	response.Header_Line.front() += get_header_line(response_number);
-	response.Body.front() = file;
+	response.Body = file;
 	response.Content_Type.front() += get_content_type(path);
 	response.Location.front() += path;
 }
@@ -115,7 +115,7 @@ std::string construct_get_response(t_header_fields const& info)
 		+ info.Content_Length.front() + "\r\n"
 		+ info.Last_Modified.front() + "\r\n"
 		+ "\r\n"
-		+ info.Body.front();
+		+ info.Body;
 	return response;
 }
 
@@ -143,7 +143,7 @@ std::string construct_post_response(t_header_fields const& info)
 		+ info.Content_Type.front() + "\r\n"
 		+ info.Content_Length.front() + "\r\n"
 		+ "\r\n"
-		+ info.Body.front();
+		+ info.Body;
 	return response;
 }
 
@@ -170,17 +170,15 @@ std::string construct_error_response(t_header_fields const& info, std::string &m
 		+ info.Content_Length.front() + "\r\n"
 		+ "\r\n";
 	if (methode != "HEAD")
-		response += info.Body.front();
+		response += info.Body;
 	return response;
 }
 
 void init_head_get(std::string const &path, std::ifstream &fd, t_header_fields &response, int const &response_number)
 {
-	std::string			file;
+	std::string			file((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
 	std::string			line;
 
-	while (getline(fd, line))
-		file += line + "\n";
 	init_response_struct(response);
 	fill_response_struct(response, file, path, response_number);
 }
@@ -191,7 +189,7 @@ void init_post(std::string const& path, std::string const& body, t_header_fields
 	fill_response_struct(response, body, path, status_code);
 }
 
-void init_put(std::string const& path, t_header_fields & response, int const& response_number)
+void init_put(std::string const& path, t_header_fields &response, int const& response_number)
 {
 	std::string			file;
 
@@ -234,7 +232,7 @@ std::string GET(t_http_req &req, t_config &conf)
 	return construct_get_response(response);
 }
 
-std::string HEAD(std::string path) // Ne devrait pas fonctionner
+std::string HEAD(std::string &path) // Ne devrait pas fonctionner
 {
 	std::ifstream		fd;
 	t_header_fields	response;
@@ -250,14 +248,14 @@ std::string POST(t_http_req &req, t_config &conf)
 	std::ifstream fd;
 	t_header_fields	response;
 
+	if (req.message_body.size() > req.loc.max_body)
+		return error_page(413, req.method, conf);
 	if (req.loc.active && req.loc.CGI.active)
 		req.URL = get_cgi(req, conf);
 	else
 		req.status_code = 200;
-	init_post(req.URL, req.message_body, response, req.status_code);
+	// init_post(req.URL, req.message_body, response, req.status_code);
 
-	if (req.message_body.size() > req.loc.max_body)
-		return error_page(413, req.method, conf);
 	if (!req.status_code)
 	{
 		fd.open(req.URL);
@@ -287,7 +285,6 @@ std::string PUT(t_http_req &req, t_config &conf)
 		P(req.URL);
 		return error_page(404, req.method, conf); // CHANGE THE ERROR CODE?
 	}
-	//write_put_file(fd,req.message_body);
 	fd << req.message_body;
 	init_put(req.URL, response, status_code);
 	fd.close();
@@ -320,16 +317,13 @@ void socket_erase(std::map<int, t_http_req>::iterator &socket, t_server &s)
 
 void get_answer(std::map<int, t_http_req>::iterator &socket, t_http_req &req, t_config &conf)
 {
-	std::string	answer;
-
 	if (req.error == true)
-		answer = error_page(400, req.method, conf);
+		conf.s.answer[socket->first] = error_page(400, req.method, conf);
 	else if (req.URL == std::string("file not found"))
-		answer = error_page(404, req.method, conf);
+		conf.s.answer[socket->first] = error_page(404, req.method, conf);
 	else if (req.URL == std::string("method not found"))
-		answer = error_page(405, req.method, conf);
+		conf.s.answer[socket->first] = error_page(405, req.method, conf);
 	else
-		answer = parse_method(req, conf);
-	conf.s.answer[socket->first] = answer;
+		conf.s.answer[socket->first] = parse_method(req, conf);
 	socket_erase(socket, conf.s);
 }

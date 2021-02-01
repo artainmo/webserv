@@ -250,7 +250,7 @@ bool completed_request_lenght(std::string const &req, std::string const &lenght)
 	return false;
 }
 
-bool completed_request_norm(std::string const req)
+bool completed_request_norm(std::string const &req)
 {
 	int pos;
 
