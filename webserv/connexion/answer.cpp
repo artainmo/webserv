@@ -206,7 +206,12 @@ std::string error_page(int error_nbr, std::string methode, t_config &conf)
 	if (conf.default_error_page.size() == 0 || !file_exists(conf.root + std::string("/") + conf.default_error_page)) //If default error page does not exist continue with own error pages
 		path = "default/error/" + std::to_string(error_nbr) + ".html";
 	else
-		path = conf.root + std::string("/") + conf.default_error_page;
+	{
+		if (conf.root.size() == 0)
+			path = conf.default_error_page;
+		else
+			path = conf.root + std::string("/") + conf.default_error_page;
+	}
 	fd.open(path);
 	if (!fd.is_open())
 	{
@@ -252,21 +257,18 @@ std::string POST(t_http_req &req, t_config &conf)
 		return error_page(413, req.method, conf);
 	if (req.loc.active && req.loc.CGI.active)
 		req.URL = get_cgi(req, conf);
-	req.status_code = 200;
-	// init_post(req.URL, req.message_body, response, req.status_code);
-
-	// if (!req.status_code)
-	// {
-	// 	fd.open(req.URL);
-	// 	if (!fd.is_open())
-	// 	{
-	// 		std::cout << "Error: file opening " << req.URL << std::endl;
-	// 		throw internal_server_error_exc();
-	// 	}
-	// 	init_head_get(req.URL, fd, response, 200);
-	// }
-	// else
-	init_post(req.URL, req.message_body, response, req.status_code);
+	if (req.loc.CGI.SCRIPT_NAME != std::string("None") && file_exists(req.loc.CGI.SCRIPT_NAME))
+		init_post(req.URL, req.message_body, response, req.status_code);
+	else
+	{
+		fd.open(req.URL);
+		if (!fd.is_open())
+		{
+			std::cout << "Error: file opening " << req.URL << std::endl;
+			throw internal_server_error_exc();
+		}
+		init_head_get(req.URL, fd, response, 200);
+	}
 	return construct_post_response(response);
 }
 

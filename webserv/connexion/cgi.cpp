@@ -176,6 +176,7 @@ std::string get_cgi(t_http_req &req, t_config &c)
 	}
 	write_to_upload_file(fd_upload_location, req, vec_env);
 	close(fd_upload_location);
-	parse_cgi_file(req, generated_file_path);
+	if (req.loc.CGI.SCRIPT_NAME != std::string("None") && file_exists(req.loc.CGI.SCRIPT_NAME))
+		parse_cgi_file(req, generated_file_path);
 	return generated_file_path;
 }

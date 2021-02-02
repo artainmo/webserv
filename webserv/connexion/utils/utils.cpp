@@ -72,6 +72,8 @@ bool file_exists(std::string name)
 	std::ifstream f;
 	int ret;
 
+	if (name[0] == '/')
+		name.erase(1);
 	f.open(name);
 	ret = f.is_open();
 	f.close();

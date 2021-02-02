@@ -226,6 +226,7 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 {
 	std::list<t_location> my_locations; //MAP takes location and associated URL
 
+	// P(req.URL);
 	prefix_location(my_locations, req, conf);
 	set_new_url(my_locations, req); //For regular expression match use the URL found in prefix_locations
 	regular_expression_location(my_locations, req, conf);
@@ -241,4 +242,5 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		add_location(req.loc, my_locations.back());
 		req.URL = my_locations.back().FOUND_URL;
 	}
+	// P(req.URL);
 }

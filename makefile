@@ -20,13 +20,13 @@ $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 
 run: re
-	./webserv.a conf/webserv2.conf
+	./webserv.a conf/webserv1.conf
 
 test:
 	yes | ./tests/tester http://127.0.0.1:1900
 
 test2:
-	yes | ./tests/tester http://10.1.10.7:4200
+	yes | ./tests/tester http://127.0.0.1:4200
 
 clean:
 	rm -rf $(OBJ)

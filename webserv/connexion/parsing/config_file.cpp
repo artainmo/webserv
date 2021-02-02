@@ -180,7 +180,11 @@ void  parse_server(t_config &conf, std::ifstream &fd)
 				conf.root =conf.root.substr(1, conf.root.size());
 		}
 		else if (check_line(line, "default_error_page"))
+		{
 			conf.default_error_page = following_content(line, "default_error_page");
+			if (conf.default_error_page[0] == '/')
+				conf.default_error_page =conf.default_error_page.substr(1, conf.default_error_page.size());
+		}
 		else if (check_line(line, "body_size_limit"))
 			try
 			{
