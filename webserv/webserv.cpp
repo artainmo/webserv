@@ -34,7 +34,7 @@ void handle_write(t_server &s, t_active_socket &active_socket)
 				client_restart(s, i);
 			}
 			else if ((size_t)message_len < s.answer[s.client_socket[i]].size())
-				s.answer[s.client_socket[i]].erase(0, message_len);
+				s.answer[s.client_socket[i]] = s.answer[s.client_socket[i]].substr(message_len, s.answer[s.client_socket[i]].size());
 			else
 				s.answer.erase(s.client_socket[i]);
 		}

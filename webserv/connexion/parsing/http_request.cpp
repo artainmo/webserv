@@ -5,6 +5,8 @@ void parse_first_line(t_http_req &req, std::string const &line, t_config &conf)
 	std::list<std::string> parts;
 
 	parts = split(line, " ");
+	if (parts.size() != 3)
+		return ;
 	req.method = parts.front();
 	parts.pop_front();
 	req.URL = parts.front().substr(1);
