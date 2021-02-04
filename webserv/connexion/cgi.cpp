@@ -86,7 +86,7 @@ void init_execve_cgi(t_http_req const& req, std::vector<std::string> &execve_par
 	execve_param.push_back(req.URL);
 }
 
-void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<std::string> const &vec_env)
+bool write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<std::string> const &vec_env)
 {
 	int pp[2];
 	pid_t pid;
@@ -100,8 +100,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	{
 		P("Error: fork failed");
 		P(strerror(errno));
-		write_to_upload_file(fd_upload_location, req, vec_env);
-		return ;
+		return false;
 		//throw internal_server_error_exc();
 	}
 	if (!pid)
@@ -135,6 +134,7 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 		close(pp[1]);
 		waitpid(pid, 0, 0);
 	}
+	return true;
 }
 
 void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
@@ -180,7 +180,11 @@ std::string get_cgi(t_http_req &req, t_config &c)
 		P(strerror(errno));
 		throw internal_server_error_exc();
 	}
-	write_to_upload_file(fd_upload_location, req, vec_env);
+	if (write_to_upload_file(fd_upload_location, req, vec_env) == false)
+	{
+		close(fd_upload_location);
+		return "None";
+	}
 	close(fd_upload_location);
 	if (req.loc.CGI.SCRIPT_NAME != std::string("None") && file_exists(req.loc.CGI.SCRIPT_NAME))
 		parse_cgi_file(req, generated_file_path);
