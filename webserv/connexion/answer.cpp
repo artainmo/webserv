@@ -212,10 +212,12 @@ std::string error_page(int error_nbr, std::string methode, t_config &conf)
 	fd.open(path);
 	if (!fd.is_open())
 	{
+		fd.close();
 		std::cout << "Error: file opening " << path << std::endl;
 		throw internal_server_error_exc();
 	}
 	init_head_get(path, fd, info, error_nbr);
+	fd.close();
 	return construct_error_response(info, methode);
 }
 
@@ -227,7 +229,11 @@ std::string GET(t_http_req &req, t_config &conf)
 
 	fd.open(req.URL);
 	if (!fd.is_open())
+	{
+		fd.close();
+		std::cout << "Error: file opening " << path << std::endl;
 		return error_page(404, req.method, conf);
+	}
 	if (req.loc.active && req.loc.CGI.active)
 		req.URL = get_cgi(req, conf);
 	init_head_get(req.URL, fd, response, 200);
@@ -262,10 +268,12 @@ std::string POST(t_http_req &req, t_config &conf)
 		fd.open(req.URL);
 		if (!fd.is_open())
 		{
+			fd.close();
 			std::cout << "Error: file opening " << req.URL << std::endl;
 			throw internal_server_error_exc();
 		}
 		init_head_get(req.URL, fd, response, 200);
+		fd.close();
 	}
 	return construct_post_response(response);
 }
@@ -284,6 +292,7 @@ std::string PUT(t_http_req &req, t_config &conf)
 	fd.open(req.URL,  std::ofstream::out | std::ofstream::trunc); // Create the file or delete it if already exist
 	if (!fd.is_open())
 	{
+		fd.close();
 		P("Error: Put file opening");
 		P(strerror(errno));
 		P(req.URL);

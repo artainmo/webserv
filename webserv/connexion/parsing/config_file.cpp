@@ -270,6 +270,7 @@ void parse_config(std::string path, std::list<t_config> &ret)
 
 	if (!fd.is_open())
 	{
+		fd.close();
 		if (errno == 2)
 			P("Error: no such file or directory");
 		else if (errno == 13)

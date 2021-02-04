@@ -145,6 +145,7 @@ void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
 
 	if (!fd.is_open())
 	{
+		fd.close();
 		P("Error: parse_cgi_post_file didn't open");
 		exit(1);
 	}
@@ -155,6 +156,7 @@ void parse_cgi_file(t_http_req &req, std::string const& ouput_file)
 	}
 	catch(std::exception &e)
 	{
+		fd.close();
 		P("Stoi Error: " << e.what());
 		throw internal_server_error_exc();
 	}
@@ -173,6 +175,7 @@ std::string get_cgi(t_http_req &req, t_config &c)
 	generated_file_path = req.loc.root + req.loc.file_upload_location;
 	if ((fd_upload_location = open(generated_file_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666)) == -1)
 	{
+		close(fd_upload_location);
 		P("Error: file upload location error");
 		P(strerror(errno));
 		throw internal_server_error_exc();
