@@ -55,11 +55,6 @@ void setup_server(t_config &c)
 	}
 }
 
-const char *internal_server_error_exc::what() const _NOEXCEPT
-{
-	return "Internal server error";
-}
-
 void internal_server_error(t_server &s)
 {
 	t_config conf; //Empty conf just for error page parameter will have no effect, 500 error will be returned independently of default_error_page

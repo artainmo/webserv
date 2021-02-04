@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <list>
+#include <sys/wait.h>
 
 #define P(x) std::cout << x << std::endl
 #define pass (void)0
@@ -30,8 +31,6 @@
 
 class internal_server_error_exc : public std::exception
 {
-public:
-	const char *what() const _NOEXCEPT;
 };
 
 typedef struct s_CGI

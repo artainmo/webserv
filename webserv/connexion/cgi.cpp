@@ -15,7 +15,7 @@ void env_secret_var(t_CGI const& c, std::string &secret_string)
 			secret_string += '_';
 		else if (c.SECRET[i] == ':')
 			secret_string += '=';
-		else if (isnumber(c.SECRET[i]))
+		else if (std::isdigit(c.SECRET[i]))
 			secret_string += c.SECRET[i];
 		else if (c.SECRET[i] == ' ')
 			continue ;

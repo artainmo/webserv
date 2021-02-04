@@ -28,7 +28,7 @@ void handle_write(t_server &s, t_active_socket &active_socket)
 	{
 		if (FD_ISSET(s.client_socket[i] , &active_socket.write))
 		{
-			if ((message_len = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), 0)) == -1)
+			if ((message_len = send(s.client_socket[i], s.answer[s.client_socket[i]].c_str(), s.answer[s.client_socket[i]].size(), MSG_NOSIGNAL)) == -1)
 			{
 				P("Error: send failed");
 				client_restart(s, i);
@@ -121,7 +121,7 @@ int main(int argc , char *argv[])
 		std::cout << "ERROR: Wrong Program Arguments" << std::endl;
 		exit(1);
 	}
-	signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
+	//signal(SIGPIPE, SIG_IGN); //Ignore closed pipe error - Client closes connextion when trying to send
 	parse_config(argv[1], config);
 	// check_config(config);
 	for (std::list<t_config>::iterator i = config.begin(); i != config.end(); i++)
