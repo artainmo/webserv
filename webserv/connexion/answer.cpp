@@ -231,7 +231,7 @@ std::string GET(t_http_req &req, t_config &conf)
 	if (!fd.is_open())
 	{
 		fd.close();
-		std::cout << "Error: file opening " << path << std::endl;
+		std::cout << "Error: file opening" <<  std::endl;
 		return error_page(404, req.method, conf);
 	}
 	if (req.loc.active && req.loc.CGI.active)
