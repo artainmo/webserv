@@ -99,7 +99,10 @@ void write_to_upload_file(int &fd_upload_location, t_http_req &req, std::vector<
 	if ((pid = fork()) == -1)
 	{
 		P("Error: fork failed");
-		throw internal_server_error_exc();
+		P(strerror(errno));
+		write_to_upload_file(fd_upload_location, req, vec_env);
+		return ;
+		//throw internal_server_error_exc();
 	}
 	if (!pid)
 	{
