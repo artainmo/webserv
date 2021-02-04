@@ -23,10 +23,7 @@ run: re
 	./webserv.a conf/webserv1.conf
 
 test:
-	yes | ./tests/tester http://127.0.0.1:1900
-
-test2:
-	yes | ./tests/tester http://127.0.0.1:4200
+	yes | ./tests/ubuntu_tester http://127.0.0.1:1900
 
 clean:
 	rm -rf $(OBJ)
