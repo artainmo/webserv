@@ -10,31 +10,26 @@ std::string header_field(std::string header, std::string text)
 	return header + std::string(": ") + text + std::string("\r\n");
 }
 
-std::string get_header_line(int const& number)
+std::string get_header_line(int const number)
 {
 	std::string	protocol("HTTP/1.1 ");
 
-	switch (number)
-	{
-		case 200:
-			return (protocol + std::string("200 OK"));
-		case 201:
-			return (protocol + std::string("201 Created"));
-		case 404:
-			return (protocol + std::string("404 Not Found"));
-		case 405:
-			return (protocol + std::string("405 Not Allowed"));
-		case 400:
-			return (protocol + std::string("400 Bad Request"));
-		case 413:
-			return (protocol + std::string("413 Payload Too Large"));
-		case 416:
-			return (protocol + std::string("416 Range Not Satisfiable"));
-		case 500:
-			return (protocol + std::string("500 Internal Server Error"));
-		default:
-			return (protocol + std::string("404 Not Found"));
-	}
+	if (number == 200)
+		return "HTTP/1.1 200 OK";
+	else if (number ==  201)
+		return (protocol + std::string("201 Created"));
+	else if (number == 404)
+		return (protocol + std::string("404 Not Found"));
+	else if (number == 405)
+		return (protocol + std::string("405 Not Allowed"));
+	else if (number == 400)
+		return (protocol + std::string("400 Bad Request"));
+	else if (number == 413)
+		return (protocol + std::string("413 Payload Too Large"));
+	else if (number == 416)
+		return (protocol + std::string("416 Range Not Satisfiable"));
+	else if (number == 500)
+		return (protocol + std::string("500 Internal Server Error"));
 	return (protocol + std::string("404 Not Found"));
 }
 
@@ -98,7 +93,8 @@ void	fill_response_struct(t_header_fields & response, std::string const& file, s
 	response.Date.front() += get_date();
 	response.Last_Modified.front() += get_last_modified(path);
 	response.Content_Length.front() += std::to_string(file.size());
-	response.Header_Line.front() += get_header_line(response_number);
+       	get_header_line(response_number);
+	response.Header_Line = get_header_line(response_number);
 	response.Body = file;
 	response.Content_Type.front() += get_content_type(path);
 	response.Location.front() += path;
@@ -108,7 +104,7 @@ std::string construct_get_response(t_header_fields const& info)
 {
 	std::string response;
 
-	response = info.Header_Line.front() + "\r\n"
+	response = info.Header_Line + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Content_Type.front() + "\r\n"
@@ -123,7 +119,7 @@ std::string construct_head_response(t_header_fields const& info)
 {
 	std::string response;
 
-	response = info.Header_Line.front() + "\r\n"
+	response = info.Header_Line + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Content_Type.front() + "\r\n"
@@ -137,7 +133,7 @@ std::string construct_post_response(t_header_fields const& info)
 {
 	std::string response;
 
-	response = info.Header_Line.front() + "\r\n"
+	response = info.Header_Line + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Content_Type.front() + "\r\n"
@@ -151,7 +147,7 @@ std::string construct_put_response(t_header_fields const& info)
 {
 	std::string response;
 
-	response = info.Header_Line.front() + "\r\n"
+	response = info.Header_Line + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Location.front() + "\r\n"
@@ -163,7 +159,7 @@ std::string construct_error_response(t_header_fields const& info, std::string &m
 {
 	std::string response;
 
-	response = info.Header_Line.front() + "\r\n"
+	response = info.Header_Line + "\r\n"
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Content_Type.front() + "\r\n"
@@ -178,6 +174,7 @@ void init_head_get(std::string const &path, std::ifstream &fd, t_header_fields &
 {
 	std::string			file((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
 	std::string			line;
+
 
 	init_response_struct(response);
 	fill_response_struct(response, file, path, response_number);
@@ -226,6 +223,7 @@ std::string GET(t_http_req &req, t_config &conf)
 {
 	std::ifstream		fd;
 	t_header_fields	response;
+
 
 	fd.open(req.URL);
 	if (!fd.is_open())

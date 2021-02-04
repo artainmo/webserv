@@ -48,7 +48,6 @@ void handle_read(t_config &c, t_active_socket &active_socket)
 	get_client_request(c.s, active_socket);
 	if (c.s.requests.size() != 0)
 	{
-
 		requests = c.s.requests.begin(); //socket is iterator map with socket fd (first) and request text (second)
 		while(requests != c.s.requests.end()) //If receiving multiple socket connections at same time handle them all
 		{
