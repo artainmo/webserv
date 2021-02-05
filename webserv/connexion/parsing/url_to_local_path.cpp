@@ -196,14 +196,20 @@ void find_in_directory_location(std::list<t_location> &my_locations, t_location 
 	}
 }
 
+std::string get_potential_location(std::string path)
+{
+	return path.substr(0, path.find_first_of("/"));
+}
+
 void prefix_location(std::list<t_location> &my_locations, t_http_req &req, t_config &conf)
 {
 	for (std::list<t_location>::iterator loc = conf.locations.begin(); loc != conf.locations.end(); loc++) //find location based on directory
 	{
 		// P("URL: " << req.URL);
-		// P("DIR: " << loc.directory);
-		// P("COMP: " << (req.URL >= loc.directory && loc.directory != std::string("None")));
-		if (req.URL >= loc->directory && loc->directory != std::string("None")) //Find in directory location
+		// P("URL: " << get_dir(req.URL));
+		// P("DIR: " << loc->directory);
+		// P("COMP: " << (get_dir(req.URL) == loc->directory && loc->directory != std::string("None")));
+		if (get_potential_location(req.URL) == loc->directory && loc->directory != std::string("None")) //Find in directory location
 			find_in_directory_location(my_locations, *loc, req);
 	}
 }
@@ -242,5 +248,6 @@ void URL_to_local_path(t_http_req &req, t_config &conf)
 		add_location(req.loc, my_locations.back());
 		req.URL = my_locations.back().FOUND_URL;
 	}
+	// P(req.loc.file_extensions.front());
 	// P(req.URL);
 }

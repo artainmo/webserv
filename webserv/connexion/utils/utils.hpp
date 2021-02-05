@@ -18,6 +18,7 @@
 std::string get_file_extension(std::string path);
 std::string final_file_in_path(std::string path);
 int is_regular_file(const char *path);
+bool is_dir(std::string path_dir);
 bool	is_ascii(std::string const &s);
 bool is_white_space(char c);
 bool equal_to(char c, std::string chars);

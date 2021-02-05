@@ -35,7 +35,7 @@ std::string final_file_in_path(std::string path)
 	return path.substr(path.find_last_of("/") + 1);
 }
 
-int is_regular_file(const char *path)
+int is_regular_file(const char *path) //returns 1 if is a file otherwise 0
 {
 	struct stat path_stat;
 
@@ -45,6 +45,16 @@ int is_regular_file(const char *path)
 		throw internal_server_error_exc();
 	}
 	return S_ISREG(path_stat.st_mode);
+}
+
+bool is_dir(std::string path_dir)
+{
+	DIR *directory;
+
+	if ((directory = opendir(path_dir.c_str())) == 0)
+		return false;
+	closedir(directory);
+	return true;
 }
 
 void print_sockets(std::map<int, std::string> &requests)
