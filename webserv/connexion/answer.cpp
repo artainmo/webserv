@@ -151,6 +151,7 @@ std::string construct_put_response(t_header_fields const& info)
 		+ info.Server.front() + "\r\n"
 		+ info.Date.front() + "\r\n"
 		+ info.Location.front() + "\r\n"
+		+ "Content-Length: 0\r\n"
 		+ "\r\n";
 	return response;
 }
