@@ -16,8 +16,16 @@ WEB DEVELOPMENT
 ---------------
 World Wide Web (www), grouping of all documents on the web accessible through URLs(uniform resource locator)
 
-Web browser, is a software application that allows access to the world wide web via URLs. The web browser transforms the URL into an IP address using the DNS (domain name system), it sends http requests towards that ip address or the server machine to receive the requested content.
+A server is a computer connected to the www, it contains an IP address to identify itself, this IP address can be associ
+ated with an URL, which is a non-random name for easier identification.
 
+Web browser, is a software application that allows access to the world wide web via URLs. The web browser transforms the URL into an IP address using the DNS (domain name system), it sends http requests towards that ip address to receive the requested content.
+
+Webservers serve an application/platform/website on the web. They receive web browser requests and send back responses.
+They often run on an external server, which is a computer with no visual display, waiting for client-servers to make requests.
+
+HTTP
+The language used between servers to communicate.
 http requests are made by a web browser and follow a specific syntax, they can request content from the webserver or even post content on the webserver, allowing the client to interact with the webserver.
 http responses are made by the web server and follow a specific syntax, they can send HTML pages for the browser to display.
 http stands for hypertext transfer protocol, hypertext are documents that include links to other documents.
@@ -49,9 +57,10 @@ The different status codes for responses are:
 405: Not allowed, the resource does not accept the method
 500: Internal server error, situation the server does not know how to handle
 
-Web server, answers http requests.
-Web platform consists of back-end and front-end.
-Back-end acts as web-server and data-base-manager, while front-end are the (in the end HTML) pages send by web-server to client server, that the client's web browser will visually display.
+WEB PLATFORM
+A web platform consists of a back-end and front-end.
+Back-end acts as web-server(answer HTTP request) and data-base-manager.
+Front-end refers to the pages send by web-server to client-server, that the client's web browser will visually display, creating an user interface (UI).
 Different programming languages can be used for the back-end and front-end development.
 
 NEW ALLOWED FUNCTIONS
