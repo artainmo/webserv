@@ -12,7 +12,6 @@ http stands for hypertext transfer protocol, hypertext are documents that includ
 
 An http server is able to accept connections with a client, to be able to receive and anser http requests.
 
----------------
 WEB DEVELOPMENT
 ---------------
 World Wide Web (www), grouping of all documents on the web accessible through URLs(uniform resource locator)
