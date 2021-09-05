@@ -12,8 +12,51 @@ http stands for hypertext transfer protocol, hypertext are documents that includ
 
 An http server is able to accept connections with a client, to be able to receive and anser http requests.
 
+---------------
+WEB DEVELOPMENT
+---------------
+World Wide Web (www), grouping of all documents on the web accessible through URLs(uniform resource locator)
+
+Web browser, is a software application that allows access to the world wide web via URLs. The web browser transforms the URL into an IP address using the DNS (domain name system), it sends http requests towards that ip address or the server machine to receive the requested content.
+
+http requests are made by a web browser and follow a specific syntax, they can request content from the webserver or even post content on the webserver, allowing the client to interact with the webserver.
+http responses are made by the web server and follow a specific syntax, they can send HTML pages for the browser to display.
+http stands for hypertext transfer protocol, hypertext are documents that include links to other documents.
+
+Structure of a request:
+First line: method + request targer (URL) + HTTP version (HTTP/1.1)
+Header fields: Optional extra information about request
+Separation empty space
+Body: Content of the request
+
+Structure of a response:
+Status line: HTTP version (HTTP/1.1) + status code + status short description
+Header fields: Optional extra information about response
+Separation empty space
+Body: Content of the response
+
+The different HTTP methods for requests are:
+GET: requests representation of specified resource, specified resource is indicated by URL.
+HEAD: The HEAD method asks for a response identical to that of a GET request, but without the response body, is used to verify if any erros.
+POST: used to submit an entity to the specified resource, often causing a change in state on the server.
+PUT: replaces all current representations of the specified resource with the submitted request entity.
+DELETE: deletes the specified resource.
+
+The different status codes for responses are:
+200: OK, successful request
+201: Created, for put and post methods
+400: Bad request, invalid syntax
+404: Not found, the URL is not recognized
+405: Not allowed, the resource does not accept the method
+500: Internal server error, situation the server does not know how to handle
+
+Web server, answers http requests.
+Web platform consists of back-end and front-end.
+Back-end acts as web-server and data-base-manager, while front-end are the (in the end HTML) pages send by web-server to client server, that the client's web browser will visually display.
+Different programming languages can be used for the back-end and front-end development.
+
 NEW ALLOWED FUNCTIONS
------------------
+---------------------
 stat - Information about a file
 lstat - Information about a symbolic link
 fstat - Same as stat but takes fd as argument
@@ -58,6 +101,16 @@ POST sets received body as env var, that can be used by the URI that is called w
 - Set env var
 - Call upload file with cgi(or not)
 - Produced upload file should be returned in body
+
+PARSING BODY
+------------
+If Transfer-encoding header is set to chunked, the content will be send in multiple requests.
+If header-lenght is specified, the content will be send in one request and the lenght of it is specified.
+
+CGI
+---
+When sending content to a browser it has to be in HTML.
+If file is not written in HTML it can be transformed to HTML using CGI, an interface that enables to execute an external program that transfomrs the non-HTML file to HTML.
 
 SERVER HOST NAME AND PORT
 -------------------------
