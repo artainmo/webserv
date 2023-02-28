@@ -1,4 +1,4 @@
-# Webserv Project 42 school
+# webserv
 
 Coding a webserver in c++ able to handle HTTP/1.1 requests following a specific configuration file.
 
