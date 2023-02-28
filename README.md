@@ -8,7 +8,7 @@ Coding a webserver in c++ able to handle HTTP/1.1 requests following a specific 
 
 ![myImage](https://media.giphy.com/media/XRB1uf2F9bGOA/giphy.gif)
 
-## RESOURCES
+## Resources
 
 ![myImage](https://media.giphy.com/media/VcizxCUIgaKpa/giphy.gif)
 
