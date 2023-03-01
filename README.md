@@ -1,6 +1,6 @@
 # webserv
 
-Coding a webserver in c++ able to handle HTTP/1.1 requests following a specific configuration file
+Coding a webserver in c++ able to handle HTTP/1.1 requests following a specific configuration file.
 
 **Subject**: [Webserv - 42](https://cdn.intra.42.fr/pdf/pdf/68475/en.subject.pdf)
 
